@@ -5,6 +5,6 @@ from celery import Celery
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'notebooksystem.settings')
 
-app = Celery('NBS')
+app = Celery('notebooksystem')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
