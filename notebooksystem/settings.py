@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 SECRET_KEY = config('SECRET_KEY')
 
 ALLOWED_HOSTS = ['notebooksystem.onrender.com','127.0.0.1']
@@ -163,21 +163,3 @@ CSRF_COOKIE_SECURE = True
 CELERY_BROKER_URL = 'django://'
 CELERY_RESULT_BACKEND = 'django-db'
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
