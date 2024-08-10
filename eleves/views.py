@@ -15,11 +15,6 @@ from django.db import IntegrityError
 from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-import logging
-
-# Configuration du logger
-logger = logging.getLogger(__name__)
-
 
 @login_required
 def liste_eleves(request):
@@ -70,100 +65,105 @@ def confirmer_suppression_eleve(request, eleve_id):
     return render(request, 'eleves/confirmer_suppression_eleve.html', {'eleve': eleve})
 
 
-
 @login_required
 def importer_eleves(request):
     if request.method == 'POST':
-        try:
-            classe_id = request.POST['classe']
-            classe = Classe.objects.get(id=classe_id)
-            file = request.FILES['file']
-            fs = FileSystemStorage()
-            filename = fs.save(file.name, file)
-            filepath = fs.path(filename)
+        classe_id = request.POST['classe']
+        classe = Classe.objects.get(id=classe_id)
+        file = request.FILES['file']
+        fs = FileSystemStorage()
+        filename = fs.save(file.name, file)
+        filepath = fs.path(filename)
 
-            wb = load_workbook(filepath)
-            ws = wb.active
+        wb = load_workbook(filepath)
+        ws = wb.active
 
-            imported_count = 0
-            duplicate_count = 0
-            error_count = 0
-            duplicates = []
-            new_eleves = []
-            errors = []
+        imported_count = 0
+        duplicate_count = 0
+        error_count = 0
+        duplicates = []
+        new_eleves = []
+        errors = []
 
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                try:
-                    nom = row[0] or ''  # Nom obligatoire
-                    prenom = row[1] or ''
-                    sexe = row[2] or ''
-                    date_naissance = row[3]
-                    lieu_naissance = row[4] or ''
-                    matricule = row[5]  # Matricule obligatoire
-                    statut = row[6] or ''
-                    contact_parent = row[7] or ''
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            try:
+                nom = row[0] or ''  # Nom obligatoire
+                prenom = row[1] or ''
+                sexe = row[2] or ''
+                date_naissance = row[3]
+                lieu_naissance = row[4] or ''
+                matricule = row[5]  # Matricule obligatoire
+                statut = row[6] or ''
+                contact_parent = row[7] or ''
 
-                    # Vérifier les champs obligatoires
-                    if not nom or not matricule:
-                        raise ValueError(f"Nom et matricule sont obligatoires (Nom: {nom}, Matricule: {matricule})")
+                # Vérifier les champs obligatoires
+                if not nom or not matricule:
+                    raise ValueError(f"Nom et matricule sont obligatoires (Nom: {nom}, Matricule: {matricule})")
 
-                    # Convertir date_naissance en chaîne de caractères
-                    if isinstance(date_naissance, datetime):
-                        date_naissance = date_naissance.strftime('%Y-%m-%d')
+                # Convertir date_naissance en chaîne de caractères
+                if isinstance(date_naissance, datetime):
+                    date_naissance = date_naissance.strftime('%Y-%m-%d')
 
-                    eleve = Eleve.objects.filter(matricule=matricule).first()
-                    if eleve:
-                        duplicates.append({
-                            'nom': nom,
-                            'prenom': prenom,
-                            'sexe': sexe,
-                            'date_naissance': date_naissance,
-                            'lieu_naissance': lieu_naissance,
-                            'matricule': matricule,
-                            'statut': statut,
-                            'contact_parent': contact_parent,
-                            'classe_actuelle': classe.id,  # Stocker l'ID de la classe
-                            'existing_eleve': eleve.id  # Stocker l'ID de l'élève existant
-                        })
-                        duplicate_count += 1
-                    else:
-                        new_eleves.append({
-                            'nom': nom,
-                            'prenom': prenom,
-                            'sexe': sexe,
-                            'date_naissance': date_naissance,
-                            'lieu_naissance': lieu_naissance,
-                            'matricule': matricule,
-                            'statut': statut,
-                            'contact_parent': contact_parent,
-                            'classe_actuelle': classe  # Stocker la classe
-                        })
-                        imported_count += 1
-                except Exception as e:
-                    errors.append(f"Erreur sur la ligne {row}: {str(e)}")
-                    error_count += 1
+                eleve = Eleve.objects.filter(matricule=matricule).first()
+                if eleve:
+                    duplicates.append({
+                        'nom': nom,
+                        'prenom': prenom,
+                        'sexe': sexe,
+                        'date_naissance': date_naissance,
+                        'lieu_naissance': lieu_naissance,
+                        'matricule': matricule,
+                        'statut': statut,
+                        'contact_parent': contact_parent,
+                        'classe_actuelle': classe.id,  # Stocker l'ID de la classe
+                        'existing_eleve': eleve.id  # Stocker l'ID de l'élève existant
+                    })
+                    duplicate_count += 1
+                else:
+                    new_eleves.append({
+                        'nom': nom,
+                        'prenom': prenom,
+                        'sexe': sexe,
+                        'date_naissance': date_naissance,
+                        'lieu_naissance': lieu_naissance,
+                        'matricule': matricule,
+                        'statut': statut,
+                        'contact_parent': contact_parent,
+                        'classe_actuelle': classe.id  # Stocker l'ID de la classe
+                    })
+                    imported_count += 1
+            except Exception as e:
+                errors.append(f"Erreur sur la ligne {row}: {str(e)}")
+                error_count += 1
 
-            # Stocker temporairement les nouveaux élèves, les doublons et les erreurs dans la session
-            request.session['new_eleves'] = new_eleves
-            request.session['duplicates'] = duplicates
-            request.session['errors'] = errors
+        # Stocker temporairement les nouveaux élèves, les doublons et les erreurs dans la session
+        request.session['new_eleves'] = new_eleves
+        request.session['duplicates'] = duplicates
+        request.session['errors'] = errors
 
-            if errors:
-                return redirect('resolve_import_errors')
-            
-            if duplicates:
-                return redirect('resolve_duplicates')
+        if errors:
+            return redirect('resolve_import_errors')
+        
+        if duplicates:
+            return redirect('resolve_duplicates')
 
-            # Ajouter les nouveaux élèves à la base de données
-            for eleve_data in new_eleves:
-                Eleve.objects.create(**eleve_data)
+        # Ajouter les nouveaux élèves à la base de données
+        for eleve_data in new_eleves:
+            classe = Classe.objects.get(id=eleve_data['classe_actuelle'])  # Récupérer l'objet Classe
+            Eleve.objects.create(
+                nom=eleve_data['nom'],
+                prenom=eleve_data['prenom'],
+                sexe=eleve_data['sexe'],
+                date_naissance=eleve_data['date_naissance'],
+                lieu_naissance=eleve_data['lieu_naissance'],
+                matricule=eleve_data['matricule'],
+                statut=eleve_data['statut'],
+                contact_parent=eleve_data['contact_parent'],
+                classe_actuelle=classe  # Utiliser l'objet Classe
+            )
 
-            messages.success(request, f"Importation réussie: {imported_count} élèves importés, {duplicate_count} doublons détectés, {error_count} erreurs.")
-            return redirect('liste_eleves')
-
-        except Exception as e:
-            logger.error(f"Erreur lors de l'importation : {str(e)}")
-            return HttpResponse("Erreur lors de l'importation", status=500)
+        messages.success(request, f"Importation réussie: {imported_count} élèves importés, {duplicate_count} doublons détectés, {error_count} erreurs.")
+        return redirect('liste_eleves')
 
     classes = Classe.objects.all()
     return render(request, 'eleves/importer_eleves.html', {'classes': classes})
