@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d_4m9lr=t4iiu69+5slbdn%-&vlr1t#m1oyc01p47eavw0^7m8'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+SECRET_KEY = config('SECRET_KEY')
 
-ALLOWED_HOSTS =  ['notebooksystem.onrender.com']
+ALLOWED_HOSTS = ['notebooksystem.onrender.com', '127.0.0.1']
 
 # Application definition
 
@@ -47,6 +50,7 @@ INSTALLED_APPS = [
     'parametres',
     'licences',
     'classes',
+ 
 
 
 ]
@@ -88,15 +92,18 @@ WSGI_APPLICATION = 'notebooksystem.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+#DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'notebooksystem_nbs',
+#         'USER': 'notebooksystem',
+#         'PASSWORD': 'JXkjWM5rmfnYQqeXgNpjeRLNU6u6fGEQ',
+#         'HOST': 'dpg-cqrmv0lumphs73cncc3g-a',  # Ou l'adresse de votre serveur PostgreSQL
+#         'PORT': '5432',       # Ou le port utilisé par PostgreSQL
+#     }
+# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'notebooksystem_nbs',
-        'USER': 'notebooksystem',
-        'PASSWORD': 'JXkjWM5rmfnYQqeXgNpjeRLNU6u6fGEQ',
-        'HOST': 'dpg-cqrmv0lumphs73cncc3g-a',  # Ou l'adresse de votre serveur PostgreSQL
-        'PORT': '5432',       # Ou le port utilisé par PostgreSQL
-    }
+    'default':dj_database_url.parse(config('DATABASE_URL'))
 }
 
 # Password validation
