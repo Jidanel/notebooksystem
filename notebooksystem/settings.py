@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = False
 SECRET_KEY = config('SECRET_KEY')
 
-ALLOWED_HOSTS = ['notebooksystem.onrender.com']
+ALLOWED_HOSTS = ['notebooksystem.onrender.com','127.0.0.1']
 
 # Application definition
 
