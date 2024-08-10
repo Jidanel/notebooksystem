@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = False
 SECRET_KEY = config('SECRET_KEY')
 
-ALLOWED_HOSTS = ['notebooksystem.onrender.com', '127.0.0.1']
+ALLOWED_HOSTS = ['notebooksystem.onrender.com']
 
 # Application definition
 
@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'licences.middleware.LicenceMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
 ]
 
 ROOT_URLCONF = 'notebooksystem.urls'
@@ -127,8 +128,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_URL = '/static/'
+#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/images/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
@@ -153,8 +154,8 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 
 CELERY_BROKER_URL = 'django://'
