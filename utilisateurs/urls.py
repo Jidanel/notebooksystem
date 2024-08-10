@@ -1,0 +1,32 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.index, name='home'),
+    path('profile/', views.profile, name='profile'),
+    path('login/', views.login_user, name='login'),
+    path('register/', views.register_user, name='register'),
+    path('logout/', views.logout_user, name='logout'),
+    path('previous/', views.previous_view, name='previous'),
+    path('next/', views.next_view, name='next'),
+    path('assigner-role/', views.assigner_role, name='assigner_role'),
+    path('liste-enseignants/', views.liste_enseignants, name='liste_enseignants'),
+    path('gestion-enseignants/', views.menu_gestion_enseignants, name='gestion_enseignants'),
+    path('liste-enseignants/', views.liste_enseignants, name='liste_enseignants'),
+    path('confirmer_suppression/<int:user_id>/', views.confirmer_suppression, name='confirmer_suppression'),
+    path('supprimer_enseignant/<int:user_id>/', views.supprimer_enseignant, name='supprimer_enseignant'),
+    path('notifier/<int:user_id>/', views.notifier, name='notifier'),
+    path('notifications/', views.notifications, name='notifications'),
+    path('sent_notifications/', views.sent_notifications, name='sent_notifications'),  
+    path('reinitialiser-mot-de-passe/<int:pk>/', views.reinitialiser_mot_de_passe, name='reinitialiser_mot_de_passe'),
+    path('departements/', views.liste_departements, name='liste_departements'),
+    path('departements/ajouter/', views.ajouter_departement, name='ajouter_departement'),
+    path('departements/modifier/<int:departement_id>/', views.modifier_departement, name='modifier_departement'),
+    path('departements/supprimer/<int:departement_id>/', views.supprimer_departement, name='supprimer_departement'),
+    path('departements/confirmer_suppression/<int:departement_id>/', views.supprimer_departement, name='confirmer_suppression_departement'),
+    path('gestion-departements/', views.menu_gestion_departements, name='gestion_departements'),
+    path('liste_enseignants_par_departement/', views.liste_enseignants_par_departement, name='liste_enseignants_par_departement'),
+    path('assigner_enseignant/', views.assigner_enseignant, name='assigner_enseignant'),
+    path('assigner_enseignant/<int:enseignant_id>/', views.assigner_enseignant, name='assigner_enseignant_id'),
+    path('supprimer_departement_enseignant/<int:enseignant_id>/<int:departement_id>/', views.supprimer_departement_enseignant, name='supprimer_departement_enseignant'),
+]

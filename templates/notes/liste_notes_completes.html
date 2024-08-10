@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Notes Complètes</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Classe</th>
+                <th>Matière</th>
+                <th>Séquence</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for note in notes_completes %}
+            <tr>
+                <td>{{ note.classe.nom }}</td>
+                <td>{{ note.matiere.nom }}</td>
+                <td>{{ note.get_sequence_display }}</td>
+                <td>
+                    <a href="{% url 'saisie_notes' note.sequence note.classe.id note.matiere.id %}" class="btn btn-primary">Modifier</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

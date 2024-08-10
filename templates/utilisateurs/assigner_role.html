@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Attribuer un Rôle</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <h2><label for="utilisateur">Sélectionner un utilisateur :</label></h2>
+            <select name="utilisateur" class="form-control" required>
+                {% for utilisateur in utilisateurs %}
+                    <option value="{{ utilisateur.id }}">{{ utilisateur.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br><br>
+        <div class="form-group">
+            <h2><label for="role">Attribuer un rôle :</label></h2><br>
+            <div>
+                {{ form.role }}
+            </div>
+        </div>
+        <br><br>
+        <h4><button type="submit" class="btn btn-primary">Attribuer</button></h4>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-group">
+        <input id="search" class="form-control" type="text" placeholder="Recherche...." value="{{ query }}">
+    </div>
+    <br>
+    <h2>Liste des Classes</h2>
+    <a href="{% url 'ajouter_classe' %}" class="btn btn-primary">Ajouter Classe</a>
+    <div id="classe-table">
+        <table class="styled-table" id="myTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>Code</th>
+                    <th>Enseignant Titulaire</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for classe in page_obj %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ classe.nom }}</td>
+                    <td>{{ classe.code }}</td>
+                    <td>
+                        {% if classe.enseignant_titulaire %}
+                            {{ classe.enseignant_titulaire.username }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'modifier_classe' classe.id %}" class="btn btn-warning btn-sm" title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="post" action="{% url 'confirmer_suppression_classe' classe.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                        <a href="{% url 'details_classe' classe.id %}" class="btn btn-info btn-sm" title="Détails">
+                            <i class="fas fa-info-circle"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}">&laquo; premier</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">précédent</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">suivant</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">dernier &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#search').on('input', function() {
+            var query = $(this).val();
+            $.ajax({
+                url: "{% url 'liste_classes' %}",
+                data: {
+                    'q': query
+                },
+                success: function(data) {
+                    $('#classe-table').html($(data).find('#classe-table').html());
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

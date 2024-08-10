@@ -1,0 +1,35 @@
+<!-- templates/matieres/matiere_table.html -->
+<table class="styled-table" id="myTable">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Coefficient</th>
+            <th>Département</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for matiere in page_obj %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ matiere.nom }}</td>
+            <td>{{ matiere.description }}</td>
+            <td>{{ matiere.coefficient }}</td>
+            <td>{{ matiere.departement.nom }}</td>
+            <td>
+                <a href="{% url 'modifier_matiere' matiere.id %}" class="btn btn-warning btn-sm" title="Modifier">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <form method="post" action="{% url 'confirmer_suppression_matiere' matiere.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

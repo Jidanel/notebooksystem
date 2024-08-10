@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impression Classe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Détails de la Classe: {{ classe.nom }}</h1>
+    <p>Code: {{ classe.code }}</p>
+    <p>Enseignant Titulaire: {{ classe.enseignant_titulaire.username }}</p>
+    <p>Nombre d'élèves: {{ classe.eleves.count }}</p>
+    <p>Nombre de garçons: {{ classe.eleves.filter(sexe='Masculin').count }}</p>
+    <p>Nombre de filles: {{ classe.eleves.filter(sexe='Féminin').count }}</p>
+    <p>Nombre de redoublants: {{ classe.eleves.filter(statut='Redoublant').count }}</p>
+    <p>Nombre de nouveaux: {{ classe.eleves.filter(statut='Nouveau').count }}</p>
+
+    <h3>Liste des Élèves</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Date de naissance</th>
+                <th>Lieu de naissance</th>
+                <th>Statut</th>
+                <th>Sexe</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for eleve in classe.eleves.all %}
+            <tr>
+                <td>{{ eleve.nom }}</td>
+                <td>{{ eleve.prenom }}</td>
+                <td>{{ eleve.date_naissance }}</td>
+                <td>{{ eleve.lieu_naissance }}</td>
+                <td>{{ eleve.statut }}</td>
+                <td>{{ eleve.sexe }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

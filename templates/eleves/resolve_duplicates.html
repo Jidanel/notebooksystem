@@ -1,0 +1,47 @@
+<!-- templates/eleves/resolve_duplicates.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Résolution des Doublons</h2>
+    <form method="post">
+        {% csrf_token %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Sexe</th>
+                    <th>Date de Naissance</th>
+                    <th>Lieu de Naissance</th>
+                    <th>Matricule</th>
+                    <th>Statut</th>
+                    <th>Contact Parent</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eleve in duplicates %}
+                <tr>
+                    <td>{{ eleve.nom }}</td>
+                    <td>{{ eleve.prenom }}</td>
+                    <td>{{ eleve.sexe }}</td>
+                    <td>{{ eleve.date_naissance }}</td>
+                    <td>{{ eleve.lieu_naissance }}</td>
+                    <td>{{ eleve.matricule }}</td>
+                    <td>{{ eleve.statut }}</td>
+                    <td>{{ eleve.contact_parent }}</td>
+                    <td>
+                        <select name="action">
+                            <option value="fusionner">Fusionner</option>
+                            <option value="dupliquer">Dupliquer</option>
+                        </select>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Résoudre les Doublons</button>
+    </form>
+</div>
+{% endblock %}

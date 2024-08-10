@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="dashboard-container">
+            <h1 class="dashboard-title">Menu Principal</h1>
+            <div class="dashboard-menu">
+                {% if user.profilutilisateur.role == 'Enseignant' %}
+                    <div class="menu-item">
+                        <a href="#"><button class="menu-button">Gestion des Notes</button></a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="#"><button class="menu-button">Gestion des Absences</button></a>
+                    </div>
+                {% elif user.profilutilisateur.role == 'AP' %}
+                    <div class="menu-item">
+                        <a href="#"><button class="menu-button">Gestion des Matières</button></a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="#"><button class="menu-button">Gestion des Enseignants</button></a>
+                    </div>
+                {% elif user.profilutilisateur.role == 'SG' %}
+                    <div class="menu-item">
+                        <a href="#"><button class="menu-button">Gestion des Absences</button></a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="#"><button class="menu-button">Gestion des Trimestres</button></a>
+                    </div>
+                {% else %}
+                <div class="menu-grid">
+                    <div class="menu-item">
+                        <a href="{% url 'gestion_enseignants' %}">
+                            <button class="menu-button">
+                                <h2>Gestion des Enseignants</h2>
+                            </button>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{% url 'gestion_departements' %}"><button class="menu-button"><h2>Gestion des Departements</h2></button></a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{% url 'gestion_classes' %}"><button class="menu-button"><h2>Gestion des Classes</h2></button></a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{% url 'menu_gestion_trimestres' %}"><button class="menu-button"><h2>Gestion des Trimestres</h2></button></a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="#"><button class="menu-button">Statistiques de l'Etablissement</button></a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

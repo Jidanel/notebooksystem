@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Détails de la Classe: {{ classe.nom }}</h2>
+    <p>Code: {{ classe.code }}</p>
+    <p>Enseignant Titulaire: {{ classe.enseignant_titulaire.username }}</p>
+    <p>Nombre d'élèves: {{ classe.eleves.count }}</p>
+    <p>Nombre de garçons: {{ classe.eleves.filter(sexe='Masculin').count }}</p>
+    <p>Nombre de filles: {{ classe.eleves.filter(sexe='Féminin').count }}</p>
+    <p>Nombre de redoublants: {{ classe.eleves.filter(statut='Redoublant').count }}</p>
+    <p>Nombre de nouveaux: {{ classe.eleves.filter(statut='Nouveau').count }}</p>
+    <button class="btn btn-primary" onclick="window.print()">Imprimer</button>
+
+    <h3>Liste des Élèves</h3>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Date de naissance</th>
+                <th>Lieu de naissance</th>
+                <th>Statut</th>
+                <th>Sexe</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for eleve in classe.eleves.all %}
+            <tr>
+                <td>{{ eleve.nom }}</td>
+                <td>{{ eleve.prenom }}</td>
+                <td>{{ eleve.date_naissance }}</td>
+                <td>{{ eleve.lieu_naissance }}</td>
+                <td>{{ eleve.statut }}</td>
+                <td>{{ eleve.sexe }}</td>
+                <td>
+                    <a href="{% url 'modifier_eleve' eleve.id %}" class="btn btn-warning btn-sm" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form method="post" action="{% url 'confirmer_suppression_eleve' eleve.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                    <a href="{% url 'contacter_parents' eleve.id %}" class="btn btn-info btn-sm" title="Contacter Parents">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

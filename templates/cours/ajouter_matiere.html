@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Ajouter une Matière</h2>
+    <form method="POST" action="{% url 'ajouter_matiere' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var departementSelect = document.getElementById('id_departement');
+        departementSelect.addEventListener('change', function () {
+            var form = this.closest('form');
+            var action = form.action;
+            var url = new URL(action);
+            url.pathname = "{% url 'filtrer_enseignants_par_departement' %}";
+            url.searchParams.set('departement', this.value);
+            window.location.href = url.toString();
+        });
+    });
+</script>
+{% endblock %}

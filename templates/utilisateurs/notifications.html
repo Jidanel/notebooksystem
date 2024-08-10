@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Boîte de réception</h2>
+    {% if notifications %}
+        <ul class="list-group">
+            {% for notification in notifications %}
+                <li class="list-group-item">
+                    <strong>De: {{ notification.sender.username }}</strong><br>
+                    Message: {{ notification.message }}<br>
+                    <small>{{ notification.date_sent }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Vous n'avez aucune notification.</p>
+    {% endif %}
+</div>
+{% endblock %}

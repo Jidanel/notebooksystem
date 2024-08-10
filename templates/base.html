@@ -1,0 +1,86 @@
+{% load static %}
+{% load absences_extras %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBS-NoteBook System</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a href="notebooksystem.alwaysdata.com" class="navbar-brand">NBS-NoteBook System</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <button class="btn btn-link nav-link" onclick="history.back();">Précédent</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-link nav-link" onclick="history.forward();">Suivant</button>
+                    </li>
+                </ul>
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'notifications' %}">
+                            <i class="fas fa-envelope"></i>
+                            {% if unread_count > 0 %}
+                                <span class="badge badge-danger">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'sent_notifications' %}">Messages envoyés</a> 
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}">Profil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Déconnexion</a>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+        </nav>
+        {% if user.is_authenticated %}
+        <div class="welcome-message">
+            Bienvenue {{ user.username }} - {{ user.profilutilisateur.role }}
+        </div>
+        {% endif %}
+    </header>
+    <div class="container">
+        <!-- Afficher les messages -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    
+        {% block content %}
+        {% endblock %}
+    
+    <footer class="footer bg-dark text-white text-center py-2">
+        <p>&copy; Copyright 2024 - Jean Daniel Nsas - NBS - NoteBook System</p>
+    </footer>
+    <script>
+        setTimeout(function() {
+            var messages = document.querySelectorAll('.messages .message');
+            messages.forEach(function(message) {
+                message.style.display = 'none';
+            });
+        }, 5000); // 5000 ms = 5 secondes
+    </script>
+
+   
+</body>
+</html>

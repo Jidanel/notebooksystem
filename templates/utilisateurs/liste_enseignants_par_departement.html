@@ -1,0 +1,49 @@
+<!-- templates/utilisateurs/liste_enseignants_par_departement.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <br>
+    <h2>Liste des Enseignants par Département</h2>
+    <a href="{% url 'assigner_enseignant' %}" class="btn btn-primary">Assigner Enseignant à Département</a>
+    <div id="enseignant-table">
+        {% include 'utilisateurs/enseignant_par_departement_table.html' %}
+    </div>
+    <br>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}">&laquo; premier</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">précédent</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">suivant</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">dernier &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#search').on('input', function() {
+            var query = $(this).val();
+            $.ajax({
+                url: "{% url 'liste_enseignants_par_departement' %}",
+                data: {
+                    'q': query
+                },
+                success: function(data) {
+                    $('#enseignant-table').html($(data).find('#enseignant-table').html());
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

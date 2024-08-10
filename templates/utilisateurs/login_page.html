@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+<main class="main-container">
+    <div class="container">
+        <h1 class="signup-heading">Connexion</h1>
+        <div class="user-content-container user-profile-form-container">
+            <form action="" method="POST">
+                {% csrf_token %}
+                <ul>
+                    <li class="name">
+                        <label for="username_or_matricule">Nom utilisateur ou Matricule</label>
+                        <input type="text" name="username_or_matricule" id="username_or_matricule" class="username-input" placeholder="Nom utilisateur ou Matricule">
+                    </li>
+
+                    <li class="pass">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" name="password" id="password" class="pass-input" placeholder="Mot de passe">
+                    </li>
+       
+                    <button class="signup-button">Connexion</button>
+                    <p class="login-link">Vous n'avez pas de compte? <a href="{% url 'register' %}">Enregistrez-vous</a></p>
+                </ul>
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock %}

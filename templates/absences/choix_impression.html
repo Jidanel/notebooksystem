@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+<div class="container">
+    <h2>Choisir l'option d'impression</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="choix_impression">Sélectionnez le type d'impression :</label>
+            <select name="choix_impression" id="choix_impression" class="form-control">
+                <option value="False">Imprimer sans justifications</option>
+                <option value="True">Imprimer avec justifications</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Valider</button>
+    </form>
+</div>
+{% endblock %}

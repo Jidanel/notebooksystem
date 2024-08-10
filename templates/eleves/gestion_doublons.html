@@ -1,0 +1,41 @@
+<!-- templates/eleves/gestion_doublons.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Gestion des doublons</h2>
+    <form method="post">
+        {% csrf_token %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Date de naissance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doublon in doublons %}
+                <tr>
+                    <td>{{ doublon.nouveau.nom }}</td>
+                    <td>{{ doublon.nouveau.prenom }}</td>
+                    <td>{{ doublon.nouveau.date_naissance }}</td>
+                    <td>
+                        <label>
+                            <input type="radio" name="action_{{ forloop.counter }}" value="dupliquer" checked> Dupliquer
+                        </label>
+                        <label>
+                            <input type="radio" name="action_{{ forloop.counter }}" value="fusionner"> Fusionner avec l'existant
+                        </label>
+                        <input type="hidden" name="nouveau_{{ forloop.counter }}" value="{{ doublon.nouveau|json_script }}">
+                        <input type="hidden" name="existant_{{ forloop.counter }}" value="{{ doublon.existant.id }}">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Valider</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+<!-- templates/eleves/importer_eleves.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Importer des élèves</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="classe">Sélectionner une classe :</label>
+            <select id="classe" name="classe" class="form-control">
+                {% for classe in classes %}
+                    <option value="{{ classe.id }}">{{ classe.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="file">Choisir un fichier Excel :</label>
+            <input type="file" id="file" name="file" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Importer</button>
+    </form>
+</div>
+{% endblock %}

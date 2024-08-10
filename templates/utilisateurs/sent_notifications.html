@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Messages envoyés</h2>
+    {% if sent_notifications %}
+        <ul class="list-group">
+            {% for notification in sent_notifications %}
+                <li class="list-group-item">
+                    <strong>À: {{ notification.receiver.username }}</strong><br>
+                    Message: {{ notification.message }}<br>
+                    <small>{{ notification.date_sent }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Vous n'avez envoyé aucune notification.</p>
+    {% endif %}
+</div>
+{% endblock %}

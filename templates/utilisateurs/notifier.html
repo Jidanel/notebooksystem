@@ -1,0 +1,16 @@
+<!-- templates/utilisateurs/notifier.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container form-container">
+    <h2>Notifier {{ receiver.username }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="message">Message</label>
+            <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+    </form>
+</div>
+{% endblock %}

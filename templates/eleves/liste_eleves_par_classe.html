@@ -1,0 +1,74 @@
+<!-- templates/eleves/liste_eleves_par_classe.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Gestion des Élèves par Classe</h2>
+    <form method="get" action="{% url 'liste_eleves_par_classe' %}">
+        <div class="form-group">
+            <label for="classe">Sélectionner une classe :</label>
+            <select id="classe" name="classe_id" class="form-control" onchange="this.form.submit()">
+                <option value="">Sélectionner une classe</option>
+                {% for classe in classes %}
+                    <option value="{{ classe.id }}" {% if classe.id == selected_classe.id %}selected{% endif %}>{{ classe.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+
+    {% if selected_classe %}
+        <h3>Détails de la Classe {{ selected_classe.nom }}</h3>
+        <p>Nombre d'élèves : {{ stats.total_eleves }}</p>
+        <p>Nombre de garçons : {{ stats.total_garcons }}</p>
+        <p>Nombre de filles : {{ stats.total_filles }}</p>
+        <p>Garçons redoublants : {{ stats.garcons_redoublants }}</p>
+        <p>Garçons nouveaux : {{ stats.garcons_nouveaux }}</p>
+        <p>Filles redoublantes : {{ stats.filles_redoublantes }}</p>
+        <p>Filles nouvelles : {{ stats.filles_nouvelles }}</p>
+        <a href="{% url 'imprimer_liste_eleves' selected_classe.id %}" class="btn btn-primary">Imprimer en PDF</a>
+        <br><br>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Matricule</th>
+                    <th>Noms</th>
+                    <th>Prenoms</th>
+                    <th>Date de naissance</th>
+                    <th>Lieu de naissance</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eleve in page_obj %}
+                <tr>
+                    <td>{{ eleve.matricule }}</td>
+                    <td>{{ eleve.nom }}</td>
+                    <td>{{ eleve.prenom }}</td>
+                    <td>{{ eleve.date_naissance }}</td>
+                    <td>{{ eleve.lieu_naissance }}</td>
+                    <td>{{ eleve.statut }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?classe_id={{ selected_classe.id }}&page=1">&laquo; premier</a>
+                    <a href="?classe_id={{ selected_classe.id }}&page={{ page_obj.previous_page_number }}">précédent</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?classe_id={{ selected_classe.id }}&page={{ page_obj.next_page_number }}">suivant</a>
+                    <a href="?classe_id={{ selected_classe.id }}&page={{ page_obj.paginator.num_pages }}">dernier &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

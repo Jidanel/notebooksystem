@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Modifier une Matière</h2>
+    <form method="post" action="{% url 'modifier_matiere' matiere.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Modifier</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var departementSelect = document.getElementById('id_departement');
+        departementSelect.addEventListener('change', function () {
+            var url = "{% url 'modifier_matiere' matiere.id %}?departement=" + departementSelect.value;
+            window.location.href = url;
+        });
+    });
+</script>
+{% endblock %}

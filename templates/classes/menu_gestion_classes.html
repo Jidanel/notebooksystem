@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="dashboard-container">
+            <h1 class="dashboard-title">Gestion des Classes</h1>
+            <div class="menu-grid">
+                <!-- Gestion des Classes -->
+                <div class="menu-item">
+                    <a href="{% url 'ajouter_classe' %}">
+                        <button class="menu-button">
+                            <h2>Ajouter une Classe</h2>
+                        </button>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="{% url 'liste_classes' %}">
+                        <button class="menu-button">
+                            <h2>Liste des Classes</h2>
+                        </button>
+                    </a>
+                </div>
+                
+                <!-- Gestion des Élèves -->
+                <div class="menu-item">
+                    <a href="{% url 'ajouter_eleve' %}">
+                        <button class="menu-button">
+                            <h2>Ajouter un Élève</h2>
+                        </button>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="{% url 'liste_eleves' %}">
+                        <button class="menu-button">
+                            <h2>Liste des Élèves</h2>
+                        </button>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="{% url 'importer_eleves' %}">
+                        <button class="menu-button">
+                            <h2>Importer Élèves</h2>
+                        </button>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a href="{% url 'liste_eleves_par_classe' %}">
+                        <button class="menu-button">
+                            <h2>Liste eleves par classe</h2>
+                        </button>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

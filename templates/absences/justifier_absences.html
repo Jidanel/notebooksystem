@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load absences_extras %}
+
+{% block content %}
+<div class="container">
+    <h2>Justification des Absences pour la classe {{ classe.nom }} - {{ sequence }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Liste des élèves</th>
+                    <th>Absences</th>
+                    <th>Justifications</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eleve in eleves %}
+                {% with absence=absences_existantes|get_item:eleve.id %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ eleve.nom }} {{ eleve.prenom }}</td>
+                    <td>{{ absence.absences|default:0 }}</td>
+                    <td>
+                        <input type="number" name="justification_{{ eleve.id }}" min="0" required value="{{ absence.justification|default:0 }}">
+                    </td>
+                    <td>{{ absence.total|default:0 }}</td>
+                </tr>
+                {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Enregistrer les Justifications</button>
+    </form>
+</div>
+{% endblock %}

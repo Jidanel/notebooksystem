@@ -1,0 +1,17 @@
+<!-- templates/eleves/contacter_parents.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Contacter les Parents de {{ eleve.nom }} {{ eleve.prenom }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="message">Message :</label>
+            <textarea id="message" name="message" class="form-control" rows="4"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+        <a href="{% url 'liste_eleves' %}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

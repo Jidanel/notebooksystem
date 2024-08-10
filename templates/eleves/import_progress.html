@@ -1,0 +1,30 @@
+<!-- templates/eleves/import_progress.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Progression de l'importation</h2>
+    <div id="progress-container" data-task-id="{{ task_id }}">
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+        var interval = setInterval(function(){
+            $.getJSON(progressUrl, function(data){
+                var progress = data.progress.percent || 0;
+                $('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress).text(progress + '%');
+                if (data.complete) {
+                    clearInterval(interval);
+                    $('.progress-bar').text('Importation terminée !');
+                }
+            });
+        }, 1000);
+    });
+</script>
+{% endblock %}

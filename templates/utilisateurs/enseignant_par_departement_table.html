@@ -1,0 +1,45 @@
+{% for departement in departements %}
+    <h3> Departement : {{ departement.nom }} - Chef de departement : {{departement.chef_departement.nom}}</h3>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom</th>
+                <th>Matricule</th>
+                <th>Rôle</th>
+                <th>Chef de Département</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for enseignant in departement.enseignantdepartement_set.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ enseignant.enseignant.nom }}</td>
+                <td>{{ enseignant.enseignant.matricule }}</td>
+                <td>{{ enseignant.enseignant.get_role_display }}</td>
+                <td>{{ enseignant.is_chef_departement|yesno:"Oui,Non" }}</td>
+                <td>
+                    <a href="{% url 'assigner_enseignant_id' enseignant.enseignant.id  %}" class="btn btn-warning btn-sm" title="Assigner">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form method="post" action="{% url 'supprimer_departement_enseignant' enseignant.enseignant.id departement.id%}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                    <a href="{% url 'notifier' enseignant.enseignant.utilisateur.id %}" class="btn btn-info btn-sm" title="Notifier">
+                        <i class="fas fa-bell"></i>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">Aucun enseignant dans ce département.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+{% endfor %}
