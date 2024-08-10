@@ -163,3 +163,21 @@ CSRF_COOKIE_SECURE = True
 CELERY_BROKER_URL = 'django://'
 CELERY_RESULT_BACKEND = 'django-db'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
