@@ -89,7 +89,25 @@ def imprimer_classe(request, classe_id):
 @login_required
 def details_classe(request, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)
-    return render(request, 'classes/details_classe.html', {'classe': classe})
+    
+    # Calcul des différents nombres
+    nombre_eleves = classe.eleves.count()
+    nombre_garcons = classe.eleves.filter(sexe='Masculin').count()
+    nombre_filles = classe.eleves.filter(sexe='Feminin').count()
+    nombre_redoublants = classe.eleves.filter(statut='Redoublant').count()
+    nombre_nouveaux = classe.eleves.filter(statut='Nouveau').count()
+    
+    context = {
+        'classe': classe,
+        'nombre_eleves': nombre_eleves,
+        'nombre_garcons': nombre_garcons,
+        'nombre_filles': nombre_filles,
+        'nombre_redoublants': nombre_redoublants,
+        'nombre_nouveaux': nombre_nouveaux,
+    }
+    
+    return render(request, 'classes/details_classe.html', context)
+
 
 @login_required
 def menu_gestion_classes(request):

@@ -5,11 +5,11 @@
     <h2>Détails de la Classe: {{ classe.nom }}</h2>
     <p>Code: {{ classe.code }}</p>
     <p>Enseignant Titulaire: {{ classe.enseignant_titulaire.username }}</p>
-    <p>Nombre d'élèves: {{ classe.eleves.count }}</p>
-    <p>Nombre de garçons: {{ classe.eleves.filter(sexe='Masculin').count }}</p>
-    <p>Nombre de filles: {{ classe.eleves.filter(sexe='Féminin').count }}</p>
-    <p>Nombre de redoublants: {{ classe.eleves.filter(statut='Redoublant').count }}</p>
-    <p>Nombre de nouveaux: {{ classe.eleves.filter(statut='Nouveau').count }}</p>
+    <p>Nombre d'élèves: {{ nombre_eleves }}</p>
+    <p>Nombre de garçons: {{ nombre_garcons }}</p>
+    <p>Nombre de filles: {{ nombre_filles }}</p>
+    <p>Nombre de redoublants: {{ nombre_redoublants }}</p>
+    <p>Nombre de nouveaux: {{ nombre_nouveaux }}</p>
     <button class="btn btn-primary btn-block" onclick="window.print()">Imprimer</button>
 
     <h3>Liste des Élèves</h3>

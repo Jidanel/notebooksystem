@@ -7,9 +7,9 @@
         {% csrf_token %}
         <div class="form-group">
             <label for="classe_matiere">Sélectionner une classe et une matière :</label>
-            {{ form.classe_matiere|add_class:"form-control" }}
+            {{ form.classe_matiere }}
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Valider</button>
+        <button type="submit" class="btn btn-primary btn-block ">Valider</button>
     </form>
 </div>
 {% endblock %}
