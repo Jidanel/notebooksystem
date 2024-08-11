@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 SECRET_KEY = config('SECRET_KEY')
 
 ALLOWED_HOSTS = ['notebooksystem.onrender.com','127.0.0.1']
