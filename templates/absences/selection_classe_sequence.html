@@ -2,11 +2,11 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container">
-    <h2>Choisir la Classe et la Séquence pour les Absences</h2>
+    <h2 class="text-center">Choisir la Classe et la Séquence pour les Absences</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Valider</button>
+        <button type="submit" class="btn btn-primary btn-block">Valider</button>
     </form>
 </div>
 {% endblock %}

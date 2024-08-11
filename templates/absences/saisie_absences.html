@@ -4,30 +4,32 @@
 
 {% block content %}
 <div class="container">
-    <h2>Saisie des Absences pour la classe {{ classe.nom }} - {{ sequence }}</h2>
+    <h2 class="text-center">Saisie des Absences pour la classe {{ classe.nom }} - {{ sequence }}</h2>
     <form method="post">
         {% csrf_token %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Liste des élèves</th>
-                    <th>Absences</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for eleve in eleves %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ eleve.nom }} {{ eleve.prenom }}</td>
-                    <td>
-                        <input type="number" name="absence_{{ eleve.id }}" min="0" required value="{{ absences_existantes|get_item:eleve.id|default:0 }}">
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button type="submit" class="btn btn-primary">Enregistrer les Absences</button>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Liste des élèves</th>
+                        <th>Absences</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for eleve in eleves %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ eleve.nom }} {{ eleve.prenom }}</td>
+                        <td>
+                            <input type="number" class="form-control" name="absence_{{ eleve.id }}" min="0" required value="{{ absences_existantes|get_item:eleve.id|default:0 }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Enregistrer les Absences</button>
     </form>
 </div>
 {% endblock %}

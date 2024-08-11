@@ -2,30 +2,30 @@
 
 {% block content %}
 <div class="container">
-    <h2>Liste des Absences Complètes</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Classe</th>
-                <th>Séquence</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for absence in absences_completes %}
-            <tr>
-                <td>{{ absence.classe.nom }}</td>
-                <td>{{ absence.sequence }}</td>
-                <td>
-                    <a href="{% url 'justifier_absences' absence.sequence absence.classe.id %}" class="btn btn-primary">Justifier</a>
-                    <!-- Bouton pour imprimer sans justifications -->
-                    <a href="{% url 'imprimer_absences' absence.sequence absence.classe.id %}?with_justifications=False" class="btn btn-primary">Imprimer SJ</a>
-                    <!-- Bouton pour imprimer avec justifications -->
-                    <a href="{% url 'imprimer_absences' absence.sequence absence.classe.id %}?with_justifications=True" class="btn btn-secondary">Imprimer AJ</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <h2 class="text-center">Liste des Absences Complètes</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Classe</th>
+                    <th>Séquence</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for absence in absences_completes %}
+                <tr>
+                    <td>{{ absence.classe.nom }}</td>
+                    <td>{{ absence.sequence }}</td>
+                    <td>
+                        <a href="{% url 'justifier_absences' absence.sequence absence.classe.id %}" class="btn btn-primary btn-sm">Justifier</a>
+                        <a href="{% url 'imprimer_absences' absence.sequence absence.classe.id %}?with_justifications=False" class="btn btn-primary btn-sm">Imprimer SJ</a>
+                        <a href="{% url 'imprimer_absences' absence.sequence absence.classe.id %}?with_justifications=True" class="btn btn-secondary btn-sm">Imprimer AJ</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
