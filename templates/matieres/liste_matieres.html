@@ -1,11 +1,10 @@
-<!-- templates/matieres/liste_matieres.html -->
 {% extends 'base.html' %}
 
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="col">
-            <a href="{% url 'ajouter_matiere' %}" class="btn btn-primary">Ajouter Matière</a>
+            <a href="{% url 'ajouter_matiere' %}" class="btn btn-primary btn-block">Ajouter Matière</a>
         </div>
         <div class="col">
             <input id="search" class="form-control" type="text" placeholder="Recherche...." value="{{ query }}">
@@ -13,7 +12,7 @@
     </div>
     <br>
     <h2>Liste des Matières</h2>
-    <div id="matiere-table">
+    <div id="matiere-table" class="table-responsive">
         {% include 'matieres/matiere_table.html' %}
     </div>
 

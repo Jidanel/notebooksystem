@@ -12,15 +12,15 @@
                 <ul>
                     <li class="name">
                         <label for="username_or_matricule">Nom utilisateur ou Matricule</label>
-                        <input type="text" name="username_or_matricule" id="username_or_matricule" class="username-input" placeholder="Nom utilisateur ou Matricule">
+                        <input type="text" name="username_or_matricule" id="username_or_matricule" class="form-control" placeholder="Nom utilisateur ou Matricule">
                     </li>
 
                     <li class="pass">
                         <label for="password">Mot de passe</label>
-                        <input type="password" name="password" id="password" class="pass-input" placeholder="Mot de passe">
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Mot de passe">
                     </li>
        
-                    <button class="signup-button">Connexion</button>
+                    <button class="signup-button btn btn-primary btn-block">Connexion</button>
                     <p class="login-link">Vous n'avez pas de compte? <a href="{% url 'register' %}">Enregistrez-vous</a></p>
                 </ul>
             </form>

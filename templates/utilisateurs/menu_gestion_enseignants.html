@@ -8,21 +8,21 @@
                 {% if user.profilutilisateur.role == 'SG' or user.profilutilisateur.role == 'AP' or user.profilutilisateur.role == 'Admin_' %}
                     <div class="menu-item">
                         <a href="{% url 'assigner_role' %}">
-                            <button class="menu-button">
-                                <h2>Assigner un role à l'Enseignant</h2>
+                            <button class="menu-button btn-block">
+                                <h2>Assigner un rôle à l'Enseignant</h2>
                             </button>
                         </a>
                     </div>
                     <div class="menu-item">
                         <a href="{% url 'liste_enseignants' %}">
-                            <button class="menu-button">
+                            <button class="menu-button btn-block">
                                 <h2>Liste des Enseignants</h2>
                             </button>
                         </a>
                     </div>
                     <div class="menu-item">
                         <a href="{% url 'liste_enseignants_par_departement' %}">
-                            <button class="menu-button">
+                            <button class="menu-button btn-block">
                                 <h2>Enseignants par Département</h2>
                             </button>
                         </a>

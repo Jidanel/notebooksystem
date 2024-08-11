@@ -8,43 +8,39 @@
                 {% if user.profilutilisateur.role == 'SG' or user.profilutilisateur.role == 'AP' or user.profilutilisateur.role == 'Admin_' %}
                     <div class="menu-item">
                         <a href="{% url 'selection_classe_matiere' 'Seq1' %}">
-                            <button class="menu-button">
+                            <button class="menu-button btn-block">
                                 <h2>Notes- Sequence 1</h2>
                             </button>
                         </a>
                     </div>
                     <div class="menu-item">
                         <a href="{% url 'selection_classe_matiere_seq2' %}">
-                            <button class="menu-button">
+                            <button class="menu-button btn-block">
                                 <h2>Notes - Sequence 2</h2>
                             </button>
                         </a>
                     </div>
-                    
-                    
                     <div class="menu-item">
                         <a href="#">
-                            <button class="menu-button">
+                            <button class="menu-button btn-block">
                                 <h2>Absences - Sequence 2</h2>
                             </button>
                         </a>
                     </div>
                     <div class="menu-item">
                         <a href="#">
-                            <button class="menu-button">
+                            <button class="menu-button btn-block">
                                 <h2>Absences - Trimestre 1</h2>
                             </button>
                         </a>
                     </div>
                     <div class="menu-item">
                         <a href="#">
-                            <button class="menu-button">
-                                <h2>Bulettin Trimestre 1</h2>
+                            <button class="menu-button btn-block">
+                                <h2>Bulletin Trimestre 1</h2>
                             </button>
                         </a>
                     </div>
-
-                    
                 {% endif %}
             </div>
         </div>

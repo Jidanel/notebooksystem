@@ -2,34 +2,34 @@
 
 {% block content %}
     {% if user.is_authenticated %}
-        <div class="dashboard-container">
-            <h1 class="dashboard-title">Gestion des Departements</h1>
-            <div class="menu-grid">
+        <div class="dashboard-container container">
+            <h1 class="dashboard-title">Gestion des Départements</h1>
+            <div class="row">
                 {% if user.profilutilisateur.role == 'SG' or user.profilutilisateur.role == 'AP' or user.profilutilisateur.role == 'Admin_' %}
-                <div class="menu-item">
+                <div class="col-md-4 mb-2">
                     <a href="{% url 'ajouter_departement' %}">
-                        <button class="menu-button">
+                        <button class="btn btn-primary btn-block">
                             <h2>Ajouter un Département</h2>
                         </button>
                     </a>
                 </div>
-                <div class="menu-item">
+                <div class="col-md-4 mb-2">
                     <a href="{% url 'liste_departements' %}">
-                        <button class="menu-button">
+                        <button class="btn btn-primary btn-block">
                             <h2>Liste des Départements</h2>
                         </button>
                     </a>
                 </div>
-                <div class="menu-item">
+                <div class="col-md-4 mb-2">
                     <a href="{% url 'ajouter_matiere' %}">
-                        <button class="menu-button">
+                        <button class="btn btn-primary btn-block">
                             <h2>Ajouter une Matière</h2>
                         </button>
                     </a>
                 </div>
-                <div class="menu-item">
+                <div class="col-md-4 mb-2">
                     <a href="{% url 'liste_matieres' %}">
-                        <button class="menu-button">
+                        <button class="btn btn-primary btn-block">
                             <h2>Liste des Matières</h2>
                         </button>
                     </a>

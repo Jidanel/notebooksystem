@@ -1,19 +1,18 @@
-<!-- templates/departements/liste_departements.html -->
 {% extends 'base.html' %}
 
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col">
-            <a href="{% url 'ajouter_departement' %}" class="btn btn-primary">Ajouter Département</a>
+        <div class="col-md-6">
+            <a href="{% url 'ajouter_departement' %}" class="btn btn-primary btn-block">Ajouter Département</a>
         </div>
-        <div class="col">
+        <div class="col-md-6">
             <input id="search" class="form-control" type="text" placeholder="Recherche...." value="{{ query }}">
         </div>
     </div>
     <br>
     <h2>Liste des Départements</h2>
-    <div id="departement-table">
+    <div id="departement-table" class="table-responsive">
         {% include 'departements/departement_table.html' %}
     </div>
 
@@ -53,4 +52,3 @@
     });
 </script>
 {% endblock %}
-

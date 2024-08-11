@@ -7,10 +7,10 @@
     </div>
     <br>
     <h2>Liste des Élèves</h2>
-    <a href="{% url 'ajouter_eleve' %}" class="btn btn-primary">Ajouter Élève</a>
-    <a href="{% url 'importer_eleves' %}" class="btn btn-secondary">Importer Élèves</a>
-    <div id="eleve-table">
-        <table class="styled-table" id="myTable">
+    <a href="{% url 'ajouter_eleve' %}" class="btn btn-primary btn-block">Ajouter Élève</a>
+    <a href="{% url 'importer_eleves' %}" class="btn btn-secondary btn-block">Importer Élèves</a>
+    <div id="eleve-table" class="table-responsive">
+        <table class="table table-striped" id="myTable">
             <thead>
                 <tr>
                     <th>#</th>

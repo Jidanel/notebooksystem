@@ -17,11 +17,11 @@
         <div class="form-group">
             <h2><label for="role">Attribuer un rôle :</label></h2><br>
             <div>
-                {{ form.role }}
+                {{ form.role|add_class:"form-control" }}
             </div>
         </div>
         <br><br>
-        <h4><button type="submit" class="btn btn-primary">Attribuer</button></h4>
+        <h4><button type="submit" class="btn btn-primary btn-block">Attribuer</button></h4>
     </form>
 </div>
 {% endblock %}

@@ -1,46 +1,47 @@
-<!-- templates/utilisateurs/enseignant_table.html -->
-<table class="styled-table" id="myTable">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Nom</th>
-            <th>Matricule</th>
-            <th>Rôle</th>
-            <th>Départements</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for enseignant in page_obj %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ enseignant.nom }}</td>
-            <td>{{ enseignant.matricule }}</td>
-            <td>{{ enseignant.get_role_display }}</td>
-            <td>
-                {% for ed in enseignant.enseignantdepartement_set.all %}
-                    {{ ed.departement.nom }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </td>
-            <td>
-                <form method="post" action="{% url 'reinitialiser_mot_de_passe' enseignant.utilisateur.id %}" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-warning btn-sm" title="Réinitialiser">
-                        <i class="fas fa-redo-alt"></i>
-                    </button>
-                </form>
-                <form method="get" action="{% url 'confirmer_suppression' enseignant.utilisateur.id %}" style="display: inline;">
-                    <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </form>
-                <form method="get" action="{% url 'notifier' enseignant.utilisateur.id %}" style="display: inline;">
-                    <button type="submit" class="btn btn-info btn-sm" title="Notifier">
-                        <i class="fas fa-envelope"></i>
-                    </button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-striped" id="myTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom</th>
+                <th>Matricule</th>
+                <th>Rôle</th>
+                <th>Départements</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for enseignant in page_obj %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ enseignant.nom }}</td>
+                <td>{{ enseignant.matricule }}</td>
+                <td>{{ enseignant.get_role_display }}</td>
+                <td>
+                    {% for ed in enseignant.enseignantdepartement_set.all %}
+                        {{ ed.departement.nom }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    <form method="post" action="{% url 'reinitialiser_mot_de_passe' enseignant.utilisateur.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning btn-sm" title="Réinitialiser">
+                            <i class="fas fa-redo-alt"></i>
+                        </button>
+                    </form>
+                    <form method="get" action="{% url 'confirmer_suppression' enseignant.utilisateur.id %}" style="display: inline;">
+                        <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                    <form method="get" action="{% url 'notifier' enseignant.utilisateur.id %}" style="display: inline;">
+                        <button type="submit" class="btn btn-info btn-sm" title="Notifier">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
