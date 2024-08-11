@@ -2,7 +2,7 @@
 {% block title %}Profile{% endblock %}
 {% block content %}
 <main class="main-container">
-    <form class="container" action="" method="POST" enctype="multipart/form-data">
+    <form class='container' action="" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="profile-photo-container profile-photo-form-container">
             <p class="profile-page-heading">Modifier votre profil</p>
@@ -12,27 +12,27 @@
             <ul>
                 <li class="name">
                     <label for="nom">Nom</label>
-                    {{ form.nom|add_class:"form-control" }}
+                    {{ form.nom }}
                 </li>
                 <li class="matricule">
                     <label for="matricule">Matricule</label>
-                    {{ form.matricule|add_class:"form-control" }}
+                    {{ form.matricule }}
                 </li>
                 <li class="code">
                     <label for="code_de_securite">Code de sécurité</label>
-                    {{ form.code_de_securite|add_class:"form-control" }}
+                    {{ form.code_de_securite }}
                 </li>
                 <li class="profile_img">
                     <label for="profile_img">Photo de profil</label>
-                    {{ form.profile_img|add_class:"form-control" }}
+                    {{ form.profile_img }}
                 </li>
                 
                 <li class="sexe">
                     <label for="sexe">Sexe</label>
-                    {{ form.sexe|add_class:"form-control" }}
+                    {{ form.sexe }}
                 </li>
             </ul>
-            <button class="profile-save-button btn btn-primary btn-block">Enregistrer</button>
+            <button class="profile-save-button">Enregistrer</button>
         </div>
     </form>
 </main>
