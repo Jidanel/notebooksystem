@@ -13,22 +13,22 @@
                     <li class="name">
                         <label for="username">Nom Utilisateur</label>
                         {{ form.username.errors }}
-                        {{ form.username|add_class:"form-control" }}
+                        {{ form.username }}
                     </li>
 
                     <li class="pass">
                         <label for="password1">Mot de passe</label>
                         {{ form.password1.errors }}
-                        {{ form.password1|add_class:"form-control" }}
+                        {{ form.password1 }}
                     </li>
               
                     <li class="confirm-pass">
                         <label for="password2">Confirmer le mot de passe</label>
                         {{ form.password2.errors }}
-                        {{ form.password2|add_class:"form-control" }}
+                        {{ form.password2 }}
                     </li>
                 </ul>
-                <button class="signup-button btn btn-primary btn-block">S'enregistrer</button>
+                <button class="signup-button">S'enregistrer</button>
                 <p class="login-link">Vous avez un compte? <a href="{% url 'login' %}">Connectez-vous</a></p>
             </form>
         </div>
