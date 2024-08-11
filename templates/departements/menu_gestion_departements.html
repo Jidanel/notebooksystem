@@ -3,7 +3,7 @@
 {% block content %}
     {% if user.is_authenticated %}
         <div class="dashboard-container">
-            <h1 class="dashboard-title">Gestion des Enseignants</h1>
+            <h1 class="dashboard-title">Gestion des Departements</h1>
             <div class="menu-grid">
                 {% if user.profilutilisateur.role == 'SG' or user.profilutilisateur.role == 'AP' or user.profilutilisateur.role == 'Admin_' %}
                 <div class="menu-item">

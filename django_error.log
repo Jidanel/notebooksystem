@@ -1,0 +1,54 @@
+Internal Server Error: /eleves/eleves/importer/
+Traceback (most recent call last):
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\notebooksystem\licences\middleware.py", line 10, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\notebooksystem\licences\middleware.py", line 23, in process_request
+    licence = Licence.objects.filter(active=True).first()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\db\models\query.py", line 1097, in first
+    for obj in queryset[:1]:
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\db\models\query.py", line 400, in __iter__
+    self._fetch_all()
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\db\models\query.py", line 1928, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\db\models\query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1560, in execute_sql
+    cursor = self.connection.cursor()
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\db\backends\base\base.py", line 316, in cursor
+    return self._cursor()
+           ^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\db\backends\base\base.py", line 292, in _cursor
+    self.ensure_connection()
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\db\backends\base\base.py", line 275, in ensure_connection
+    self.connect()
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 277, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\JD\Mon Contenu\Mes cours d'info\Projects Python\NBS-Alwaysdata\.venv\Lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf4 in position 102: invalid continuation byte
+"GET /eleves/eleves/importer/ HTTP/1.1" 500 145

@@ -16,8 +16,11 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <a href="https://notebooksystem.onrender.com" class="navbar-brand">NBS-NoteBook System</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-            <div class="collapse navbar-collapse">
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
                         <button class="btn btn-link nav-link" onclick="history.back();">Précédent</button>
@@ -50,8 +53,8 @@
             </div>
         </nav>
         {% if user.is_authenticated %}
-        <div class="welcome-message">
-            Bienvenue {{ user.username }} - {{ user.profilutilisateur.role }}
+        <div class="welcome-message text-center mt-3">
+            Bienvenue {{ user.username }}
         </div>
         {% endif %}
     </header>
@@ -60,7 +63,7 @@
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
-                    <div class="message {{ message.tags }}">
+                    <div class="alert {{ message.tags }} mt-3" role="alert">
                         {{ message }}
                     </div>
                 {% endfor %}
@@ -70,18 +73,16 @@
         {% block content %}
         {% endblock %}
     
-    <footer class="footer bg-dark text-white text-center py-2">
+    <footer class="footer bg-dark text-white text-center py-2 mt-5">
         <p>&copy; Copyright 2024 - Jean Daniel Nsas - NBS - NoteBook System</p>
     </footer>
     <script>
         setTimeout(function() {
-            var messages = document.querySelectorAll('.messages .message');
+            var messages = document.querySelectorAll('.messages .alert');
             messages.forEach(function(message) {
                 message.style.display = 'none';
             });
         }, 5000); // 5000 ms = 5 secondes
     </script>
-
-   
 </body>
 </html>
