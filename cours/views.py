@@ -5,7 +5,10 @@ from django.contrib import messages
 from .models import Matiere
 from .forms import MatiereForm
 from utilisateurs.models import *
+from utilisateurs.decorators import *
+from utilisateurs.views import *
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def liste_matieres(request):
     query = request.GET.get('q')
@@ -20,6 +23,7 @@ def liste_matieres(request):
 
     return render(request, 'cours/liste_matieres.html', {'page_obj': page_obj, 'query': query})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def ajouter_matiere(request):
     if request.method == 'POST':
@@ -34,6 +38,7 @@ def ajouter_matiere(request):
 
     return render(request, 'cours/ajouter_matiere.html', {'form': form})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def filtrer_enseignants_par_departement(request):
     departement_id = request.GET.get('departement')
@@ -44,6 +49,7 @@ def filtrer_enseignants_par_departement(request):
         ).order_by('nom')
     return render(request, 'cours/ajouter_matiere.html', {'form': form})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def modifier_matiere(request, matiere_id):
     matiere = get_object_or_404(Matiere, id=matiere_id)
@@ -67,12 +73,13 @@ def modifier_matiere(request, matiere_id):
 
     return render(request, 'cours/modifier_matiere.html', {'form': form, 'matiere': matiere})
 
+
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def confirmer_suppression_matiere(request, matiere_id):
-    matiere = get_object_or_404(Matiere, id=matiere_id)
-    if request.method == 'POST':
-        matiere.delete()
-        messages.success(request, "Matière supprimée avec succès.")
-        return redirect('liste_matieres')
-    return render(request, 'cours/confirmer_suppression_matiere.html', {'matiere': matiere})
-
+    return supprimer_objet_securise(
+        request, 
+        model=Matiere, 
+        pk=matiere_id, 
+        redirect_url='liste_matieres'
+    )

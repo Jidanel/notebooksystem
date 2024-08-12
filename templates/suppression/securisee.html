@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{{ title }}</h1>
+    <p>Veuillez entrer votre code de sécurité pour confirmer la suppression.</p>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="code_de_securite">Code de sécurité :</label>
+            {{ form.code_de_securite }}
+        </div>
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

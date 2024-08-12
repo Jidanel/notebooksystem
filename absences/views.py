@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from utilisateurs.models import *
+from utilisateurs.decorators import *
 
 @login_required
 def selection_classe_sequence(request):
@@ -73,6 +74,7 @@ def liste_absences_completes(request):
     absences_completes = Absence.objects.filter(enseignant=enseignant).distinct('classe', 'sequence')
     return render(request, 'absences/liste_absences_completes.html', {'absences_completes': absences_completes})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def justifier_absences(request, sequence, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)

@@ -7,7 +7,7 @@ class Departement(models.Model):
     nom = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     chef_departement = models.ForeignKey('ProfilUtilisateur', related_name='chef_departement', on_delete=models.SET_NULL, null=True, blank=True)
-
+    utilisateur_sg = models.ForeignKey('ProfilUtilisateur', related_name='departements', on_delete=models.SET_NULL, null=True, blank=True)  # Ajoutez ce champ
     def __str__(self):
         return self.nom
 

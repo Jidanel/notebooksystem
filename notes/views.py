@@ -8,6 +8,7 @@ from classes.models import Classe
 from cours.models import Matiere
 from utilisateurs.models import *
 from django.db.models import Q
+from utilisateurs.decorators import *
 
 @login_required
 def selection_classe_matiere(request, sequence):

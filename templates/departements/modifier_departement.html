@@ -1,12 +1,36 @@
-<!-- templates/departements/modifier_departement.html -->
 {% extends 'base.html' %}
 
 {% block content %}
 <div class="container mt-5">
-    <h1>Modifier le Département</h1>
+    <h1>{{ title }}</h1>
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div class="form-group">
+            <label for="nom">Nom du département :</label>
+            <input type="text" class="form-control" id="nom" name="nom" value="{{ form.nom.value }}" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description :</label>
+            <textarea class="form-control" id="description" name="description">{{ form.description.value }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="chef_departement">Chef de département :</label>
+            <select class="form-control" id="chef_departement" name="chef_departement">
+                <option value="">Sélectionner un chef de département (optionnel)</option>
+                {% for utilisateur in form.fields.chef_departement.queryset %}
+                    <option value="{{ utilisateur.id }}" {% if form.chef_departement.value == utilisateur.id %}selected{% endif %}>{{ utilisateur.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="utilisateur_sg">Utilisateur SG :</label>
+            <select class="form-control" id="utilisateur_sg" name="utilisateur_sg">
+                <option value="">Sélectionner un utilisateur SG</option>
+                {% for utilisateur in form.fields.utilisateur_sg.queryset %}
+                    <option value="{{ utilisateur.id }}" {% if form.utilisateur_sg.value == utilisateur.id %}selected{% endif %}>{{ utilisateur.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
     </form>
 </div>

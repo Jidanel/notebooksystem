@@ -38,14 +38,24 @@ class NotificationForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea, label='Message')
 
 class DepartementForm(forms.ModelForm):
+    chef_departement = forms.ModelChoiceField(
+        queryset=ProfilUtilisateur.objects.filter(role='AP'),
+        label="Chef de Département"
+    )
+    utilisateur_sg = forms.ModelChoiceField(
+        queryset=ProfilUtilisateur.objects.filter(role='SG'),
+        label="Utilisateur SG"
+    )
+
     class Meta:
         model = Departement
-        fields = ['nom', 'description', 'chef_departement']
+        fields = ['nom', 'description', 'chef_departement', 'utilisateur_sg']
 
     def __init__(self, *args, **kwargs):
         super(DepartementForm, self).__init__(*args, **kwargs)
-        self.fields['chef_departement'].queryset = ProfilUtilisateur.objects.filter(role='AP')
         self.fields['chef_departement'].label_from_instance = lambda obj: f"{obj.nom}"
+        self.fields['utilisateur_sg'].label_from_instance = lambda obj: f"{obj.nom}"
+
 
 
 class AssignerEnseignantForm(forms.ModelForm):

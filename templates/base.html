@@ -15,21 +15,53 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a href="https://notebooksystem.onrender.com" class="navbar-brand">NBS-NoteBook System</a>
+            <a href="/" class="navbar-brand">NBS-NoteBook System</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
+            {% if user.is_authenticated %}
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <button class="btn btn-link nav-link" onclick="history.back();">Précédent</button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="btn btn-link nav-link" onclick="history.forward();">Suivant</button>
-                    </li>
+                    {% if user.profilutilisateur.role == 'Enseignant' %}
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Notes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Absences</a>
+                        </li>
+                    {% elif user.profilutilisateur.role == 'AP' %}
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Matières</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Enseignants</a>
+                        </li>
+                    {% elif user.profilutilisateur.role == 'SG' %}
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Absences</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Trimestres</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a href="{% url 'gestion_enseignants' %}" class="nav-link">Enseignants</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'gestion_departements' %}" class="nav-link">Départements</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'gestion_classes' %}" class="nav-link">Classes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'menu_gestion_trimestres' %}" class="nav-link">Trimestres</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Statistiques</a>
+                        </li>
+                    {% endif %}
                 </ul>
-                {% if user.is_authenticated %}
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'notifications' %}">
@@ -49,8 +81,8 @@
                         <a class="nav-link" href="{% url 'logout' %}">Déconnexion</a>
                     </li>
                 </ul>
-                {% endif %}
             </div>
+            {% endif %}
         </nav>
         {% if user.is_authenticated %}
         <div class="welcome-message text-center mt-3">

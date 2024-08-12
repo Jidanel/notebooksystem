@@ -7,8 +7,11 @@ from .forms import *
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from django.core.paginator import Paginator
+from utilisateurs.decorators import *
+from utilisateurs.views import *
 
-login_required
+@role_required(allowed_roles=['Admin_', 'SG'])
+@login_required
 def liste_classes(request):
     query = request.GET.get('q')
     classes = Classe.objects.all().order_by('nom')
@@ -22,6 +25,7 @@ def liste_classes(request):
 
     return render(request, 'classes/liste_classes.html', {'page_obj': page_obj, 'query': query})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def ajouter_classe(request):
     if request.method == 'POST':
@@ -34,6 +38,7 @@ def ajouter_classe(request):
         form = ClasseForm()
     return render(request, 'classes/ajouter_classe.html', {'form': form})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def modifier_classe(request, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)
@@ -47,15 +52,17 @@ def modifier_classe(request, classe_id):
         form = ClasseForm(instance=classe)
     return render(request, 'classes/modifier_classe.html', {'form': form})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def confirmer_suppression_classe(request, classe_id):
-    classe = get_object_or_404(Classe, id=classe_id)
-    if request.method == 'POST':
-        classe.delete()
-        messages.success(request, "Classe supprimée avec succès.")
-        return redirect('liste_classes')
-    return render(request, 'classes/confirmer_suppression_classe.html', {'classe': classe})
+    return supprimer_objet_securise(
+        request, 
+        model=Classe, 
+        pk=classe_id, 
+        redirect_url='liste_classes'
+    )
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def imprimer_classe(request, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)
@@ -86,6 +93,7 @@ def imprimer_classe(request, classe_id):
     
     return response
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def details_classe(request, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)
@@ -109,6 +117,7 @@ def details_classe(request, classe_id):
     return render(request, 'classes/details_classe.html', context)
 
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def menu_gestion_classes(request):
     return render(request, 'classes/menu_gestion_classes.html')

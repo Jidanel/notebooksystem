@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-    <h2>Réinitialiser le mot de passe pour {{ utilisateur.username }}</h2>
+    <h2>Réinitialiser le mot de passe pour {{ utilisateur.profilutilisateur.nom }}</h2>
     <form method="post">
         {% csrf_token %}
         <div class="form-group">

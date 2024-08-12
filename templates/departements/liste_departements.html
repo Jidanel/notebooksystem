@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-    <div class="row">
+    <div class="row mb-3">
         <div class="col-md-6">
             <a href="{% url 'ajouter_departement' %}" class="btn btn-primary btn-block">Ajouter Département</a>
         </div>
@@ -10,13 +10,50 @@
             <input id="search" class="form-control" type="text" placeholder="Recherche...." value="{{ query }}">
         </div>
     </div>
-    <br>
+    
     <h2>Liste des Départements</h2>
     <div id="departement-table" class="table-responsive">
-        {% include 'departements/departement_table.html' %}
+        <table class="table table-striped" id="myTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>Description</th>
+                    <th>Chef de Département</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for departement in page_obj %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ departement.nom }}</td>
+                    <td>{{ departement.description }}</td>
+                    <td>
+                        {% if departement.chef_departement %}
+                            {{ departement.chef_departement.nom }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'modifier_departement' departement.id %}" class="btn btn-warning btn-sm" title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="post" action="{% url 'confirmer_suppression_departement' departement.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-    <div class="pagination">
+    <div class="pagination mt-3">
         <span class="step-links">
             {% if page_obj.has_previous %}
                 <a href="?page=1{% if query %}&q={{ query }}{% endif %}">&laquo; premier</a>

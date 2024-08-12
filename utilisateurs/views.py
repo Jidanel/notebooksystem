@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import *
 from .models import *
-from .decorators import unauthenticated_user
+from .decorators import *
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.forms import SetPasswordForm
@@ -96,7 +96,7 @@ def next_view(request):
     # Logique pour le bouton suivant
     return redirect('home')
 
-
+@role_required(allowed_roles=['Admin_', 'AP', 'SG'])
 @login_required(login_url='login')
 def liste_enseignants(request):
     query = request.GET.get('q')
@@ -121,6 +121,7 @@ def liste_enseignants(request):
     }
     return render(request, 'utilisateurs/liste_enseignants.html', context)
 
+@role_required(allowed_roles=['Admin_'])
 @login_required(login_url='login')
 def assigner_role(request):
     if request.method == 'POST':
@@ -136,6 +137,13 @@ def assigner_role(request):
             
             profil.role = form.cleaned_data['role']
             profil.save()
+
+            # Déconnexion automatique de l'utilisateur
+            if utilisateur == request.user:
+                logout(request)
+                messages.info(request, "Votre rôle a changé. Veuillez vous reconnecter.")
+                return redirect('login')
+
             messages.success(request, f"Le rôle de {utilisateur.username} a été mis à jour avec succès.")
             return redirect('assigner_role')
     else:
@@ -145,11 +153,12 @@ def assigner_role(request):
     context = {'form': form, 'utilisateurs': utilisateurs}
     return render(request, 'utilisateurs/assigner_role.html', context)
 
+@role_required(allowed_roles=['Admin_', 'AP', 'SG'])
 @login_required(login_url='login')
 def menu_gestion_enseignants(request):
     return render(request, 'utilisateurs/menu_gestion_enseignants.html')
 
-
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required(login_url='login')
 def reset_password(request, user_id):
     utilisateur = get_object_or_404(User, id=user_id)
@@ -184,20 +193,25 @@ def reset_password(request, user_id):
     return render(request, 'utilisateurs/reset_password.html', context)
 
 
-    
+@role_required(allowed_roles=['Admin_', 'SG'])   
 @login_required(login_url='login')
 def supprimer_enseignant(request, user_id):
     utilisateur = get_object_or_404(User, id=user_id)
     profil = get_object_or_404(ProfilUtilisateur, utilisateur=utilisateur)
 
     if request.method == 'POST':
-        profil.actif = False
-        profil.save()
-        messages.success(request, f"L'enseignant {utilisateur.username} a été désactivé avec succès.")
-        return redirect('liste_enseignants')
-    
-    return render(request, 'utilisateurs/confirmer_suppression.html', {'enseignant': utilisateur})
+        code_de_securite = request.POST.get('code_de_securite')
+        if code_de_securite == request.user.profilutilisateur.code_de_securite:
+            profil.actif = False
+            profil.save()
+            messages.success(request, f"L'enseignant {utilisateur.username} a été désactivé avec succès.")
+            return redirect('liste_enseignants')
+        else:
+            messages.error(request, 'Code de sécurité incorrect.')
 
+    return render(request, 'utilisateurs/supprimer_enseignant.html', {'enseignant': utilisateur})
+
+@role_required(allowed_roles=['Admin_', 'AP', 'SG'])
 @login_required(login_url='login')
 def notifier(request, user_id):
     receiver = get_object_or_404(User, id=user_id)
@@ -221,6 +235,7 @@ def notifications(request):
     }
     return render(request, 'utilisateurs/notifications.html', context)
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required(login_url='login')
 def demander_code_securite(request, pk):
     enseignant = ProfilUtilisateur.objects.get(id=pk)
@@ -235,10 +250,16 @@ def demander_code_securite(request, pk):
         form = SecurityCodeForm()
     return render(request, 'utilisateurs/demander_code_securite.html', {'form': form})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required(login_url='login')
 def reinitialiser_mot_de_passe(request, pk):
     utilisateur = get_object_or_404(User, id=pk)
     profil = get_object_or_404(ProfilUtilisateur, utilisateur=utilisateur)
+
+    # Vérifier si l'utilisateur a un code de sécurité défini
+    if not profil.code_de_securite:
+        messages.error(request, f"L'utilisateur {profil.nom} n'a pas de code de sécurité défini.")
+        return redirect('liste_enseignants')
 
     if request.method == 'POST':
         security_code = request.POST.get('code_de_securite')
@@ -249,7 +270,7 @@ def reinitialiser_mot_de_passe(request, pk):
             if new_password == confirm_password:
                 utilisateur.set_password(new_password)
                 utilisateur.save()
-                messages.success(request, f"Le mot de passe de {utilisateur.username} a été réinitialisé avec succès.")
+                messages.success(request, f"Le mot de passe de {profil.nom} a été réinitialisé avec succès.")
                 return redirect('liste_enseignants')
             else:
                 messages.error(request, 'Les mots de passe ne correspondent pas.')
@@ -260,6 +281,7 @@ def reinitialiser_mot_de_passe(request, pk):
         'utilisateur': utilisateur
     }
     return render(request, 'utilisateurs/reinitialiser_mot_de_passe.html', context)
+
 
 
 @login_required(login_url='login')
@@ -296,36 +318,54 @@ def confirmer_suppression(request, user_id):
     }
     return render(request, 'utilisateurs/confirmer_suppression.html', context)
 
-@login_required
+@login_required(login_url='login')
+@role_required(allowed_roles=['Admin_', 'SG'])
 def liste_departements(request):
-    query = request.GET.get('q')
-    departements = Departement.objects.all().order_by('nom')
+    if request.user.profilutilisateur.role == 'Admin_':
+        departements = Departement.objects.all().order_by('nom')
+    else:
+        departements = Departement.objects.filter(utilisateur_sg=request.user.profilutilisateur).order_by('nom')
     
+    query = request.GET.get('q')
     if query:
-        departements = departements.filter(Q(nom__icontains=query) | Q(description__icontains=query))
+        departements = departements.filter(
+            Q(nom__icontains=query) |
+            Q(description__icontains=query) |
+            Q(chef_departement__nom__icontains=query)
+        )
 
-    paginator = Paginator(departements, 10)
+    paginator = Paginator(departements, 10)  # Paginer la liste des départements
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    context = {
-        'page_obj': page_obj,
-        'query': query,
-    }
-    return render(request, 'departements/liste_departements.html', context)
+    return render(request, 'departements/liste_departements.html', {'page_obj': page_obj, 'query': query})
 
+
+
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def ajouter_departement(request):
     if request.method == 'POST':
         form = DepartementForm(request.POST)
         if form.is_valid():
-            form.save()
+            departement = form.save(commit=False)
+            departement.save()
+
+            # Associer le SG sélectionné au département
+            utilisateur_sg = form.cleaned_data['utilisateur_sg']
+            EnseignantDepartement.objects.create(
+                enseignant=utilisateur_sg,
+                departement=departement,
+                is_chef_departement=False
+            )
             messages.success(request, "Département ajouté avec succès.")
             return redirect('liste_departements')
     else:
         form = DepartementForm()
     return render(request, 'departements/ajouter_departement.html', {'form': form})
 
+
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def modifier_departement(request, departement_id):
     departement = get_object_or_404(Departement, id=departement_id)
@@ -339,20 +379,20 @@ def modifier_departement(request, departement_id):
         form = DepartementForm(instance=departement)
     return render(request, 'departements/modifier_departement.html', {'form': form})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def supprimer_departement(request, departement_id):
-    if request.method == 'POST':
-        departement = get_object_or_404(Departement, id=departement_id)
-        departement.delete()
-        messages.success(request, "Département supprimé avec succès.")
-        return redirect('liste_departements')
-    else:
-        return redirect('confirmer_suppression_departement', departement_id=departement_id)
+    return supprimer_objet_securise(
+        request, 
+        model=Departement, 
+        pk=departement_id, 
+        redirect_url='liste_departements'
+    )
 
 
 
 
-    
+@role_required(allowed_roles=['Admin_', 'SG'])    
 @login_required(login_url='login')
 def menu_gestion_departements(request):
     return render(request, 'departements/menu_gestion_departements.html')
@@ -362,6 +402,7 @@ def confirmer_suppression_departement(request, departement_id):
     departement = get_object_or_404(Departement, id=departement_id)
     return render(request, 'departements/confirmer_suppression_departement.html', {'departement': departement})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def assigner_enseignant(request, enseignant_id=None):
     if request.method == 'POST':
@@ -390,7 +431,7 @@ def assigner_enseignant(request, enseignant_id=None):
 
 
 
-
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def liste_enseignants_par_departement(request):
     query = request.GET.get('q')
@@ -416,7 +457,7 @@ def liste_enseignants_par_departement(request):
     }
     return render(request, 'utilisateurs/liste_enseignants_par_departement.html', {'departements': departements, 'page_obj': page_obj, 'query': query})
 
-
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def supprimer_departement_enseignant(request, enseignant_id, departement_id):
     enseignant = get_object_or_404(ProfilUtilisateur, id=enseignant_id)
@@ -433,3 +474,44 @@ def supprimer_departement_enseignant(request, enseignant_id, departement_id):
         'departement': departement
     }
     return render(request, 'utilisateurs/confirmer_suppression.html', context)
+
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from .models import ProfilUtilisateur
+from .forms import SecurityCodeForm
+
+@login_required
+def supprimer_objet_securise(request, model, pk, redirect_url):
+    """
+    Vue générique pour supprimer un objet avec vérification du code de sécurité.
+
+    :param request: Requête HTTP
+    :param model: Le modèle de l'objet à supprimer (ex: Eleve, Classe, etc.)
+    :param pk: ID de l'objet à supprimer
+    :param redirect_url: URL vers laquelle rediriger après la suppression réussie
+    """
+    obj = get_object_or_404(model, pk=pk)
+    profil = request.user.profilutilisateur
+
+    if request.method == 'POST':
+        form = SecurityCodeForm(request.POST)
+        if form.is_valid():
+            code_de_securite = form.cleaned_data['code_de_securite']
+            if profil.code_de_securite == code_de_securite:
+                obj.delete()
+                messages.success(request, f"{model.__name__} supprimé avec succès.")
+                return redirect(redirect_url)
+            else:
+                messages.error(request, "Code de sécurité incorrect.")
+        else:
+            messages.error(request, "Formulaire invalide.")
+    else:
+        form = SecurityCodeForm()
+
+    context = {
+        'obj': obj,
+        'form': form,
+        'title': f"Supprimer {model.__name__}",
+    }
+
+    return render(request, 'suppression/securisee.html', context)

@@ -15,7 +15,11 @@ from django.db import IntegrityError
 from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+from utilisateurs.decorators import *
+from utilisateurs.views import *
 
+
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def liste_eleves(request):
     query = request.GET.get('q')
@@ -30,6 +34,7 @@ def liste_eleves(request):
 
     return render(request, 'eleves/liste_eleves.html', {'page_obj': page_obj, 'query': query})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def ajouter_eleve(request):
     if request.method == 'POST':
@@ -42,6 +47,7 @@ def ajouter_eleve(request):
         form = EleveForm()
     return render(request, 'eleves/ajouter_eleve.html', {'form': form})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def modifier_eleve(request, eleve_id):
     eleve = get_object_or_404(Eleve, id=eleve_id)
@@ -55,16 +61,19 @@ def modifier_eleve(request, eleve_id):
         form = EleveForm(instance=eleve)
     return render(request, 'eleves/modifier_eleve.html', {'form': form})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def confirmer_suppression_eleve(request, eleve_id):
-    eleve = get_object_or_404(Eleve, id=eleve_id)
-    if request.method == 'POST':
-        eleve.delete()
-        messages.success(request, "Élève supprimé avec succès.")
-        return redirect('liste_eleves')
-    return render(request, 'eleves/confirmer_suppression_eleve.html', {'eleve': eleve})
+    return supprimer_objet_securise(
+        request, 
+        model=Eleve, 
+        pk=eleve_id, 
+        redirect_url='liste_eleves'
+    )
 
 
+
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def importer_eleves(request):
     if request.method == 'POST':
@@ -170,6 +179,7 @@ def importer_eleves(request):
 
 
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def resolve_import_errors(request):
     errors = request.session.get('errors', [])
@@ -177,6 +187,7 @@ def resolve_import_errors(request):
 
 
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def resolve_duplicates(request):
     if request.method == 'POST':
@@ -261,7 +272,7 @@ def resolve_duplicates(request):
     duplicates = request.session.get('duplicates', [])
     return render(request, 'eleves/resolve_duplicates.html', {'duplicates': duplicates})
 
-
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def contacter_parents(request, eleve_id):
     eleve = get_object_or_404(Eleve, id=eleve_id)
@@ -276,6 +287,7 @@ def contacter_parents(request, eleve_id):
         return redirect('liste_eleves')
     return render(request, 'eleves/contacter_parents.html', {'eleve': eleve})
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def liste_eleves_par_classe(request):
     classes = Classe.objects.all()
@@ -311,6 +323,7 @@ def liste_eleves_par_classe(request):
     }
     return render(request, 'eleves/liste_eleves_par_classe.html', context)
 
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def imprimer_liste_eleves(request, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)
