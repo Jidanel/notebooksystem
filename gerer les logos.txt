@@ -1,0 +1,6 @@
+Allez sur https://www.resizepixel.com/fr/download
+Redimmensionner le logo avec les calculs faits sur https://www.comment-calculer.net/conversion-cm-pixel.php pour convertir les cm en pixels
+Remettre les pixels trouvés sur resizepixel pour redimmensionner
+telecharger puis aller sur https://www.flickr.com/ puis charger le logo
+Faire le clic droit et cliquer sur copier adresse de l'image
+Aller dans les parametres puis coller l'image du logo

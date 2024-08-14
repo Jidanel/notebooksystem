@@ -310,3 +310,213 @@ h1 {
     color: #856404;
     border: 1px solid #ffeeba;
 }
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .form-group label {
+        font-size: 1rem;
+    }
+
+    .form-control {
+        font-size: 1rem;
+    }
+
+    .btn {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .container {
+        max-width: 600px;
+    }
+
+    .form-group label {
+        font-size: 1.2rem;
+    }
+
+    .form-control {
+        font-size: 1.2rem;
+    }
+
+    .btn {
+        font-size: 1.2rem;
+    }
+}
+
+/* en tete */
+
+.entete-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid #000;
+    padding-bottom: 10px;
+}
+
+.entete-container .left-section,
+.entete-container .right-section {
+    width: 35%;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.entete-container .center-section {
+    width: 30%;
+    text-align: center;
+    font-size: 12px;
+}
+
+.entete-container .logo {
+    max-width: 100px;
+    max-height: 100px;
+    margin-bottom: 5px;
+}
+
+.entete-container p {
+    margin: 0;
+    padding: 0;
+    line-height: 1.1; /* Diminue l'interligne */
+}
+
+.entete-container .republique {
+    font-weight: bold;
+    font-size: 14px; /* Taille plus grande pour 'REPUBLIQUE DU CAMEROUN' */
+    text-align: center;
+}
+
+.entete-container .paix {
+    font-style: italic;
+    font-size: 11px;
+    text-align: center;
+}
+
+.entete-container .ministere,
+.entete-container .nom-etablissement,
+.entete-container .adresse {
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+}
+
+.entete-container .nom-etablissement {
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+.entete-container .adresse {
+    font-size: 11px;
+    text-align: center;
+}
+
+.entete-container .annee-scolaire {
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* CSS spécifique à la galerie d'images */
+.gallery-container {
+    padding: 10px;
+    background-color: #f8f9fa; /* Couleur de fond légère pour la galerie */
+}
+
+.gallery-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.gallery-header h1 {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+}
+
+.add-image-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-image-btn:hover {
+    background-color: #0056b3;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Ajuste automatiquement les colonnes */
+    gap: 10px;
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 5px;
+}
+
+/* Ajout d'une légère transition au survol */
+.gallery-item:hover {
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .gallery-header h1 {
+        font-size: 20px;
+    }
+    
+    .add-image-btn {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+    
+    .gallery-item img {
+        max-width: 150px; /* Ajustement spécifique pour les petits écrans */
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-header h1 {
+        font-size: 18px;
+    }
+
+    .add-image-btn {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    
+    .gallery-item img {
+            width: 100%; 
+            height: auto; 
+            max-width: 4cm; 
+            max-height: 4cm; 
+            display: block;
+            border-radius: 5px;
+        }
+        
+}
+
+  

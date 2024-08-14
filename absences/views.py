@@ -12,6 +12,7 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from utilisateurs.models import *
 from utilisateurs.decorators import *
+from parametres.models import *
 
 @login_required
 def selection_classe_sequence(request):
@@ -105,12 +106,13 @@ def justifier_absences(request, sequence, classe_id):
     })
     
 # absences/views.py
-
+@role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def imprimer_absences(request, sequence, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)
     eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
     absences = Absence.objects.filter(classe=classe, sequence=sequence)
+    parametres_etablissement = ParametresEtablissement.objects.first()
 
     # Récupérer la valeur de with_justifications depuis les paramètres GET
     with_justifications = request.GET.get('with_justifications', 'False') == 'True'
@@ -123,6 +125,7 @@ def imprimer_absences(request, sequence, classe_id):
         'sequence': sequence,
         'absences': absences,
         'with_justifications': with_justifications,
+        'parametres_etablissement': parametres_etablissement
     }
 
     response = HttpResponse(content_type='application/pdf')

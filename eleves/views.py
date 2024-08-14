@@ -17,6 +17,7 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from utilisateurs.decorators import *
 from utilisateurs.views import *
+from parametres.models import *
 
 
 @role_required(allowed_roles=['Admin_', 'SG'])
@@ -328,6 +329,7 @@ def liste_eleves_par_classe(request):
 def imprimer_liste_eleves(request, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)
     eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    parametres_etablissement = ParametresEtablissement.objects.first()
 
     # Calculer les statistiques
     stats = {}
@@ -357,7 +359,8 @@ def imprimer_liste_eleves(request, classe_id):
     context = {
         'classe': classe,
         'eleves': eleves,
-        'stats': stats
+        'stats': stats,
+        'parametres_etablissement': parametres_etablissement
     }
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="Liste_eleves_{classe.nom}.pdf"'

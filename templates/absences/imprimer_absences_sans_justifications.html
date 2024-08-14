@@ -35,8 +35,8 @@
     </style>
 </head>
 <body>
+    {% include 'parametres/entete.html' with parametres=parametres_etablissement %}
     <h1>Liste des absences de {{ classe.nom }} - {{ sequence }}</h1>
-    <br>
     <table>
         <thead>
             <tr>

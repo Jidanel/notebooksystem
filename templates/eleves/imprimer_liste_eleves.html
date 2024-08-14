@@ -54,8 +54,9 @@
     </style>
 </head>
 <body>
-    <h1>Liste des élèves de {{ classe.nom }}</h1>
-    <br>
+    {% include 'parametres/entete.html' with parametres=parametres_etablissement %}
+
+    <h2 style ="text-align: center;">Liste des élèves de {{ classe.nom }}</h2>
     <table>
         <thead>
             <tr>
@@ -85,7 +86,7 @@
     <h3>Détails de la Classe {{ classe.nom }}</h3>
     <table>
         <tr>
-            <th></th>
+            <th>#</th>
             <th>Garçons</th>
             <th>Filles</th>
             <th>Total</th>
@@ -103,7 +104,7 @@
             <td>{{ stats.total_eleves_redoublants }}</td>
         </tr>
         <tr>
-            <td>Total Élèves</td>
+            <td>Totaux</td>
             <td>{{ stats.total_garcons }}</td>
             <td>{{ stats.total_filles }}</td>
             <td>{{ stats.total_eleves }}</td>
