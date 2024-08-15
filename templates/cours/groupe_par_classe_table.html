@@ -1,0 +1,22 @@
+<!-- templates/cours/groupe_par_classe_table.html -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Nom du Groupe</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for groupe in page_obj %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ groupe.nom }}</td>
+            <td>
+                <a href="{% url 'modifier_groupe_matiere' groupe.id %}" class="btn btn-warning btn-sm">Modifier</a>
+                <a href="{% url 'supprimer_groupe_matiere' groupe.id %}" class="btn btn-danger btn-sm">Supprimer</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

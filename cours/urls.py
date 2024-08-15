@@ -8,5 +8,6 @@ urlpatterns = [
     path('matieres/modifier/<int:matiere_id>/', views.modifier_matiere, name='modifier_matiere'),
     path('matieres/supprimer/<int:matiere_id>/', views.confirmer_suppression_matiere, name='confirmer_suppression_matiere'),
     path('matieres/filtrer_enseignants/', views.filtrer_enseignants_par_departement, name='filtrer_enseignants_par_departement'),
+    path('groupes_par_classe/<int:classe_id>/', views.liste_groupes_par_classe, name='liste_groupes_par_classe'),
 
 ]

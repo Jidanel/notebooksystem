@@ -1,15 +1,19 @@
-# cours/forms.py
 from django import forms
 from .models import Matiere
-from utilisateurs.models import ProfilUtilisateur, Departement
+from utilisateurs.models import ProfilUtilisateur
+from parametres.models import ParametresEtablissement
 
 class MatiereForm(forms.ModelForm):
+    groupe = forms.ChoiceField(choices=[], required=True, label="Groupe")
+
     class Meta:
         model = Matiere
-        fields = ['nom', 'description', 'coefficient', 'departement', 'classe', 'enseignant']
+        fields = ['nom', 'description', 'coefficient', 'departement', 'classe', 'enseignant', 'groupe']
 
     def __init__(self, *args, **kwargs):
         super(MatiereForm, self).__init__(*args, **kwargs)
+
+        # Logique pour filtrer les enseignants par département
         if 'departement' in self.data:
             try:
                 departement_id = int(self.data.get('departement'))
@@ -24,4 +28,34 @@ class MatiereForm(forms.ModelForm):
             ).order_by('nom')
         else:
             self.fields['enseignant'].queryset = ProfilUtilisateur.objects.none()
+
         self.fields['enseignant'].label_from_instance = lambda obj: f"{obj.nom}"
+
+        # Définition des choix de groupes en fonction du type d'enseignement
+        parametres = ParametresEtablissement.objects.first()
+        if parametres:
+            if parametres.type_enseignement == 'bilingue':
+                self.fields['groupe'].choices = [
+                    ('groupe_1', 'Groupe 1'),
+                    ('groupe_2', 'Groupe 2'),
+                    ('groupe_3', 'Groupe 3'),
+                    ('groupe_4', 'Groupe 4'),
+                    ('groupe_5', 'Groupe 5'),
+                    ('groupe_6', 'Groupe 6'),
+                ]
+            elif parametres.type_enseignement == 'technique':
+                self.fields['groupe'].choices = [
+                    ('enseignement_general', 'Enseignement Général'),
+                    ('enseignement_professionnel', 'Enseignement Professionnel'),
+                    ('enseignement_divers', 'Enseignement Divers'),
+                ]
+            elif parametres.type_enseignement == 'general':
+                self.fields['groupe'].choices = [
+                    ('groupe_1', 'Groupe 1'),
+                    ('groupe_2', 'Groupe 2'),
+                    ('groupe_3', 'Groupe 3'),
+                ]
+
+        # Remplissage du champ groupe avec la valeur existante si elle est définie
+        if self.instance.pk and self.instance.groupe:
+            self.fields['groupe'].initial = self.instance.groupe

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Ajouter un Groupe de Matière</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="nom">Nom du Groupe</label>
+            <input type="text" class="form-control" id="nom" name="nom" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    </form>
+</div>
+{% endblock %}

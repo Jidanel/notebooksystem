@@ -348,11 +348,13 @@ def ajouter_departement(request):
     if request.method == 'POST':
         form = DepartementForm(request.POST)
         if form.is_valid():
+            print("Formulaire valide")
             departement = form.save(commit=False)
             departement.save()
 
             # Associer le SG sélectionné au département
             utilisateur_sg = form.cleaned_data['utilisateur_sg']
+            print(f"Utilisateur SG: {utilisateur_sg}")
             EnseignantDepartement.objects.create(
                 enseignant=utilisateur_sg,
                 departement=departement,
@@ -360,9 +362,15 @@ def ajouter_departement(request):
             )
             messages.success(request, "Département ajouté avec succès.")
             return redirect('liste_departements')
+        else:
+            # Message d'erreur si le formulaire n'est pas valide
+            messages.error(request, "Veuillez remplir tous les champs svp.")
+            #print(f"Formulaire non valide: {form.errors}")  # Pour le débogage
     else:
         form = DepartementForm()
+    
     return render(request, 'departements/ajouter_departement.html', {'form': form})
+
 
 
 @role_required(allowed_roles=['Admin_', 'SG'])

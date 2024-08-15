@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Matières par Groupes pour la classe {{ classe.nom }}</h2>
+    {% for groupe in groupes_matieres %}
+        <h3>Groupe: {{ groupe.nom }} - Total des Coefficients: {{ groupe.total_coefficient }}</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nom de la Matière</th>
+                        <th>Coefficient</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for matiere in groupe.matieres %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ matiere.nom }}</td>
+                        <td>{{ matiere.coefficient }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">Aucune matière dans ce groupe.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <br>
+    {% endfor %}
+</div>
+{% endblock %}
