@@ -3,5 +3,5 @@ from .models import Classe
 
 @admin.register(Classe)
 class ClasseAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'code', 'enseignant_titulaire')
+    list_display = ('nom', 'code')
     search_fields = ('nom', 'code')

@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.contrib.auth.forms import SetPasswordForm
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
+from .forms import AssignerClasseForm
 
 @login_required(login_url='login')
 def index(request):
@@ -523,3 +524,32 @@ def supprimer_objet_securise(request, model, pk, redirect_url):
     }
 
     return render(request, 'suppression/securisee.html', context)
+
+def assigner_classe(request, enseignant_id):
+    enseignant = get_object_or_404(ProfilUtilisateur, id=enseignant_id)
+
+    if request.method == 'POST':
+        form = AssignerClasseForm(request.POST, instance=enseignant)
+        if form.is_valid():
+            # Si un enseignant est déjà responsable d'une classe, on libère cette classe
+            if enseignant.responsable_classe:
+                ancienne_classe = enseignant.responsable_classe
+                ancienne_classe.responsable = None
+                ancienne_classe.save()
+
+            # Assignation de la nouvelle classe
+            nouvelle_classe = form.cleaned_data['responsable_classe']
+            enseignant.responsable_classe = nouvelle_classe
+            enseignant.save()
+
+            # Mettre à jour la classe choisie (si ce n'est pas "Aucune classe")
+            if nouvelle_classe:
+                nouvelle_classe.responsable = enseignant
+                nouvelle_classe.save()
+
+            messages.success(request, f"Classe {nouvelle_classe.nom if nouvelle_classe else 'Aucune classe'} assignée à {enseignant.nom}.")
+            return redirect('liste_enseignants')
+    else:
+        form = AssignerClasseForm(instance=enseignant)
+
+    return render(request, 'utilisateurs/assigner_classe.html', {'form': form, 'enseignant': enseignant})

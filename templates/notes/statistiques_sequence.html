@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Statistiques pour la Séquence {{ sequence }} - {{ classe.nom }}</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Moyenne la plus élevée :</strong> {{ stats_classe.moyenne_max }}</p>
+            <p><strong>Moyenne la plus basse :</strong> {{ stats_classe.moyenne_min }}</p>
+            <p><strong>Moyenne générale de la classe :</strong> {{ stats_classe.moyenne_generale }}</p>
+            <p><strong>Écart type :</strong> {{ stats_classe.ecart_type }}</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Taux de réussite :</strong> {{ stats_classe.taux_reussite }}%</p>
+        </div>
+    </div>
+
+    <h3 class="mt-4">Classement des élèves</h3>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Rang</th>
+                    <th>Élève</th>
+                    <th>Moyenne Séquentielle</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eleve in stats_classe.classement %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ eleve.eleve.nom }}</td>
+                    <td>{{ eleve.moyenne_sequence }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

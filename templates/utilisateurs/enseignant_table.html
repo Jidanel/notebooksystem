@@ -7,6 +7,7 @@
                 <th>Matricule</th>
                 <th>Rôle</th>
                 <th>Départements</th>
+                <th>Titulaire</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -23,6 +24,13 @@
                     {% endfor %}
                 </td>
                 <td>
+                    {% if enseignant.responsable_classe %}
+                        {{ enseignant.responsable_classe.nom }}
+                    {% else %}
+                        non
+                    {% endif %}
+                </td>
+                <td>
                     <form method="post" action="{% url 'reinitialiser_mot_de_passe' enseignant.utilisateur.id %}" style="display: inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-warning btn-sm" title="Réinitialiser">
@@ -37,6 +45,11 @@
                     <form method="get" action="{% url 'notifier' enseignant.utilisateur.id %}" style="display: inline;">
                         <button type="submit" class="btn btn-info btn-sm" title="Notifier">
                             <i class="fas fa-envelope"></i>
+                        </button>
+                    </form>
+                    <form method="get" action="{% url 'assigner_classe' enseignant.id %}" style="display: inline;">
+                        <button type="submit" class="btn btn-success btn-sm" title="Assigner">
+                            <i class="fas fa-school"></i>
                         </button>
                     </form>
                 </td>

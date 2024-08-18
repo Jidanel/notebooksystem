@@ -3,6 +3,7 @@ from django.db import models
 from eleves.models import Eleve
 from classes.models import Classe
 from utilisateurs.models import ProfilUtilisateur
+from django.core.exceptions import ValidationError
 
 class Absence(models.Model):
     eleve = models.ForeignKey(Eleve, on_delete=models.CASCADE)
@@ -13,8 +14,14 @@ class Absence(models.Model):
     justification = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
 
+    
+    
+    def clean(self):
+        if self.justification > self.absences:
+            raise ValidationError("Les heures d'absences justifiées sont superieures aux heures non justifiées.")
+        
     def save(self, *args, **kwargs):
-        # Convertir en entier si nécessaire
+    # Convertir en entier si nécessaire
         self.absences = int(self.absences)
         self.justification = int(self.justification)
         

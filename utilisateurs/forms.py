@@ -4,6 +4,7 @@ from .models import *
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import SetPasswordForm
+from classes.models import *
 
 class CreateUserForm(UserCreationForm):
     class Meta:
@@ -78,3 +79,17 @@ class AssignationForm(forms.ModelForm):
     class Meta:
         model = EnseignantDepartement
         fields = ['enseignant', 'departements', 'is_chef_departement']
+
+
+class AssignerClasseForm(forms.ModelForm):
+    responsable_classe = forms.ModelChoiceField(
+        queryset=Classe.objects.all(),
+        required=False,
+        label='Classe à assigner',
+        widget=forms.Select(),
+        empty_label="Aucune classe"
+    )
+
+    class Meta:
+        model = ProfilUtilisateur
+        fields = ['responsable_classe']

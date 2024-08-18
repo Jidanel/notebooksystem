@@ -5,7 +5,7 @@ class Eleve(models.Model):
     photo = models.ImageField(upload_to='eleves/photos', null=True, blank=True)
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
-    sexe = models.CharField(max_length=10, choices=[('Masculin', 'Masculin'), ('Féminin', 'Féminin')])
+    sexe = models.CharField(max_length=10, choices=[('Masculin', 'Masculin'), ('Feminin', 'Feminin')])
     date_naissance = models.DateField()
     lieu_naissance = models.CharField(max_length=100)
     adresse = models.TextField(null=True, blank=True)

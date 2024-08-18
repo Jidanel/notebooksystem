@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-group">
+        <input id="search" class="form-control" type="text" placeholder="Recherche...." value="{{ query }}">
+    </div>
+    <br>
+    <h2>Liste des Classes</h2>
+    <div id="classe-table" class="table-responsive">
+        <table class="table table-striped" id="myTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for classe in page_obj %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ classe.nom }}</td>
+                    <td>
+                        <!-- Lien vers les statistiques de Séquence 1 -->
+                        <a href="{% url 'afficher_statistiques_sequence' classe.id 'Seq1' %}" class="btn btn-warning btn-sm" title="Séquence 1">
+                            stats-Seq 1
+                        </a>
+
+                        <!-- Lien vers les statistiques de Séquence 2 -->
+                        <a href="{% url 'afficher_statistiques_sequence' classe.id 'Seq2' %}" class="btn btn-warning btn-sm" title="Séquence 2">
+                            stats-Seq 2
+                        </a>
+
+                        <!-- Lien vers les statistiques du Trimestre 1 -->
+                        <a href="{% url 'afficher_statistiques_trimestre' classe.id %}" class="btn btn-warning btn-sm" title="Trimestre 1">
+                            stats-Trim 1
+                        </a>
+                        <a href="{% url 'afficher_bulletins_trimestriels' classe.id %}" class="btn btn-warning btn-sm" title="Trimestre 1">
+                            Bull-trim 1
+                        </a>
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}">&laquo; premier</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">précédent</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">suivant</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">dernier &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#search').on('input', function() {
+            var query = $(this).val();
+            $.ajax({
+                url: "{% url 'liste_classes' %}",
+                data: {
+                    'q': query
+                },
+                success: function(data) {
+                    $('#classe-table').html($(data).find('#classe-table').html());
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

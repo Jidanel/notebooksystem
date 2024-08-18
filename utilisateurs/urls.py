@@ -28,5 +28,6 @@ urlpatterns = [
     path('liste_enseignants_par_departement/', views.liste_enseignants_par_departement, name='liste_enseignants_par_departement'),
     path('assigner_enseignant/', views.assigner_enseignant, name='assigner_enseignant'),
     path('assigner_enseignant/<int:enseignant_id>/', views.assigner_enseignant, name='assigner_enseignant_id'),
+    path('assigner_classe/<int:enseignant_id>/', views.assigner_classe, name='assigner_classe'),
     path('supprimer_departement_enseignant/<int:enseignant_id>/<int:departement_id>/', views.supprimer_departement_enseignant, name='supprimer_departement_enseignant'),
 ]

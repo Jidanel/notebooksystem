@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from classes.models import *
 
 class Departement(models.Model):
     nom = models.CharField(max_length=100)
@@ -25,6 +26,8 @@ class ProfilUtilisateur(models.Model):
     ], blank=True, null=True)
     profile_img = models.ImageField(default='images/default.jpg', upload_to='images', null=True, blank=True)
     actif = models.BooleanField(default=True)
+    responsable_classe = models.OneToOneField(Classe, on_delete=models.SET_NULL, null=True, blank=True, related_name='responsable')  # Le champ que vous avez demandé
+
 
     def __str__(self):
         return f"{self.nom} - {self.utilisateur.username}"

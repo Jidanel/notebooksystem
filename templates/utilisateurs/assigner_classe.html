@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Assigner une classe à {{ enseignant.nom }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="responsable_classe">Classe</label>
+            {{ form.responsable_classe }}
+        </div>
+        <button type="submit" class="btn btn-primary">Assigner</button>
+    </form>
+</div>
+{% endblock %}

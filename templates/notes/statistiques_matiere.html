@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Statistiques pour la matière {{ matiere.nom }} - {{ sequence }}</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Classe :</strong> {{ classe.nom }}</p>
+            <p><strong>Moyenne de la classe :</strong> {{ stats.moyenne_classe }}</p>
+            <p><strong>Note la plus haute :</strong> {{ stats.max_note }}</p>
+            <p><strong>Nombre de garçons ayant la moyenne :</strong> {{ stats.nb_garcons_moyenne }}</p>
+            <p><strong>Nombre de filles ayant la moyenne :</strong> {{ stats.nb_filles_moyenne }}</p>
+            <p><strong>Nombre total d'élèves ayant la moyenne :</strong> {{ stats.nb_eleves_moyenne }}</p>
+            <p><strong>Pourcentage de réussite des garçons :</strong> {{ stats.pourcentage_reussite_garcons }}%</p>
+            <p><strong>Pourcentage de réussite des filles :</strong> {{ stats.pourcentage_reussite_filles }}%</p>
+            <p><strong>Pourcentage total de réussite :</strong> {{ stats.pourcentage_reussite_total }}%</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Note la plus basse :</strong> {{ stats.min_note }}</p>
+            <p><strong>Nombre de garçons ayant la sous moyenne :</strong> {{ stats.nb_garcons_sous_moyenne }}</p>
+            <p><strong>Nombre de filles ayant la sous moyenne :</strong> {{ stats.nb_filles_sous_moyenne }}</p>
+            <p><strong>Nombre total d'élèves sous la moyenne :</strong> {{ stats.nb_eleves_sous_moyenne }}</p>
+            <p><strong>Pourcentage d'échec des garçons :</strong> {{ stats.pourcentage_echec_garcons }}%</p>
+            <p><strong>Pourcentage d'échec des filles :</strong> {{ stats.pourcentage_echec_filles }}%</p>
+            <p><strong>Pourcentage total d'échec :</strong> {{ stats.pourcentage_echec_total }}%</p>
+            <p><strong>Écart-type de la classe :</strong> {{ stats.ecart_type }}</p>
+        </div>
+    </div>
+
+    <h3 class="mt-4">Classement des élèves</h3>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Rang</th>
+                    <th>Élève</th>
+                    <th>Note</th>
+                    <th>Appréciation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for note in stats.classement %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ note.eleve.nom }}</td>
+                    <td>{{ note.note }}</td>
+                    <td>{{ note.appreciation }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

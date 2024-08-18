@@ -26,10 +26,10 @@
                     <td>{{ classe.nom }}</td>
                     <td>{{ classe.code }}</td>
                     <td>
-                        {% if classe.enseignant_titulaire %}
-                            {{ classe.enseignant_titulaire.username }}
+                        {% if classe.responsable %}
+                            {{ classe.responsable.nom }}
                         {% else %}
-                            N/A
+                            Aucun titulaire
                         {% endif %}
                     </td>
                     <td>

@@ -3,7 +3,7 @@
 {% block content %}
     {% if user.is_authenticated %}
         <div class="dashboard-container">
-            <h1 class="dashboard-title">Menu Principal</h1>
+            <h1 class="dashboard-title"><h3>Menu Principal</h3></h1>
             <div class="dashboard-menu">
                 {% if user.profilutilisateur.role == 'Enseignant' %}
                     <div class="menu-item">

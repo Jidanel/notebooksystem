@@ -21,6 +21,7 @@
                     <td>{{ note.get_sequence_display }}</td>
                     <td>
                         <a href="{% url 'saisie_notes' note.sequence note.classe.id note.matiere.id %}" class="btn btn-primary">Modifier</a>
+                        <a href="{% url 'afficher_statistiques_matiere' note.sequence note.classe.id note.matiere.id %}" class="btn btn-info">Statistiques</a>
                     </td>
                 </tr>
                 {% endfor %}
