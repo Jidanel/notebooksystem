@@ -96,7 +96,7 @@ def previous_view(request):
 def next_view(request):
     # Logique pour le bouton suivant
     return redirect('home')
-
+from .decorators import *
 @role_required(allowed_roles=['Admin_', 'AP', 'SG'])
 @login_required(login_url='login')
 def liste_enseignants(request):

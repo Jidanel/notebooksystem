@@ -26,10 +26,16 @@
                         <a href="{% url 'afficher_statistiques_sequence' classe.id 'Seq1' %}" class="btn btn-warning btn-sm" title="Séquence 1">
                             stats-Seq 1
                         </a>
+                        <a href="{% url 'bulletins_seq1' classe.id %}" class="btn btn-warning btn-sm" title="Séquence 1">
+                            bull-Seq 1
+                        </a>
 
                         <!-- Lien vers les statistiques de Séquence 2 -->
                         <a href="{% url 'afficher_statistiques_sequence' classe.id 'Seq2' %}" class="btn btn-warning btn-sm" title="Séquence 2">
                             stats-Seq 2
+                        </a>
+                        <a href="{% url 'bulletins_seq2' classe.id %}" class="btn btn-warning btn-sm" title="Séquence 2">
+                            bull-Seq 2
                         </a>
 
                         <!-- Lien vers les statistiques du Trimestre 1 -->
@@ -39,7 +45,7 @@
                         <a href="{% url 'afficher_bulletins_trimestriels' classe.id %}" class="btn btn-warning btn-sm" title="Trimestre 1">
                             Bull-trim 1
                         </a>
-
+                       
                     </td>
                 </tr>
                 {% endfor %}

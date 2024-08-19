@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Tableau de Bord des élèves par classes</h1>
+
+<div class="chart-container" style="position: relative; height:40vh; width:80vw">
+    <canvas id="classeSexeChart"></canvas>
+</div>
+
+<br>
+
+<h1>Tableau de Bord des Absences</h1>
+
+<div class="chart-container" style="position: relative; height:40vh; width:80vw">
+    <canvas id="classeAbsenceChart"></canvas>
+</div>
+<br>
+
+<h1>Meilleures Matières par Classe par Trimestre</h1>
+
+<div class="chart-container" style="position: relative; height:40vh; width:80vw">
+    <canvas id="meilleuresMatieresChart"></canvas>
+</div>
+<br>
+
+<h1>3 Meilleures Classes par Séquence</h1>
+
+<div class="chart-container" style="position: relative; height:40vh; width:80vw">
+    <select id="sequenceSelect"></select>
+    <canvas id="meilleuresClassesChart"></canvas>
+</div>
+
+<script>
+    let meilleuresClassesChart = null;
+
+    // Graphique pour la répartition des élèves par sexe et classe
+    const ctxSexe = document.getElementById('classeSexeChart');
+    if (ctxSexe) {
+        fetch('/api/classes/')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(classe => classe.nom);
+                const males = data.map(classe => classe.eleves.filter(eleve => eleve.sexe === 'Masculin').length);
+                const females = data.map(classe => classe.eleves.filter(eleve => eleve.sexe === 'Feminin').length);
+
+                const ctx = ctxSexe.getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Garçons',
+                                data: males,
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Filles',
+                                data: females,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Erreur dans le fetch des classes:', error));
+    }
+
+    // Graphique pour les absences par classe et sexe
+    const ctxAbsences = document.getElementById('classeAbsenceChart');
+    if (ctxAbsences) {
+        fetch('/api/absences/')
+            .then(response => response.json())
+            .then(data => {
+                const labels = [...new Set(data.map(absence => `${absence.classe_nom} - ${absence.sequence}`))];
+
+                const absencesGarcons = labels.map(label => {
+                    return data.filter(absence => `${absence.classe_nom} - ${absence.sequence}` === label && absence.eleve_sexe === 'Masculin')
+                                .reduce((sum, absence) => sum + absence.absences, 0);
+                });
+
+                const absencesFilles = labels.map(label => {
+                    return data.filter(absence => `${absence.classe_nom} - ${absence.sequence}` === label && absence.eleve_sexe === 'Feminin')
+                                .reduce((sum, absence) => sum + absence.absences, 0);
+                });
+
+                const justificationsGarcons = labels.map(label => {
+                    return data.filter(absence => `${absence.classe_nom} - ${absence.sequence}` === label && absence.eleve_sexe === 'Masculin')
+                                .reduce((sum, absence) => sum + absence.justification, 0);
+                });
+
+                const justificationsFilles = labels.map(label => {
+                    return data.filter(absence => `${absence.classe_nom} - ${absence.sequence}` === label && absence.eleve_sexe === 'Feminin')
+                                .reduce((sum, absence) => sum + absence.justification, 0);
+                });
+
+                const ctx = ctxAbsences.getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Absences Garçons',
+                                data: absencesGarcons,
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Justifications Garçons',
+                                data: justificationsGarcons,
+                                backgroundColor: 'rgba(54, 162, 235, 0.4)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Absences Filles',
+                                data: absencesFilles,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Justifications Filles',
+                                data: justificationsFilles,
+                                backgroundColor: 'rgba(255, 159, 64, 0.4)',
+                                borderColor: 'rgba(255, 159, 64, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Erreur dans le fetch des absences:', error));
+    }
+
+    // Graphique pour la meilleure matière par classe et par séquence
+    const ctxMatieres = document.getElementById('meilleuresMatieresChart');
+    if (ctxMatieres) {
+        fetch('/api/meilleures_matieres_par_classe/')
+            .then(response => response.json())
+            .then(data => {
+                const filteredData = [];
+                const classes = [...new Set(data.map(item => item.classe))];
+                const sequences = [...new Set(data.map(item => item.sequence))];
+
+                classes.forEach(classe => {
+                    sequences.forEach(sequence => {
+                        const filtered = data
+                            .filter(item => item.classe === classe && item.sequence === sequence)
+                            .sort((a, b) => b.moyenne - a.moyenne);
+                        if (filtered.length > 0) {
+                            filteredData.push(filtered[0]);
+                        }
+                    });
+                });
+
+                const labels = filteredData.map(item => `${item.classe} - ${item.matiere} - ${item.sequence}`);
+                const moyennes = filteredData.map(item => item.moyenne);
+
+                const ctx = ctxMatieres.getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Meilleure Moyenne par Matière',
+                            data: moyennes,
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return 'Moyenne: ' + tooltipItem.raw;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Erreur dans le fetch des matières:', error));
+    }
+
+    // Dynamically load sequences and update charts
+    fetch('/api/sequences/')
+        .then(response => response.json())
+        .then(sequences => {
+            const sequenceSelect = document.getElementById('sequenceSelect');
+
+            sequences.forEach(sequence => {
+                const option = document.createElement('option');
+                option.value = sequence;
+                option.textContent = sequence;
+                sequenceSelect.appendChild(option);
+            });
+
+            sequenceSelect.addEventListener('change', function() {
+                updateMeilleuresClassesChart(sequenceSelect.value);
+            });
+
+            // Initially load the charts with the first sequence
+            if (sequences.length > 0) {
+                updateMeilleuresClassesChart(sequences[0]);
+            }
+        })
+        .catch(error => console.error('Erreur dans le fetch des séquences:', error));
+
+    function updateMeilleuresClassesChart(sequence) {
+        const ctxMeilleuresClasses = document.getElementById('meilleuresClassesChart');
+        if (ctxMeilleuresClasses) {
+            if (meilleuresClassesChart) {
+                meilleuresClassesChart.destroy(); // Détruire l'ancien graphique avant d'en créer un nouveau
+            }
+
+            fetch(`/api/meilleures_classes_par_sequence/?sequence=${sequence}`)
+                .then(response => response.json())
+                .then(data => {
+                    const labels = data.map(item => item.classe);
+                    const tauxReussite = data.map(item => item.taux_reussite);
+                    const nombreAdmis = data.map(item => item.nombre_admis);
+
+                    const ctx = ctxMeilleuresClasses.getContext('2d');
+                    meilleuresClassesChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Taux de Réussite (%)',
+                                    data: tauxReussite,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: 'Nombre d\'Admis',
+                                    data: nombreAdmis,
+                                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                                    borderColor: 'rgba(153, 102, 255, 1)',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(tooltipItem) {
+                                            return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Erreur dans le fetch des classes:', error));
+        }
+    }
+
+    // Ajout de l'actualisation automatique toutes les 30 minutes
+    setInterval(() => {
+        window.location.reload();
+    }, 1800000);
+
+</script>
+{% endblock %}

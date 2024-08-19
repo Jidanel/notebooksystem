@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'parametres',
     'licences',
     'classes',
+    'rest_framework',
  
 
 

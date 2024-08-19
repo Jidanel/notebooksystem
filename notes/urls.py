@@ -22,4 +22,9 @@ urlpatterns = [
     # URL pour afficher les statistiques du trimestre 1
     path('statistiques/trimestre/<int:classe_id>/', views.afficher_statistiques_trimestre, name='afficher_statistiques_trimestre'),
     path('bulletins/<int:classe_id>/', views.afficher_bulletins_trimestriels, name='afficher_bulletins_trimestriels'),
+    # Route pour afficher les bulletins de la Séquence 1
+    path('notes/bulletins_seq1/<int:classe_id>/', views.afficher_bulletins_sequence1, name='bulletins_seq1'),
+    
+    # Route pour afficher les bulletins de la Séquence 2
+    path('notes/bulletins_seq2/<int:classe_id>/', views.afficher_bulletins_sequence2, name='bulletins_seq2'),
 ]

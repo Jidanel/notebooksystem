@@ -28,6 +28,12 @@
                     </div>
                 {% else %}
                 <div class="menu-grid">
+                    
+                    <div class="menu-item">
+                        <a href="{% url 'dashboard' %}">
+                            <button class="menu-button btn-block"><h2>Tableau de Bord</h2></button>
+                        </a>
+                    </div>
                     <div class="menu-item">
                         <a href="{% url 'gestion_enseignants' %}">
                             <button class="menu-button btn-block">

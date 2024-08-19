@@ -16,7 +16,7 @@ urlpatterns = [
     path('absences/', include('absences.urls')),
     path('rapports/', include('rapports.urls')),
     path('notifications/', include('notifications.urls')),
-    path('tableau_de_bord/', include('tableau_de_bord.urls')),
+    path('api/', include('tableau_de_bord.urls')),
     path('parametres/', include('parametres.urls')),
     path('licences/', include('licences.urls')),
     path('classes/', include('classes.urls')),

@@ -23,7 +23,7 @@
             text-align: center;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #BDBDBD;
         }
         .details {
             margin-top: 20px;
@@ -39,19 +39,18 @@
         }
         @page {
             size: A4;
-            margin: 1cm; /* Réduire les marges pour maximiser l'espace sur la page */
+            margin: 2cm;
         }
     </style>
 </head>
 <body>
     {% for eleve_data in eleves_data %}
     {% include 'parametres/entete.html' with parametres=parametres %}
-    
     <div class="header">
         <table style="width: 100%; border: none; border-collapse: collapse;">
             <tr>
                 <td style="text-align: center; font-weight: bold; font-size: 10px; padding-bottom: 0; border: none;">
-                    <h3><strong>Noms & prénoms :</strong> {{ eleve_data.eleve.nom}} {{eleve_data.eleve.prenom }}</h3>
+                    <h3><strong>Noms & prénoms :</strong> {{ eleve_data.eleve.nom }} {{ eleve_data.eleve.prenom }}</h3>
                     <p><strong>Né(e) le :</strong> {{ eleve_data.eleve.date_naissance }} à {{ eleve_data.eleve.lieu_naissance }}</p>
                 </td>
                 <td style="text-align: center; font-weight: bold; font-size: 10px; padding-bottom: 0; border: none;">
@@ -79,18 +78,16 @@
         <table>
             <thead>
                 <tr>
-                    <th style="background-color: #BDBDBD;">Matières</th>
+                    <th>Matières</th>
                     <th style="background-color: #BDBDBD;">Seq1</th>
-                    <th style="background-color: #BDBDBD;">Seq2</th>
-                    <th style="background-color: #BDBDBD;">Moy.</th>
-                    <th style="background-color: #BDBDBD;">Coef</th>
+                    <th>Coef</th>
                     <th style="background-color: #BDBDBD;">Total</th>
-                    <th style="background-color: #BDBDBD;">Rg</th>
+                    <th>Rg</th>
                     <th style="background-color: #BDBDBD;">MGC</th>
-                    <th style="background-color: #BDBDBD;">Min</th>
-                    <th style="background-color: #BDBDBD;">Max</th>
-                    <th style="background-color: #BDBDBD;">Appréciations</th>
-                    <th style="background-color: #BDBDBD;">Enseignant</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th>Appréciations</th>
+                    <th>Enseignant</th>
                 </tr>
             </thead>
             <tbody>
@@ -98,13 +95,11 @@
                     {% for matiere in groupe.matieres %}
                     <tr>
                         <td>{{ matiere.nom }}</td>
-                        <td>{{ matiere.seq1_note|floatformat:2 }}</td>
-                        <td>{{ matiere.seq2_note|floatformat:2 }}</td>
-                        <td style="background-color: #BDBDBD; font-weight: bold;">{{ matiere.moyenne|floatformat:2 }}</td>
+                        <td style="background-color: #BDBDBD;">{{ matiere.seq1_note|floatformat:2 }}</td>
                         <td>{{ matiere.coefficient }}</td>
                         <td>{{ matiere.total|floatformat:2 }}</td>
                         <td>{{ matiere.rang }}</td>
-                        <td style="background-color: #BDBDBD; font-weight: bold;">{{ matiere.mgc|floatformat:2 }}</td>
+                        <td style="background-color: #BDBDBD;">{{ matiere.mgc|floatformat:2 }}</td>
                         <td>{{ matiere.min|floatformat:2 }}</td>
                         <td>{{ matiere.max|floatformat:2 }}</td>
                         <td>{{ matiere.appreciation }}</td>
@@ -112,7 +107,7 @@
                     </tr>
                     {% endfor %}
                     <tr style="background-color: #BDBDBD;">
-                        <td colspan="4"><strong>{{ groupe.nom }}</strong></td>
+                        <td colspan="2"><strong>{{ groupe.nom }}</strong></td>
                         <td><strong>{{ groupe.total_coefficient }}</strong></td>
                         <td><strong>{{ groupe.total|floatformat:2 }}</strong></td>
                         <td colspan="6" style="text-align: right;"><strong>Moyenne: {{ groupe.moyenne|floatformat:2 }}</strong></td>
@@ -124,70 +119,51 @@
     <div class="table-responsive">
         <table style="width: 100%;">
             <tr>
-                <th colspan="2">Discipline</th>
-                <th colspan="1">Seq 1</th>
-                <th colspan="1">Seq 2</th>
-                <th colspan="1">Total</th>
-                <th colspan="3">Travail de l'élève</th>
+                <th colspan="3">Discipline</th>
+                <th colspan="5">Travail de l'élève</th>
                 <th colspan="4">Profil de la classe</th>
             </tr>
             <tr>
-                <td colspan="2">Absences non justifiées (h) :</td>
-                <td>{{  eleve_data.absences_seq1|default:"0" }}</td>
-                <td>{{  eleve_data.absences_seq2|default:"0" }}</td>
-                <td>{{ eleve_data.absences_non_justifiees }}</td>
-                <td colspan="2">Sequence 1 :</td>
-                <td colspan="1"><strong>{{ eleve_data.seq1_moyenne|floatformat:2 }}</strong></td>
+                <td colspan="2" style="text-align: left;">Absences non justifiées (h) :</td>
+                <td>{{ eleve_data.absences_seq1|default:"0" }}</td>
+                <td colspan="5" rowspan="3"><strong>Moyenne: {{ eleve_data.moyenne_generale|floatformat:2 }}</strong></td>
                 <td colspan="2">Moy. gen. classe :</td>
-                <td colspan="2"><strong>{{ profil_classe.moyenne_generale|floatformat:2 }}</strong></td>
+                <td colspan="3"><strong>{{ profil_classe.moyenne_generale|floatformat:2 }}</strong></td> <!-- Ajuster colspan à 3 pour cette cellule -->
             </tr>
             <tr>
-                <td colspan="2">Retards (h) :</td>
-                <td> </td>
+                <td colspan="2" style="text-align: left;">Retards (h) :</td>
                 <td></td>
-                <td></td>
-                <td colspan="2">Sequence 2 :</td>
-                <td colspan="1"><strong>{{ eleve_data.seq2_moyenne|floatformat:2 }}</strong></td>
                 <td colspan="2">Moy. dernier :</td>
-                <td colspan="2">{{ profil_classe.moyenne_dernier|floatformat:2 }}</td>
+                <td colspan="3">{{ profil_classe.moyenne_dernier|floatformat:2 }}</td> <!-- Ajuster colspan à 3 pour cette cellule -->
             </tr>
             <tr>
-                <td colspan="2">Consignes (h) :</td>
+                <td colspan="2" style="text-align: left;">Consignes (h) :</td>
                 <td></td>
-                <td></td>
-                <td></td>
-                <td colspan="2">Points :</td>
-                <td colspan="1"><strong>{{ eleve_data.total_points|floatformat:2 }}</strong></td>
                 <td colspan="2">Moy. premier :</td>
-                <td colspan="2">{{ profil_classe.moyenne_premier|floatformat:2 }}</td>
+                <td colspan="3">{{ profil_classe.moyenne_premier|floatformat:2 }}</td> <!-- Ajuster colspan à 3 pour cette cellule -->
             </tr>
             <tr>
-                <td colspan="2">Avertissements :</td>
+                <td colspan="1" style="text-align: left;">Avertissements :</td>
                 <td style="text-align: center;">Travail</td>
                 <td style="text-align: center;">Conduite</td>
-                <td colspan="1" rowspan="2" style="font-size: 13px; font-weight:bold;">Moyenne :</td>
-                <td colspan="1" rowspan="2" style="font-size: 13px; font-weight:bold;">{{ eleve_data.moyenne_generale|floatformat:2 }}</td>
-                <td colspan="1">Coeff :</td>
-                <td colspan="1"><strong>{{ eleve_data.total_coefficients }}</strong></td>
+                <td colspan="5" rowspan="3" style="font-size: 13px; font-weight:bold;">Rang :{{ eleve_data.rang }}/{{ classe.eleves.count }}</td>
                 <td colspan="2">Nombre de Moyennes :</td>
-                <td colspan="2">{{ profil_classe.nombre_moyennes }}</td>
+                <td colspan="3">{{ profil_classe.nombre_moyennes }}</td> <!-- Ajuster colspan à 3 pour cette cellule -->
             </tr>
             <tr>
-                <td colspan="2">Blâme :</td>
+                <td colspan="1" style="text-align: left;">Blâme :</td>
                 <td style="text-align: center;">Travail</td>
                 <td style="text-align: center;">Conduite</td>
-                <td colspan="1">Taux R :</td>
-                <td colspan="1">{{ profil_classe.taux_reussite|floatformat:2 }}%</td>
-               
+                <td colspan="2">Taux R :</td>
+                <td colspan="3">{{ profil_classe.taux_reussite|floatformat:2 }}%</td> <!-- Ajuster colspan à 3 pour cette cellule -->
             </tr>
             <tr>
-                <td colspan="2">Exclusions :</td>
-                <td colspan="2"> </td>
-                <td colspan="2" style="font-size: 13px; font-weight:bold;">Rang :</td>
-                <td colspan="2" style="font-size: 13px; font-weight:bold;">{{ eleve_data.rang }}/{{ classe.eleves.count }}</td>
+                <td colspan="2" style="text-align: left;">Exclusions :</td>
+                <td colspan="1"></td>
                 <td colspan="2">Écart-type :</td>
-                <td colspan="2">{{ profil_classe.ecart_type|floatformat:2 }}</td>
+                <td colspan="3">{{ profil_classe.ecart_type|floatformat:2 }}</td> <!-- Ajuster colspan à 3 pour cette cellule -->
             </tr>
+            
         </table>
     </div>
     <div class="signature-section">
@@ -199,13 +175,13 @@
                 <th colspan="4">Visa du Chef d'établissement</th>
             </tr>
             <tr>
-                <td colspan="3" style="font-size: 13px; font-weight:bold; padding:30px;"></td>
-                <td colspan="2" style="text-align: center; font-size: 13px; font-weight:bold; padding:30px;">
+                <td colspan="3" style="font-size: 13px; font-weight:bold; padding:40px;"></td>
+                <td colspan="2" style="text-align: center; font-size: 13px; font-weight:bold; padding:40px;">
                     <strong>{{ eleve_data.appreciation_travail }}</strong>
                 </td>
-                <td colspan="3" style="font-size: 13px; font-weight:bold; padding:30px;"></td>
-                <td colspan="4" style="font-size: 13px; font-weight:bold; padding:30px;">
-                    <p style="text-align:left;">Fait à {{ parametres.ville_fr }},  Le {% now "d/m/Y" %}</p>
+                <td colspan="3" style="font-size: 13px; font-weight:bold; padding:40px;"></td>
+                <td colspan="4" style="font-size: 13px; font-weight:bold; padding:40px;">
+                    <p style="text-align:left;">Fait à {{ parametres.ville_fr }}, Le {% now "d/m/Y" %}</p>
                     <p style="text-align:right;">Le Principal</p>
                 </td>
             </tr>
