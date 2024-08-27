@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">Liste des Classes pour la Séquence {{ sequence }}</h2>
+    <form method="get" action="{% url 'bordereau_par_sequence' %}">
+        <div class="form-group">
+            <label for="sequenceSelect">Choisir une séquence :</label>
+            <select id="sequenceSelect" name="sequence" class="form-control">
+                {% for seq in form.fields.sequence.choices %}
+                    <option value="{{ seq.0 }}" {% if seq.0 == sequence %}selected{% endif %}>{{ seq.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Valider</button>
+    </form>
+
+    {% if sequence %}
+    <div class="table-responsive mt-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Classe</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for classe in classes %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ classe.nom }}</td>
+                    <td>
+                        <a href="{% url 'imprimer_bordereau_notes' classe.id sequence %}" class="btn btn-success btn-sm">Imprimer Bordereau</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

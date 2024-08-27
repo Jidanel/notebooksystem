@@ -1,9 +1,8 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from utilisateurs.models import ProfilUtilisateur
 from eleves.models import Eleve
 from classes.models import Classe
-from cours.models import Matiere
-from django.core.exceptions import ValidationError
 
 class Note(models.Model):
     SEQUENCE_CHOICES = [
@@ -23,13 +22,12 @@ class Note(models.Model):
     eleve = models.ForeignKey(Eleve, related_name='notes', on_delete=models.CASCADE)
     enseignant = models.ForeignKey(ProfilUtilisateur, related_name='notes', on_delete=models.CASCADE)
     classe = models.ForeignKey(Classe, related_name='notes', on_delete=models.CASCADE)
-    matiere = models.ForeignKey(Matiere, related_name='notes', on_delete=models.CASCADE)
+    matiere = models.ForeignKey('cours.Matiere', related_name='notes', on_delete=models.CASCADE)  # Référence par chaîne de caractères
     sequence = models.CharField(max_length=10, choices=SEQUENCE_CHOICES)
     note = models.FloatField()
     appreciation = models.CharField(max_length=20, choices=APPRECIATION_CHOICES, blank=True)
     rang = models.IntegerField(null=True, blank=True)
-    completed = models.BooleanField(default=False)  # Champ pour indiquer si les notes sont complètes
-    
+    completed = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('eleve', 'matiere', 'sequence')
@@ -44,9 +42,8 @@ class Note(models.Model):
 
     def set_appreciation(self):
         try:
-            note_value = float(self.note)  # Convertir la note en float
+            note_value = float(self.note)
         except ValueError:
-            # Si la conversion échoue, définissez une appréciation par défaut ou laissez l'appréciation vide
             self.appreciation = ''
             return
 

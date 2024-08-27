@@ -11,6 +11,11 @@ from django.contrib.auth.forms import SetPasswordForm
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from .forms import AssignerClasseForm
+from parametres.models import *
+from django.http import HttpResponse
+from xhtml2pdf import pisa  # Pour générer des PDF
+from django.template.loader import get_template
+
 
 @login_required(login_url='login')
 def index(request):
@@ -96,7 +101,7 @@ def previous_view(request):
 def next_view(request):
     # Logique pour le bouton suivant
     return redirect('home')
-from .decorators import *
+
 @role_required(allowed_roles=['Admin_', 'AP', 'SG'])
 @login_required(login_url='login')
 def liste_enseignants(request):
@@ -460,11 +465,39 @@ def liste_enseignants_par_departement(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # Récupérer les paramètres de l'établissement
+    parametres = ParametresEtablissement.objects.first()
+
     context = {
+        'departements': departements,
         'page_obj': page_obj,
         'query': query,
+        'parametres': parametres,  # Ajouter les paramètres de l'établissement au contexte
     }
-    return render(request, 'utilisateurs/liste_enseignants_par_departement.html', {'departements': departements, 'page_obj': page_obj, 'query': query})
+    return render(request, 'utilisateurs/liste_enseignants_par_departement.html', context)
+
+@role_required(allowed_roles=['Admin_', 'SG'])
+@login_required
+def imprimer_liste_enseignants_par_departement(request):
+    departements = Departement.objects.all().order_by('nom')
+    parametres = ParametresEtablissement.objects.first()
+
+    context = {
+        'departements': departements,
+        'parametres': parametres,
+    }
+
+    template_path = 'utilisateurs/liste_enseignants_par_departement_pdf.html'
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="Liste_Enseignants_Departements.pdf"'
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Une erreur s\'est produite lors de la génération du PDF', status=400)
+    return response
+
 
 @role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
@@ -484,10 +517,6 @@ def supprimer_departement_enseignant(request, enseignant_id, departement_id):
     }
     return render(request, 'utilisateurs/confirmer_suppression.html', context)
 
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib import messages
-from .models import ProfilUtilisateur
-from .forms import SecurityCodeForm
 
 @login_required
 def supprimer_objet_securise(request, model, pk, redirect_url):

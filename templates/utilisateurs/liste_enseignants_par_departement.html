@@ -5,6 +5,7 @@
     <br>
     <h2>Liste des Enseignants par Département</h2>
     <a href="{% url 'assigner_enseignant' %}" class="btn btn-primary btn-block">Assigner Enseignant à Département</a>
+    <a href="{% url 'imprimer_liste_enseignants_par_departement' %}" class="btn btn-secondary btn-block">Imprimer la liste</a>
     <div id="enseignant-table" class="table-responsive">
         {% include 'utilisateurs/enseignant_par_departement_table.html' %}
     </div>

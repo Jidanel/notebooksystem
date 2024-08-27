@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ title }}</h2>
+    <p>Êtes-vous sûr de vouloir supprimer les élèves sélectionnés ? Cette action est irréversible.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="code_de_securite">Code de sécurité :</label>
+            {{ form.code_de_securite }}
+        </div>
+        <!-- Champs cachés pour conserver les IDs des élèves sélectionnés sous forme de chaîne -->
+        <input type="hidden" name="eleve_ids" value="{{ eleve_ids }}">
+        <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+        <a href="{% url 'liste_eleves' %}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

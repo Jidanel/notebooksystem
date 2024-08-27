@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
+<div class="ajouter">
     <h2>Ajouter une Matière</h2>
     <form method="POST" action="{% url 'ajouter_matiere' %}">
         {% csrf_token %}

@@ -8,7 +8,15 @@ class MatiereForm(forms.ModelForm):
 
     class Meta:
         model = Matiere
-        fields = ['nom', 'description', 'coefficient', 'departement', 'classe', 'enseignant', 'groupe']
+        fields = ['nom', 'coefficient', 'departement', 'classe', 'enseignant', 'groupe']
+        widgets = {
+            'nom': forms.TextInput(attrs={'class': 'form-control'}),
+            'coefficient': forms.NumberInput(attrs={'class': 'form-control'}),
+            'departement': forms.Select(attrs={'class': 'form-control'}),
+            'classe': forms.Select(attrs={'class': 'form-control'}),
+            'enseignant': forms.Select(attrs={'class': 'form-control'}),
+            'groupe': forms.Select(attrs={'class': 'form-control'}),
+        }
 
     def __init__(self, *args, **kwargs):
         super(MatiereForm, self).__init__(*args, **kwargs)

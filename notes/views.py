@@ -5,7 +5,7 @@ from .forms import ClasseMatiereSelectionForm
 from .models import Note
 from eleves.models import Eleve
 from classes.models import Classe
-from cours.models import Matiere
+from cours.models import *
 from utilisateurs.models import *
 from django.db.models import Q
 from utilisateurs.decorators import *
@@ -20,6 +20,7 @@ from xhtml2pdf import pisa
 from absences.models import *
 from django.db.models import Sum
 from django.template.loader import get_template
+from .forms import *
 
 @login_required
 def selection_classe_matiere(request, sequence):
@@ -541,6 +542,10 @@ def afficher_bulletins_sequence1(request, classe_id):
             for matiere in groupe['matieres']:
                 seq1_note = Note.objects.filter(eleve=eleve, matiere=matiere, sequence='Seq1').first()
 
+                # Vérification si la matière est complète ou non
+                if not seq1_note or seq1_note.note == 0 or seq1_note.note == "":
+                    continue  # Si la matière est incomplète, on la saute
+
                 moyenne_sequence = seq1_note.note if seq1_note else 0
 
                 groupe_total_notes += moyenne_sequence * matiere.coefficient
@@ -626,6 +631,7 @@ def afficher_bulletins_sequence1(request, classe_id):
         'parametres': parametres,
     })
 
+
 @login_required
 def afficher_bulletins_sequence2(request, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)
@@ -671,6 +677,10 @@ def afficher_bulletins_sequence2(request, classe_id):
 
             for matiere in groupe['matieres']:
                 seq2_note = Note.objects.filter(eleve=eleve, matiere=matiere, sequence='Seq2').first()
+
+                # Vérification si la matière est complète ou non
+                if not seq2_note or seq2_note.note == 0 or seq2_note.note == "":
+                    continue  # Si la matière est incomplète, on la saute
 
                 moyenne_sequence = seq2_note.note if seq2_note else 0
 
@@ -758,4 +768,125 @@ def afficher_bulletins_sequence2(request, classe_id):
     })
 
 
+@role_required(allowed_roles=['Admin_', 'SG'])
+@login_required
+def liste_classes_par_sequence(request):
+    form = SequenceSelectionForm(request.GET)
+    sequence = request.GET.get('sequence')
+    classes = Classe.objects.all()
+    context = {
+        'form': form,
+        'sequence': sequence,
+        'classes': classes,
+    }
+    return render(request, 'notes/liste_classes_par_sequence.html', context)
 
+
+@role_required(allowed_roles=['Admin_', 'SG'])
+@login_required
+def liste_matieres_incompletes_par_classe(request, classe_id, sequence):
+    classe = get_object_or_404(Classe, id=classe_id)
+    matieres_incompletes = []
+
+    # Récupérer toutes les matières de la classe
+    matieres = Matiere.objects.filter(classe=classe)
+
+    for matiere in matieres:
+        # Récupérer les notes pour cette matière et cette séquence
+        notes = Note.objects.filter(matiere=matiere, sequence=sequence)
+        
+        # Vérifier si la matière est incomplète
+        matiere_incomplete = any(note.note == "" or note.note == 0 for note in notes) or notes.count() < Eleve.objects.filter(classe_actuelle=classe).count()
+
+        if matiere_incomplete:
+            matieres_incompletes.append({
+                'matiere': matiere,
+                'sequence': sequence,
+                'classe': classe
+            })
+
+    return render(request, 'notes/liste_matieres_incompletes_par_classe.html', {
+        'classe': classe,
+        'sequence': sequence,
+        'matieres_incompletes': matieres_incompletes,
+    })
+
+@role_required(allowed_roles=['Admin_', 'SG'])
+@login_required
+def imprimer_bordereau_notes(request, classe_id, sequence):
+    # Récupération de la classe et des élèves associés
+    classe = get_object_or_404(Classe, id=classe_id)
+    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    parametres = ParametresEtablissement.objects.first()
+
+    # Définition des groupes et matières en fonction du type d'enseignement
+    groupes_definition = []
+    if parametres.type_enseignement == 'technique':
+        groupes_definition = [
+            {'nom': 'Enseignement Général', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_general').order_by('nom')},
+            {'nom': 'Enseignement Professionnel', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_professionnel').order_by('nom')},
+            {'nom': 'Enseignement Divers', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_divers').order_by('nom')},
+        ]
+    elif parametres.type_enseignement == 'bilingue':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+    elif parametres.type_enseignement == 'general':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+
+    # Préparation des données pour chaque élève
+    eleves_data = []
+    for eleve in eleves:
+        notes_par_matiere = []
+        for groupe in groupes_definition:
+            for matiere in groupe['matieres']:
+                # Récupérer la note de l'élève pour chaque matière dans la séquence donnée
+                note = Note.objects.filter(eleve=eleve, matiere=matiere, sequence=sequence).first()
+                if note:
+                    notes_par_matiere.append(note.note)
+                else:
+                    notes_par_matiere.append('-')  # Afficher un tiret si la note n'existe pas
+        eleves_data.append({
+            'eleve': eleve,
+            'notes_par_matiere': notes_par_matiere,
+        })
+
+    context = {
+        'classe': classe,
+        'eleves_data': eleves_data,
+        'groupes_definition': groupes_definition,
+        'parametres': parametres,
+        'sequence': sequence
+    }
+
+    # Génération du PDF à partir du template
+    template_path = 'notes/bordereau_notes_pdf.html'
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Bordereau_Notes_{classe.nom}_Seq{sequence}.pdf"'
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # Utilisation de pisa pour créer le PDF
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse("Une erreur s'est produite lors de la génération du PDF", status=400)
+    return response
+
+@role_required(allowed_roles=['Admin_', 'SG'])
+@login_required
+def bordereau_par_sequence(request):
+    form = SequenceSelectionForm(request.GET)
+    sequence = request.GET.get('sequence')
+    classes = Classe.objects.all()
+    context = {
+        'form': form,
+        'sequence': sequence,
+        'classes': classes,
+    }
+    return render(request, 'notes/bordereau_par_sequence.html', context)

@@ -1,6 +1,7 @@
 from django import forms
 from cours.models import Matiere
 from classes.models import Classe
+from .models import *
 
 
 class ClasseMatiereSelectionForm(forms.Form):
@@ -22,3 +23,14 @@ class NoteSaisieForm(forms.Form):
     eleve_id = forms.IntegerField(widget=forms.HiddenInput())
     eleve = forms.CharField(disabled=True, label="Élève")
     note = forms.FloatField(label="Note", min_value=0, max_value=20)
+
+class SequenceSelectionForm(forms.Form):
+    SEQUENCE_CHOICES = [
+        ('Seq1', 'Séquence 1'),
+        ('Seq2', 'Séquence 2'),
+        ('Seq3', 'Séquence 3'),
+        ('Seq4', 'Séquence 4'),
+        ('Seq5', 'Séquence 5'),
+    ]
+    
+    sequence = forms.ChoiceField(choices=SEQUENCE_CHOICES, label="Sélectionner une séquence")

@@ -9,50 +9,57 @@
     <h2>Liste des Élèves</h2>
     <a href="{% url 'ajouter_eleve' %}" class="btn btn-primary btn-block">Ajouter Élève</a>
     <a href="{% url 'importer_eleves' %}" class="btn btn-secondary btn-block">Importer Élèves</a>
-    <div id="eleve-table" class="table-responsive">
-        <table class="table table-striped" id="myTable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Matricule</th>
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    <th>Date de naissance</th>
-                    <th>Lieu de naissance</th>
-                    <th>Statut</th>
-                    <th>Sexe</th>
-                    <th>Classe</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for eleve in page_obj %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ eleve.matricule }}</td>
-                    <td>{{ eleve.nom }}</td>
-                    <td>{{ eleve.prenom }}</td>
-                    <td>{{ eleve.date_naissance }}</td>
-                    <td>{{ eleve.lieu_naissance }}</td>
-                    <td>{{ eleve.statut }}</td>
-                    <td>{{ eleve.sexe }}</td>
-                    <td>{{ eleve.classe_actuelle.nom }}</td>
-                    <td>
-                        <a href="{% url 'modifier_eleve' eleve.id %}" class="btn btn-warning btn-sm" title="Modifier">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <form method="post" action="{% url 'confirmer_suppression_eleve' eleve.id %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    
+    <form method="POST" id="bulk-delete-form" action="{% url 'supprimer_eleves_selectionnes' %}">
+        {% csrf_token %}
+        <div id="eleve-table" class="table-responsive">
+            <table class="table table-striped" id="myTable">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="select-all"></th>
+                        <th>#</th>
+                        <th>Matricule</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Date de naissance</th>
+                        <th>Lieu de naissance</th>
+                        <th>Statut</th>
+                        <th>Sexe</th>
+                        <th>Classe</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for eleve in page_obj %}
+                    <tr>
+                        <td><input type="checkbox" name="eleves" value="{{eleve.id}}"></td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ eleve.matricule }}</td>
+                        <td>{{ eleve.nom }}</td>
+                        <td>{{ eleve.prenom }}</td>
+                        <td>{{ eleve.date_naissance }}</td>
+                        <td>{{ eleve.lieu_naissance }}</td>
+                        <td>{{ eleve.statut }}</td>
+                        <td>{{ eleve.sexe }}</td>
+                        <td>{{ eleve.classe_actuelle.nom }}</td>
+                        <td>
+                            <a href="{% url 'modifier_eleve' eleve.id %}" class="btn btn-warning btn-sm" title="Modifier">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form method="post" action="{% url 'confirmer_suppression_eleve' eleve.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <button type="submit" class="btn btn-danger btn-block mt-3" onclick="return confirmDelete()">Supprimer les élèves sélectionnés</button>
+    </form>
 
     <div class="pagination">
         <span class="step-links">
@@ -75,6 +82,10 @@
 
 <script>
     $(document).ready(function() {
+        $('#select-all').click(function() {
+            $('input[name="eleves"]').prop('checked', this.checked);
+        });
+
         $('#search').on('input', function() {
             var query = $(this).val();
             $.ajax({
@@ -84,9 +95,16 @@
                 },
                 success: function(data) {
                     $('#eleve-table').html($(data).find('#eleve-table').html());
+                },
+                error: function(xhr, status, error) {
+                    console.error("Erreur lors de la recherche: ", error);
                 }
             });
         });
     });
+
+    function confirmDelete() {
+        return confirm("Êtes-vous sûr de vouloir supprimer les élèves sélectionnés ?");
+    }
 </script>
 {% endblock %}

@@ -73,6 +73,23 @@ def confirmer_suppression_eleve(request, eleve_id):
     )
 
 
+@role_required(allowed_roles=['Admin_', 'SG'])
+@login_required
+def supprimer_eleves_selectionnes(request):
+    profil = request.user.profilutilisateur
+
+    if request.method == "POST":
+        eleve_ids = request.POST.getlist('eleves')
+        eleves = Eleve.objects.filter(id__in=eleve_ids)
+        
+        if not eleves.exists():
+            messages.error(request, "Aucun élève sélectionné.")
+        else:
+            total = eleves.count()
+            eleves.delete()
+            messages.success(request, f'{total} élèves ont été supprimés avec succès.')
+        return redirect('liste_eleves')
+
 
 @role_required(allowed_roles=['Admin_', 'SG'])
 @login_required

@@ -9,10 +9,7 @@ from utilisateurs.views import *
 @login_required
 @role_required(allowed_roles=['Admin_', 'SG'])
 def gerer_parametres_etablissement(request):
-    try:
-        parametres = ParametresEtablissement.objects.get(id=1)
-    except ParametresEtablissement.DoesNotExist:
-        parametres = None
+    parametres, created = ParametresEtablissement.objects.get_or_create(id=1)
 
     if request.method == 'POST':
         form = ParametresEtablissementForm(request.POST, request.FILES, instance=parametres)
@@ -24,3 +21,4 @@ def gerer_parametres_etablissement(request):
         form = ParametresEtablissementForm(instance=parametres)
 
     return render(request, 'parametres/gerer_parametres_etablissement.html', {'form': form})
+

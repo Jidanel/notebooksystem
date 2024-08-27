@@ -35,6 +35,13 @@
                         </a>
                     </div>
                     <div class="menu-item">
+                        <a href="{% url 'liste_classes_par_sequence' %}">
+                            <button class="menu-button btn-block">
+                                <h2>Notes non Remplies</h2>
+                            </button>
+                        </a>
+                    </div>
+                    <div class="menu-item">
                         <a href="{% url 'selection_classe_sequence' %}">
                             <button class="menu-button btn-block">
                                 <h2>Saisie des Absences</h2>
@@ -45,6 +52,13 @@
                         <a href="{% url 'liste_absences_completes' %}">
                             <button class="menu-button btn-block">
                                 <h2>Absences Remplies</h2>
+                            </button>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{% url 'bordereau_par_sequence' %}">
+                            <button class="menu-button btn-block">
+                                <h2>Bordereau Notes</h2>
                             </button>
                         </a>
                     </div>

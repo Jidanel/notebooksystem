@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Matières avec notes incomplètes pour la Séquence {{ sequence }} - Classe {{ classe.nom }}</h2>
+
+    <div class="table-responsive mt-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Matière</th>
+                    <th>Enseignant</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for matiere_status in matieres_incompletes %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ matiere_status.matiere.nom }}</td>
+                    <td> {% if matiere_status.matiere.enseignant %}
+                        {{ matiere_status.matiere.enseignant.nom }}
+                    {% else %}
+                        N/A
+                    {% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if not matieres_incompletes %}
+            <div class="alert alert-info">
+                Toutes les notes sont complètes pour cette séquence.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

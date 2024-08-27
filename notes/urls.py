@@ -27,4 +27,9 @@ urlpatterns = [
     
     # Route pour afficher les bulletins de la Séquence 2
     path('notes/bulletins_seq2/<int:classe_id>/', views.afficher_bulletins_sequence2, name='bulletins_seq2'),
+    path('liste_classes_par_sequence', views.liste_classes_par_sequence, name='liste_classes_par_sequence'),
+    path('bordereau_par_sequence', views.bordereau_par_sequence, name='bordereau_par_sequence'),
+    path('matieres_incompletes/<int:classe_id>/<str:sequence>/', views.liste_matieres_incompletes_par_classe, name='liste_matieres_incompletes_par_classe'),
+    path('imprimer-bordereau/<int:classe_id>/<str:sequence>/', views.imprimer_bordereau_notes, name='imprimer_bordereau_notes'),
+
 ]
