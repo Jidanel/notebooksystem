@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="dashboard-container">
+            <h1 class="dashboard-title">Gestion des Statistiques des Trimestres</h1>
+            <div class="menu-grid">
+                {% if  user.profilutilisateur.role == 'AP' or user.profilutilisateur.role == 'Admin_' %}
+                    <div class="menu-item">
+                        <a href="{% url 'statistiques_trimestrielles_departement' 'T1' %}">
+                            <button class="menu-button btn-block">
+                                <h2>Trimestre 1</h2>
+                            </button>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="#">
+                            <button class="menu-button btn-block">
+                                <h2>Trimestre 2</h2>
+                            </button>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="#">
+                            <button class="menu-button btn-block">
+                                <h2>Trimestre 3</h2>
+                            </button>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

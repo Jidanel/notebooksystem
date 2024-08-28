@@ -46,9 +46,14 @@ def saisie_notes(request, sequence, classe_id, matiere_id):
         all_filled = True
         for eleve in eleves:
             note_value = request.POST.get(f'note_{eleve.id}')
-            if not note_value:
+            if not note_value or note_value == "" or float(note_value) == 0:
                 all_filled = False
                 break
+
+        if all_filled and len(eleves) == len(notes_existantes):
+            completed_status = True
+        else:
+            completed_status = False
 
         if all_filled:
             for eleve in eleves:
@@ -57,7 +62,7 @@ def saisie_notes(request, sequence, classe_id, matiere_id):
                     eleve=eleve,
                     matiere=matiere,
                     sequence=sequence,
-                    defaults={'note': note_value, 'classe': classe, 'enseignant': request.user.profilutilisateur, 'completed': True}
+                    defaults={'note': note_value, 'classe': classe, 'enseignant': request.user.profilutilisateur, 'completed': completed_status}
                 )
             messages.success(request, "Les notes ont été enregistrées avec succès.")
 
@@ -88,6 +93,12 @@ def menu_gestion_trimestres(request):
 @login_required
 def menu_gestion_trimestre_1(request):
     return render(request, 'notes/menu_gestion_trimestre_1.html')
+
+@role_required(allowed_roles=['AP','Admin_'])
+@login_required
+def gestion_stats_departements(request):
+    return render(request, 'notes/menu_statistiques_departement.html')
+
 
 @login_required
 def bulletins_et_stats(request):
@@ -890,3 +901,180 @@ def bordereau_par_sequence(request):
         'classes': classes,
     }
     return render(request, 'notes/bordereau_par_sequence.html', context)
+
+def calcul_statistiques_matiere_trimestrielle(classe, matiere, sequences):
+    # Récupérer les notes pour les séquences spécifiées
+    notes = Note.objects.filter(classe=classe, matiere=matiere, sequence__in=sequences)
+
+    total_eleves = notes.values('eleve').distinct().count()
+    nb_garcons = notes.filter(eleve__sexe='Masculin').values('eleve').distinct().count()
+    nb_filles = notes.filter(eleve__sexe='Feminin').values('eleve').distinct().count()
+
+    # Calcul des moyennes
+    moyenne_classe = notes.aggregate(Avg('note'))['note__avg'] or 0
+    max_note = notes.aggregate(Max('note'))['note__max'] or 0
+    min_note = notes.aggregate(Min('note'))['note__min'] or 0
+
+    # Calcul des élèves ayant la moyenne
+    nb_garcons_moyenne = notes.filter(eleve__sexe='Masculin', note__gte=10).values('eleve').distinct().count()
+    nb_filles_moyenne = notes.filter(eleve__sexe='Feminin', note__gte=10).values('eleve').distinct().count()
+    nb_eleves_moyenne = nb_garcons_moyenne + nb_filles_moyenne
+
+    # Calcul des pourcentages de réussite
+    pourcentage_reussite_garcons = (nb_garcons_moyenne / nb_garcons) * 100 if nb_garcons > 0 else 0
+    pourcentage_reussite_filles = (nb_filles_moyenne / nb_filles) * 100 if nb_filles > 0 else 0
+    pourcentage_reussite_total = (nb_eleves_moyenne / total_eleves) * 100 if total_eleves > 0 else 0
+
+    # Calcul des élèves ayant la sous-moyenne
+    nb_garcons_sous_moyenne = nb_garcons - nb_garcons_moyenne
+    nb_filles_sous_moyenne = nb_filles - nb_filles_moyenne
+    nb_eleves_sous_moyenne = total_eleves - nb_eleves_moyenne
+
+    # Calcul des pourcentages d'échec
+    pourcentage_echec_garcons = 100 - pourcentage_reussite_garcons if nb_garcons > 0 else 0
+    pourcentage_echec_filles = 100 - pourcentage_reussite_filles if nb_filles > 0 else 0
+    pourcentage_echec_total = 100 - pourcentage_reussite_total if total_eleves > 0 else 0
+
+    # Calcul de l'écart-type
+    variance = sum((note.note - moyenne_classe) ** 2 for note in notes) / total_eleves if total_eleves > 0 else 0
+    ecart_type = round(math.sqrt(variance), 2)
+
+    stats_classe_trimestre = {
+        'total_eleves': total_eleves,
+        'total_garcons': nb_garcons,
+        'total_filles': nb_filles,
+        'moyenne_classe': round(moyenne_classe, 2),
+        'max_note': round(max_note, 2),
+        'min_note': round(min_note, 2),
+        'nb_garcons_moyenne': nb_garcons_moyenne,
+        'nb_filles_moyenne': nb_filles_moyenne,
+        'nb_eleves_moyenne': nb_eleves_moyenne,
+        'nb_garcons_sous_moyenne': nb_garcons_sous_moyenne,
+        'nb_filles_sous_moyenne': nb_filles_sous_moyenne,
+        'nb_eleves_sous_moyenne': nb_eleves_sous_moyenne,
+        'pourcentage_reussite_garcons': round(pourcentage_reussite_garcons, 2),
+        'pourcentage_reussite_filles': round(pourcentage_reussite_filles, 2),
+        'pourcentage_reussite_total': round(pourcentage_reussite_total, 2),
+        'pourcentage_echec_garcons': round(pourcentage_echec_garcons, 2),
+        'pourcentage_echec_filles': round(pourcentage_echec_filles, 2),
+        'pourcentage_echec_total': round(pourcentage_echec_total, 2),
+        'ecart_type': ecart_type,
+    }
+
+    return stats_classe_trimestre
+
+
+
+
+@login_required
+@role_required(allowed_roles=['AP', 'SG', 'Admin_'])
+def statistiques_trimestrielles_departement(request, trimestre):
+    utilisateur = request.user.profilutilisateur
+
+    # Déterminer les départements à afficher en fonction du rôle de l'utilisateur
+    if utilisateur.role == 'Admin_':
+        departements = Departement.objects.all()
+    elif utilisateur.role == 'SG':
+        departements = Departement.objects.filter(utilisateur_sg=utilisateur)
+    elif utilisateur.role == 'AP':
+        departements = Departement.objects.filter(chef_departement=utilisateur)
+
+    if not departements.exists():
+        messages.error(request, "Vous n'êtes responsable d'aucun département.")
+        return redirect('home')
+
+    departement_id = request.GET.get('departement_id')
+    if departement_id:
+        departement = get_object_or_404(Departement, id=departement_id)
+    else:
+        departement = departements.first()
+
+    if trimestre == 'T1':
+        sequences = ['Seq1', 'Seq2']
+    elif trimestre == 'T2':
+        sequences = ['Seq3', 'Seq4']
+    elif trimestre == 'T3':
+        sequences = ['Seq5']
+    else:
+        messages.error(request, "Trimestre invalide")
+        return redirect('menu_gestion_trimestres')
+
+    matieres = Matiere.objects.filter(departement=departement)
+
+    statistiques = []
+    stats_globales = {
+        'total_eleves': 0,
+        'total_garcons': 0,
+        'total_filles': 0,
+        'total_garcons_moyenne': 0,
+        'total_filles_moyenne': 0,
+        'total_eleves_moyenne': 0,
+        'moyenne_generale_departement': 0,
+        'pourcentage_reussite_garcons': 0,
+        'pourcentage_reussite_filles': 0,
+        'pourcentage_reussite_total': 0,
+        'ecart_type_global': 0,
+    }
+
+    total_moyennes = 0
+    nombre_notes = 0
+    variances = []
+
+    for matiere in matieres:
+        classes = Classe.objects.filter(matieres=matiere).distinct()
+        stats_par_classe = []
+
+        for classe in classes:
+            stats_classe = calcul_statistiques_matiere_trimestrielle(classe, matiere, sequences)
+            stats_par_classe.append({
+                'classe': classe,
+                'stats': stats_classe,
+            })
+
+            # Accumuler les statistiques globales
+            stats_globales['total_eleves'] += stats_classe['total_eleves']
+            stats_globales['total_garcons'] += stats_classe['total_garcons']
+            stats_globales['total_filles'] += stats_classe['total_filles']
+            stats_globales['total_garcons_moyenne'] += stats_classe['nb_garcons_moyenne']
+            stats_globales['total_filles_moyenne'] += stats_classe['nb_filles_moyenne']
+            stats_globales['total_eleves_moyenne'] += stats_classe['nb_eleves_moyenne']
+
+            total_moyennes += stats_classe['moyenne_classe'] * stats_classe['total_eleves']
+            nombre_notes += stats_classe['total_eleves']
+            variances.append((stats_classe['moyenne_classe'], stats_classe['ecart_type'], stats_classe['total_eleves']))
+
+        statistiques.append({
+            'matiere': matiere,
+            'stats_par_classe': stats_par_classe,
+        })
+
+    if nombre_notes > 0:
+        stats_globales['moyenne_generale_departement'] = round(total_moyennes / nombre_notes, 2)
+
+    # Calcul de l'écart-type global
+    if nombre_notes > 0:
+        variance_globale = sum(
+            ((moyenne_classe - stats_globales['moyenne_generale_departement']) ** 2) * total_eleves
+            for moyenne_classe, ecart_type, total_eleves in variances
+        ) / nombre_notes
+        stats_globales['ecart_type_global'] = round(math.sqrt(variance_globale), 2)
+
+    if stats_globales['total_garcons'] > 0:
+        stats_globales['pourcentage_reussite_garcons'] = round((stats_globales['total_garcons_moyenne'] / stats_globales['total_garcons']) * 100, 2)
+
+    if stats_globales['total_filles'] > 0:
+        stats_globales['pourcentage_reussite_filles'] = round((stats_globales['total_filles_moyenne'] / stats_globales['total_filles']) * 100, 2)
+
+    if stats_globales['total_eleves'] > 0:
+        stats_globales['pourcentage_reussite_total'] = round((stats_globales['total_eleves_moyenne'] / stats_globales['total_eleves']) * 100, 2)
+
+    context = {
+        'departements': departements,
+        'selected_departement': departement,
+        'trimestre': trimestre,
+        'statistiques': statistiques,
+        'stats_globales': stats_globales,
+    }
+
+    return render(request, 'notes/statistiques_trimestrielles_departement.html', context)
+

@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('gestion-trimestres/', views.menu_gestion_trimestres, name='menu_gestion_trimestres'),
+     path('gestion_stats_departements/', views.gestion_stats_departements, name='gestion_stats_departements'),
     path('gestion-trimestre-1/', views.menu_gestion_trimestre_1, name='menu_gestion_trimestre_1'),
     path('bulletins_et_stats/', views.bulletins_et_stats, name='bulletins_et_stats'),
     path('selection_classe_matiere/<str:sequence>/', views.selection_classe_matiere, name='selection_classe_matiere'),
@@ -31,5 +32,6 @@ urlpatterns = [
     path('bordereau_par_sequence', views.bordereau_par_sequence, name='bordereau_par_sequence'),
     path('matieres_incompletes/<int:classe_id>/<str:sequence>/', views.liste_matieres_incompletes_par_classe, name='liste_matieres_incompletes_par_classe'),
     path('imprimer-bordereau/<int:classe_id>/<str:sequence>/', views.imprimer_bordereau_notes, name='imprimer_bordereau_notes'),
+    path('statistiques-trimestrielles-departement/<str:trimestre>/', views.statistiques_trimestrielles_departement, name='statistiques_trimestrielles_departement'),
 
 ]

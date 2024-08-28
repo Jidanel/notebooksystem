@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Statistiques Trimestrielles - Département</h2>
+    
+    <!-- Formulaire de sélection du département -->
+    <form method="get" action="{% url 'statistiques_trimestrielles_departement' trimestre %}">
+        <div class="form-group">
+            <label for="departementSelect">Sélectionner un département :</label>
+            <select id="departementSelect" name="departement_id" class="form-control" onchange="this.form.submit()">
+                <option value="">Sélectionner un département</option>
+                {% for departement in departements %}
+                    <option value="{{ departement.id }}" {% if departement.id == selected_departement.id %}selected{% endif %}>{{ departement.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+
+    <!-- Affichage des statistiques si un département est sélectionné -->
+    {% if selected_departement %}
+        <h3>Trimestre {{ trimestre }} - Département : {{ selected_departement.nom }}</h3>
+
+        {% for stat in statistiques %}
+            <h4>Matière : {{ stat.matiere.nom }}</h4>
+            {% for stat_classe in stat.stats_par_classe %}
+                <h5>Classe : {{ stat_classe.classe.nom }}</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Total des élèves :</strong> {{ stat_classe.stats.total_eleves }}</p>
+                        <p><strong>Nombre total de garçons :</strong> {{ stat_classe.stats.total_garcons }}</p>
+                        <p><strong>Nombre total de filles :</strong> {{ stat_classe.stats.total_filles }}</p>
+                        <p><strong>Moyenne de la classe :</strong> {{ stat_classe.stats.moyenne_classe }}</p>
+                        <p><strong>Note la plus haute :</strong> {{ stat_classe.stats.max_note }}</p>
+                        <p><strong>Nombre de garçons ayant la moyenne :</strong> {{ stat_classe.stats.nb_garcons_moyenne }}</p>
+                        <p><strong>Nombre de filles ayant la moyenne :</strong> {{ stat_classe.stats.nb_filles_moyenne }}</p>
+                        <p><strong>Nombre total d'élèves ayant la moyenne :</strong> {{ stat_classe.stats.nb_eleves_moyenne }}</p>
+                        <p><strong>Pourcentage de réussite des garçons :</strong> {{ stat_classe.stats.pourcentage_reussite_garcons }}%</p>
+                        <p><strong>Pourcentage de réussite des filles :</strong> {{ stat_classe.stats.pourcentage_reussite_filles }}%</p>
+                        <p><strong>Pourcentage total de réussite :</strong> {{ stat_classe.stats.pourcentage_reussite_total }}%</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Note la plus basse :</strong> {{ stat_classe.stats.min_note }}</p>
+                        <p><strong>Nombre de garçons ayant la sous moyenne :</strong> {{ stat_classe.stats.nb_garcons_sous_moyenne }}</p>
+                        <p><strong>Nombre de filles ayant la sous moyenne :</strong> {{ stat_classe.stats.nb_filles_sous_moyenne }}</p>
+                        <p><strong>Nombre total d'élèves sous la moyenne :</strong> {{ stat_classe.stats.nb_eleves_sous_moyenne }}</p>
+                        <p><strong>Pourcentage d'échec des garçons :</strong> {{ stat_classe.stats.pourcentage_echec_garcons }}%</p>
+                        <p><strong>Pourcentage d'échec des filles :</strong> {{ stat_classe.stats.pourcentage_echec_filles }}%</p>
+                        <p><strong>Pourcentage total d'échec :</strong> {{ stat_classe.stats.pourcentage_echec_total }}%</p>
+                        <p><strong>Écart-type de la classe :</strong> {{ stat_classe.stats.ecart_type }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+            <hr>
+        {% endfor %}
+        
+        <!-- Statistiques globales du département -->
+        <h4>Statistiques Globales du Département</h4>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Total d'élèves ayant composé :</strong> {{ stats_globales.total_eleves }}</p>
+                <p><strong>Nombre total de garçons :</strong> {{ stats_globales.total_garcons }}</p>
+                <p><strong>Nombre total de filles :</strong> {{ stats_globales.total_filles }}</p>
+                <p><strong>Nombre total d'élèves ayant la moyenne :</strong> {{ stats_globales.total_eleves_moyenne }}</p>
+                <p><strong>Pourcentage de réussite des garçons :</strong> {{ stats_globales.pourcentage_reussite_garcons }}%</p>
+                <p><strong>Pourcentage de réussite des filles :</strong> {{ stats_globales.pourcentage_reussite_filles }}%</p>
+                <p><strong>Pourcentage total de réussite :</strong> {{ stats_globales.pourcentage_reussite_total }}%</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Moyenne générale du département :</strong> {{ stats_globales.moyenne_generale_departement }}</p>
+                <p><strong>Écart-type global du département :</strong> {{ stats_globales.ecart_type_global }}</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
