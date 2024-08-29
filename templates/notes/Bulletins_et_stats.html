@@ -23,28 +23,67 @@
                     <td>{{ classe.nom }}</td>
                     <td>
                         <!-- Lien vers les statistiques de Séquence 1 -->
-                        <a href="{% url 'afficher_statistiques_sequence' classe.id 'Seq1' %}" class="btn btn-warning btn-sm" title="Séquence 1">
-                            stats-Seq 1
+                        <a href="{% url 'afficher_statistiques_sequence' classe.id 'Seq1' %}" class="btn btn-warning btn-sm" title="Stats Séquence 1">
+                            Stats1
                         </a>
                         <a href="{% url 'bulletins_seq1' classe.id %}" class="btn btn-warning btn-sm" title="Séquence 1">
-                            bull-Seq 1
+                            BS1
                         </a>
 
                         <!-- Lien vers les statistiques de Séquence 2 -->
-                        <a href="{% url 'afficher_statistiques_sequence' classe.id 'Seq2' %}" class="btn btn-warning btn-sm" title="Séquence 2">
-                            stats-Seq 2
+                        <a href="{% url 'afficher_statistiques_sequence' classe.id 'Seq2' %}" class="btn btn-warning btn-sm" title="Stats Séquence 2">
+                            Stats2
                         </a>
                         <a href="{% url 'bulletins_seq2' classe.id %}" class="btn btn-warning btn-sm" title="Séquence 2">
-                            bull-Seq 2
+                            BS2
                         </a>
 
                         <!-- Lien vers les statistiques du Trimestre 1 -->
-                        <a href="{% url 'afficher_statistiques_trimestre' classe.id %}" class="btn btn-warning btn-sm" title="Trimestre 1">
-                            stats-Trim 1
+                        <a href="{% url 'afficher_statistiques_trimestre' classe.id %}" class="btn btn-warning btn-sm" title="Stats Trimestre 1">
+                            ST1
                         </a>
                         <a href="{% url 'afficher_bulletins_trimestriels' classe.id %}" class="btn btn-warning btn-sm" title="Trimestre 1">
-                            Bull-trim 1
+                            BT1
                         </a>
+                        <a href="{% url 'afficher_statistiques_sequence' classe.id 'Seq3' %}" class="btn btn-warning btn-sm" title="Stats Séquence 3">
+                            Stats3
+                        </a>
+                        <a href="{% url 'bulletins_seq3' classe.id %}" class="btn btn-warning btn-sm" title="Séquence 3">
+                            BS3
+                        </a>
+                        <a href="{% url 'afficher_statistiques_sequence' classe.id 'Seq4' %}" class="btn btn-warning btn-sm" title="Stats Séquence 4">
+                            Stats4
+                        </a>
+                        <a href="{% url 'bulletins_seq2' classe.id %}" class="btn btn-warning btn-sm" title="Séquence 4">
+                            BS4
+                        </a>
+
+                        <!-- Lien vers les statistiques du Trimestre 2 -->
+                        <a href="{% url 'afficher_statistiques_trimestre2' classe.id %}" class="btn btn-warning btn-sm" title="Stats Trimestre 2">
+                            ST2
+                        </a>
+                        <a href="{% url 'afficher_bulletins_trimestriels2' classe.id %}" class="btn btn-warning btn-sm" title="Trimestre 2">
+                            BT2
+                        </a>
+                        <a href="{% url 'afficher_statistiques_sequence' classe.id 'Seq5' %}" class="btn btn-warning btn-sm" title="Stats Séquence 5">
+                            Stats5
+                        </a>
+                        <a href="{% url 'bulletins_seq5' classe.id %}" class="btn btn-warning btn-sm" title="Séquence 5">
+                            BS5
+                        </a>
+                        <a href="{% url 'afficher_statistiques_trimestre3' classe.id %}" class="btn btn-warning btn-sm" title="Stats Trimestre 3">
+                            ST3
+                        </a>
+                        <a href="{% url 'afficher_bulletins_trimestriels3' classe.id %}" class="btn btn-warning btn-sm" title="Trimestre 3">
+                            BT3
+                        </a>
+                        <a href="{% url 'afficher_statistiques_annuelles' classe.id %}" class="btn btn-warning btn-sm" title="Stats Annuels">
+                            STA
+                        </a>
+                        <a href="{% url 'bulletins_annuels' classe.id %}" class="btn btn-warning btn-sm" title="Annuel">
+                            BTA
+                        </a>
+                       
                        
                     </td>
                 </tr>

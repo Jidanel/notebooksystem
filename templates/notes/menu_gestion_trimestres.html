@@ -14,14 +14,14 @@
                         </a>
                     </div>
                     <div class="menu-item">
-                        <a href="#">
+                        <a href="{% url 'menu_gestion_trimestre_2' %}">
                             <button class="menu-button btn-block">
                                 <h2>Gestion Trimestre 2</h2>
                             </button>
                         </a>
                     </div>
                     <div class="menu-item">
-                        <a href="{% url 'liste_enseignants_par_departement' %}">
+                        <a href="{% url 'menu_gestion_trimestre_3' %}">
                             <button class="menu-button btn-block">
                                 <h2>Gestion Trimestre 3</h2>
                             </button>
@@ -65,7 +65,14 @@
                     <div class="menu-item">
                         <a href="{% url 'gestion_stats_departements' %}">
                             <button class="menu-button btn-block">
-                                <h2>Statistiques Departements</h2>
+                                <h2>Stats Depart.</h2>
+                            </button>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a href="{% url 'bulletins_et_stats' %}">
+                            <button class="menu-button btn-block">
+                                <h2>Bulletins des classes</h2>
                             </button>
                         </a>
                     </div>

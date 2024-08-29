@@ -22,7 +22,7 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ eleve.nom }} {{ eleve.prenom }}</td>
                         <td>
-                            <input type="number" name="note_{{ eleve.id }}" step="0.25" min="0" max="20" required value="{{ notes_existantes|get_item:eleve.id }}">
+                            <input type="number" name="note_{{ eleve.id }}" step="0.1" min="0" max="20" required value="{{ notes_existantes|get_item:eleve.id }}">
                         </td>
                     </tr>
                     {% endfor %}

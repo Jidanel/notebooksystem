@@ -1,32 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Tableau de Bord des élèves par classes</h1>
+<h1 class="dashboard-title">Tableau de Bord des élèves par classes</h1>
 
-<div class="chart-container" style="position: relative; height:40vh; width:80vw">
+<div class="chart-container">
     <canvas id="classeSexeChart"></canvas>
 </div>
 
 <br>
 
-<h1>Tableau de Bord des Absences</h1>
+<h1 class="dashboard-title">Tableau de Bord des Absences</h1>
 
-<div class="chart-container" style="position: relative; height:40vh; width:80vw">
+<div class="chart-container">
     <canvas id="classeAbsenceChart"></canvas>
 </div>
 <br>
 
-<h1>Meilleures Matières par Classe par Trimestre</h1>
+<h1 class="dashboard-title">Meilleures Matières par Classe par Trimestre</h1>
 
-<div class="chart-container" style="position: relative; height:40vh; width:80vw">
+<div class="chart-container">
     <canvas id="meilleuresMatieresChart"></canvas>
 </div>
 <br>
 
-<h1>3 Meilleures Classes par Séquence</h1>
+<h1 class="dashboard-title">3 Meilleures Classes par Séquence</h1>
 
-<div class="chart-container" style="position: relative; height:40vh; width:80vw">
-    <select id="sequenceSelect"></select>
+<div class="chart-container">
+    <select id="sequenceSelect" class="select-style"></select>
     <canvas id="meilleuresClassesChart"></canvas>
 </div>
 
@@ -52,16 +52,20 @@
                             {
                                 label: 'Garçons',
                                 data: males,
-                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 1
+                                backgroundColor: 'rgba(0, 123, 255, 0.8)',
+                                borderColor: '#007bff',
+                                borderWidth: 2,
+                                hoverBackgroundColor: 'rgba(0, 123, 255, 1)',
+                                hoverBorderColor: '#0056b3'
                             },
                             {
                                 label: 'Filles',
                                 data: females,
-                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                borderWidth: 1
+                                backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                                borderColor: '#ff6384',
+                                borderWidth: 2,
+                                hoverBackgroundColor: 'rgba(255, 99, 132, 1)',
+                                hoverBorderColor: '#cc0044'
                             }
                         ]
                     },
@@ -69,19 +73,59 @@
                         responsive: true,
                         plugins: {
                             legend: {
-                                position: 'top',
+                                labels: {
+                                    color: "#fff",
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                }
                             },
                             tooltip: {
                                 callbacks: {
                                     label: function(tooltipItem) {
                                         return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
                                     }
-                                }
+                                },
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleFont: {
+                                    size: 16,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                bodyColor: '#fff',
+                                borderColor: '#fff',
+                                borderWidth: 1
                             }
                         },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    color: "#fff",
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: "#fff",
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
                             }
                         }
                     }
@@ -127,30 +171,34 @@
                             {
                                 label: 'Absences Garçons',
                                 data: absencesGarcons,
-                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 1
+                                backgroundColor: 'rgba(0, 123, 255, 0.8)',
+                                borderColor: '#007bff',
+                                borderWidth: 2,
+                                hoverBackgroundColor: 'rgba(0, 123, 255, 1)',
+                                hoverBorderColor: '#0056b3'
                             },
                             {
                                 label: 'Justifications Garçons',
                                 data: justificationsGarcons,
-                                backgroundColor: 'rgba(54, 162, 235, 0.4)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 1
+                                backgroundColor: 'rgba(0, 123, 255, 0.4)',
+                                borderColor: '#007bff',
+                                borderWidth: 2
                             },
                             {
                                 label: 'Absences Filles',
                                 data: absencesFilles,
-                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                borderWidth: 1
+                                backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                                borderColor: '#ff6384',
+                                borderWidth: 2,
+                                hoverBackgroundColor: 'rgba(255, 99, 132, 1)',
+                                hoverBorderColor: '#cc0044'
                             },
                             {
                                 label: 'Justifications Filles',
                                 data: justificationsFilles,
                                 backgroundColor: 'rgba(255, 159, 64, 0.4)',
-                                borderColor: 'rgba(255, 159, 64, 1)',
-                                borderWidth: 1
+                                borderColor: '#ff9f40',
+                                borderWidth: 2
                             }
                         ]
                     },
@@ -162,12 +210,46 @@
                                     label: function(tooltipItem) {
                                         return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
                                     }
-                                }
+                                },
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleFont: {
+                                    size: 16,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                bodyColor: '#fff',
+                                borderColor: '#fff',
+                                borderWidth: 1
                             }
                         },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    color: "#fff",
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: "#fff",
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
                             }
                         }
                     }
@@ -208,9 +290,11 @@
                         datasets: [{
                             label: 'Meilleure Moyenne par Matière',
                             data: moyennes,
-                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            backgroundColor: 'rgba(153, 102, 255, 0.8)',
                             borderColor: 'rgba(153, 102, 255, 1)',
-                            borderWidth: 1
+                            borderWidth: 2,
+                            hoverBackgroundColor: 'rgba(153, 102, 255, 1)',
+                            hoverBorderColor: '#8e44ad'
                         }]
                     },
                     options: {
@@ -221,12 +305,46 @@
                                     label: function(tooltipItem) {
                                         return 'Moyenne: ' + tooltipItem.raw;
                                     }
-                                }
+                                },
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleFont: {
+                                    size: 16,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                bodyColor: '#fff',
+                                borderColor: '#fff',
+                                borderWidth: 1
                             }
                         },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    color: "#fff",
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: "#fff",
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                }
                             }
                         }
                     }
@@ -282,16 +400,20 @@
                                 {
                                     label: 'Taux de Réussite (%)',
                                     data: tauxReussite,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    backgroundColor: 'rgba(75, 192, 192, 0.8)',
                                     borderColor: 'rgba(75, 192, 192, 1)',
-                                    borderWidth: 1
+                                    borderWidth: 2,
+                                    hoverBackgroundColor: 'rgba(75, 192, 192, 1)',
+                                    hoverBorderColor: '#00796b'
                                 },
                                 {
                                     label: 'Nombre d\'Admis',
                                     data: nombreAdmis,
-                                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                                    backgroundColor: 'rgba(153, 102, 255, 0.8)',
                                     borderColor: 'rgba(153, 102, 255, 1)',
-                                    borderWidth: 1
+                                    borderWidth: 2,
+                                    hoverBackgroundColor: 'rgba(153, 102, 255, 1)',
+                                    hoverBorderColor: '#8e44ad'
                                 }
                             ]
                         },
@@ -303,12 +425,46 @@
                                         label: function(tooltipItem) {
                                             return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
                                         }
-                                    }
+                                    },
+                                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                    titleFont: {
+                                        size: 16,
+                                        weight: 'bold'
+                                    },
+                                    bodyFont: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    },
+                                    bodyColor: '#fff',
+                                    borderColor: '#fff',
+                                    borderWidth: 1
                                 }
                             },
                             scales: {
                                 y: {
-                                    beginAtZero: true
+                                    beginAtZero: true,
+                                    ticks: {
+                                        color: "#fff",
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        }
+                                    },
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)'
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: "#fff",
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        }
+                                    },
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)'
+                                    }
                                 }
                             }
                         }

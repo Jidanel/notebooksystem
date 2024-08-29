@@ -94,6 +94,14 @@ def menu_gestion_trimestres(request):
 def menu_gestion_trimestre_1(request):
     return render(request, 'notes/menu_gestion_trimestre_1.html')
 
+@login_required
+def menu_gestion_trimestre_2(request):
+    return render(request, 'notes/menu_gestion_trimestre_2.html')
+
+@login_required
+def menu_gestion_trimestre_3(request):
+    return render(request, 'notes/menu_gestion_trimestre_3.html')
+
 @role_required(allowed_roles=['AP','Admin_'])
 @login_required
 def gestion_stats_departements(request):
@@ -347,15 +355,7 @@ def afficher_statistiques_sequence(request, classe_id, sequence):
         'sequence': sequence,
         'stats_classe': stats_classe,
     })
-@login_required
-def afficher_statistiques_trimestre(request, classe_id):
-    classe = get_object_or_404(Classe, id=classe_id)
-    stats_classe_trimestre = calcul_statistiques_trimestre(classe)
-    
-    return render(request, 'notes/statistiques_trimestre.html', {
-        'classe': classe,
-        'stats_classe_trimestre': stats_classe_trimestre,
-    })
+
 
 @login_required
 def afficher_bulletins_trimestriels(request, classe_id):
@@ -1078,3 +1078,1120 @@ def statistiques_trimestrielles_departement(request, trimestre):
 
     return render(request, 'notes/statistiques_trimestrielles_departement.html', context)
 
+@login_required
+def selection_classe_matiere_seq3(request):
+    return selection_classe_matiere(request, 'Seq3')
+
+@login_required
+def selection_classe_matiere_seq4(request):
+    return selection_classe_matiere(request, 'Seq4')
+
+@login_required
+def selection_classe_matiere_seq5(request):
+    return selection_classe_matiere(request, 'Seq5')
+
+@login_required
+def saisie_notes_seq3(request, classe_id, matiere_id):
+    return saisie_notes(request, 'Seq3', classe_id, matiere_id)
+
+@login_required
+def saisie_notes_seq4(request, classe_id, matiere_id):
+    return saisie_notes(request, 'Seq4', classe_id, matiere_id)
+
+@login_required
+def saisie_notes_seq5(request, classe_id, matiere_id):
+    return saisie_notes(request, 'Seq5', classe_id, matiere_id)
+
+@login_required
+def afficher_statistiques_sequence3(request, classe_id):
+    return afficher_statistiques_sequence(request, classe_id, 'Seq3')
+
+@login_required
+def afficher_statistiques_sequence4(request, classe_id):
+    return afficher_statistiques_sequence(request, classe_id, 'Seq4')
+
+@login_required
+def afficher_statistiques_sequence5(request, classe_id):
+    return afficher_statistiques_sequence(request, classe_id, 'Seq5')
+
+def calcul_statistiques_trimestre_sequenciel_T2(classe):
+    sequences = ['Seq3', 'Seq4']  # Séquences spécifiques au Trimestre 2
+    eleves = Eleve.objects.filter(classe_actuelle=classe)
+    moyennes_trimestrielles = []
+
+    for eleve in eleves:
+        total_notes = 0
+        total_coefficients = 0
+
+        matieres = Matiere.objects.filter(classe=classe)
+        for matiere in matieres:
+            total_moyenne = 0
+            count = 0
+            for sequence in sequences:
+                note_sequence = Note.objects.filter(eleve=eleve, matiere=matiere, sequence=sequence).first()
+                if note_sequence:
+                    total_moyenne += note_sequence.note
+                    count += 1
+
+            moyenne_trimestrielle = total_moyenne / count if count > 0 else 0
+            total_notes += moyenne_trimestrielle * matiere.coefficient
+            total_coefficients += matiere.coefficient
+
+        moyenne_generale_trimestrielle = round(total_notes / total_coefficients, 2) if total_coefficients > 0 else 0
+        moyennes_trimestrielles.append({
+            'eleve': eleve,
+            'moyenne_trimestrielle': moyenne_generale_trimestrielle
+        })
+
+    moyennes_trimestrielles.sort(key=lambda x: x['moyenne_trimestrielle'], reverse=True)
+    moyenne_max = round(max(moyennes_trimestrielles, key=lambda x: x['moyenne_trimestrielle'])['moyenne_trimestrielle'], 2)
+    moyenne_min = round(min(moyennes_trimestrielles, key=lambda x: x['moyenne_trimestrielle'])['moyenne_trimestrielle'], 2)
+    moyenne_generale = round(sum(x['moyenne_trimestrielle'] for x in moyennes_trimestrielles) / len(moyennes_trimestrielles), 2)
+
+    variance = sum((x['moyenne_trimestrielle'] - moyenne_generale) ** 2 for x in moyennes_trimestrielles) / len(moyennes_trimestrielles)
+    ecart_type = round(math.sqrt(variance), 2)
+
+    nb_reussites = sum(1 for x in moyennes_trimestrielles if x['moyenne_trimestrielle'] >= 10)
+    taux_reussite = round((nb_reussites / len(moyennes_trimestrielles)) * 100, 2)
+
+    stats_classe_trimestre = {
+        'moyenne_max': moyenne_max,
+        'moyenne_min': moyenne_min,
+        'moyenne_generale': moyenne_generale,
+        'ecart_type': ecart_type,
+        'taux_reussite': taux_reussite,
+        'classement': moyennes_trimestrielles,
+    }
+
+    return stats_classe_trimestre
+
+def calcul_statistiques_trimestre_sequenciel_T3(classe):
+    sequences = ['Seq5']  # Séquence spécifique au Trimestre 3
+    eleves = Eleve.objects.filter(classe_actuelle=classe)
+    moyennes_trimestrielles = []
+
+    for eleve in eleves:
+        total_notes = 0
+        total_coefficients = 0
+
+        matieres = Matiere.objects.filter(classe=classe)
+        for matiere in matieres:
+            total_moyenne = 0
+            count = 0
+            for sequence in sequences:
+                note_sequence = Note.objects.filter(eleve=eleve, matiere=matiere, sequence=sequence).first()
+                if note_sequence:
+                    total_moyenne += note_sequence.note
+                    count += 1
+
+            moyenne_trimestrielle = total_moyenne / count if count > 0 else 0
+            total_notes += moyenne_trimestrielle * matiere.coefficient
+            total_coefficients += matiere.coefficient
+
+        moyenne_generale_trimestrielle = round(total_notes / total_coefficients, 2) if total_coefficients > 0 else 0
+        moyennes_trimestrielles.append({
+            'eleve': eleve,
+            'moyenne_trimestrielle': moyenne_generale_trimestrielle
+        })
+
+    moyennes_trimestrielles.sort(key=lambda x: x['moyenne_trimestrielle'], reverse=True)
+    moyenne_max = round(max(moyennes_trimestrielles, key=lambda x: x['moyenne_trimestrielle'])['moyenne_trimestrielle'], 2)
+    moyenne_min = round(min(moyennes_trimestrielles, key=lambda x: x['moyenne_trimestrielle'])['moyenne_trimestrielle'], 2)
+    moyenne_generale = round(sum(x['moyenne_trimestrielle'] for x in moyennes_trimestrielles) / len(moyennes_trimestrielles), 2)
+
+    variance = sum((x['moyenne_trimestrielle'] - moyenne_generale) ** 2 for x in moyennes_trimestrielles) / len(moyennes_trimestrielles)
+    ecart_type = round(math.sqrt(variance), 2)
+
+    nb_reussites = sum(1 for x in moyennes_trimestrielles if x['moyenne_trimestrielle'] >= 10)
+    taux_reussite = round((nb_reussites / len(moyennes_trimestrielles)) * 100, 2)
+
+    stats_classe_trimestre = {
+        'moyenne_max': moyenne_max,
+        'moyenne_min': moyenne_min,
+        'moyenne_generale': moyenne_generale,
+        'ecart_type': ecart_type,
+        'taux_reussite': taux_reussite,
+        'classement': moyennes_trimestrielles,
+    }
+
+    return stats_classe_trimestre
+
+def  calcul_statistiques_trimestre_sequenciel_annuel(classe):
+    # Définir les séquences pour chaque trimestre
+    sequences_trimestres = {
+        'Trimestre 1': ['Seq1', 'Seq2'],
+        'Trimestre 2': ['Seq3', 'Seq4'],
+        'Trimestre 3': ['Seq5']
+    }
+
+    eleves = Eleve.objects.filter(classe_actuelle=classe)
+    moyennes_annuelles = []
+
+    for eleve in eleves:
+        total_notes_annuelles = 0
+        total_coefficients_annuels = 0
+        count_trimestres = 0
+
+        matieres = Matiere.objects.filter(classe=classe)
+        for matiere in matieres:
+            moyenne_annuelle_matiere = 0
+            count_matiere_trimestres = 0
+
+            for trimestre, sequences in sequences_trimestres.items():
+                total_moyenne_trimestre = 0
+                count_sequences = 0
+
+                for sequence in sequences:
+                    note_sequence = Note.objects.filter(eleve=eleve, matiere=matiere, sequence=sequence).first()
+                    if note_sequence:
+                        total_moyenne_trimestre += note_sequence.note
+                        count_sequences += 1
+
+                # Calcul de la moyenne trimestrielle
+                moyenne_trimestre = total_moyenne_trimestre / count_sequences if count_sequences > 0 else None
+
+                if moyenne_trimestre is not None:
+                    moyenne_annuelle_matiere += moyenne_trimestre
+                    count_matiere_trimestres += 1
+
+            # Si au moins un trimestre est présent pour cette matière, calculer la moyenne annuelle de la matière
+            if count_matiere_trimestres > 0:
+                moyenne_annuelle_matiere /= count_matiere_trimestres
+                total_notes_annuelles += moyenne_annuelle_matiere * matiere.coefficient
+                total_coefficients_annuels += matiere.coefficient
+
+        # Calcul de la moyenne générale annuelle de l'élève
+        moyenne_generale_annuelle = round(total_notes_annuelles / total_coefficients_annuels, 2) if total_coefficients_annuels > 0 else 0
+        moyennes_annuelles.append({
+            'eleve': eleve,
+            'moyenne_annuelle': moyenne_generale_annuelle
+        })
+
+    # Statistiques sur les moyennes annuelles
+    moyennes_annuelles.sort(key=lambda x: x['moyenne_annuelle'], reverse=True)
+    moyenne_max = round(max(moyennes_annuelles, key=lambda x: x['moyenne_annuelle'])['moyenne_annuelle'], 2)
+    moyenne_min = round(min(moyennes_annuelles, key=lambda x: x['moyenne_annuelle'])['moyenne_annuelle'], 2)
+    moyenne_generale = round(sum(x['moyenne_annuelle'] for x in moyennes_annuelles) / len(moyennes_annuelles), 2)
+
+    # Calcul de l'écart-type
+    variance = sum((x['moyenne_annuelle'] - moyenne_generale) ** 2 for x in moyennes_annuelles) / len(moyennes_annuelles)
+    ecart_type = round(math.sqrt(variance), 2)
+
+    # Taux de réussite
+    nb_reussites = sum(1 for x in moyennes_annuelles if x['moyenne_annuelle'] >= 10)
+    taux_reussite = round((nb_reussites / len(moyennes_annuelles)) * 100, 2)
+
+    stats_classe_annuelles = {
+        'moyenne_max': moyenne_max,
+        'moyenne_min': moyenne_min,
+        'moyenne_generale': moyenne_generale,
+        'ecart_type': ecart_type,
+        'taux_reussite': taux_reussite,
+        'classement': moyennes_annuelles,
+    }
+
+    return stats_classe_annuelles
+
+
+
+@login_required
+def afficher_statistiques_trimestre2(request, classe_id):
+    classe = get_object_or_404(Classe, id=classe_id)
+    stats_classe_trimestre = calcul_statistiques_trimestre_sequenciel_T2(classe)
+
+    return render(request, 'notes/statistiques_trimestre.html', {
+        'classe': classe,
+        'trimestre': 'Trimestre 2',
+        'stats_classe_trimestre': stats_classe_trimestre,
+    })
+@login_required
+def afficher_statistiques_trimestre3(request, classe_id):
+    classe = get_object_or_404(Classe, id=classe_id)
+    stats_classe_trimestre = calcul_statistiques_trimestre_sequenciel_T3(classe)
+
+    return render(request, 'notes/statistiques_trimestre.html', {
+        'classe': classe,
+        'trimestre': 'Trimestre 3',
+        'stats_classe_trimestre': stats_classe_trimestre,
+    })
+@login_required
+def afficher_statistiques_annuelles(request, classe_id):
+    classe = get_object_or_404(Classe, id=classe_id)
+    stats_classe_annuelles = calcul_statistiques_trimestre_sequenciel_annuel(classe)
+
+    return render(request, 'notes/statistiques_annuelles.html', {
+        'classe': classe,
+        'stats_classe_annuelles': stats_classe_annuelles,
+    })
+
+
+@login_required
+def afficher_bulletins_sequence3(request, classe_id):
+    classe = get_object_or_404(Classe, id=classe_id)
+    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    parametres = ParametresEtablissement.objects.first()
+
+    type_enseignement = parametres.type_enseignement if parametres else None
+
+    groupes_definition = []
+    if type_enseignement == 'technique':
+        groupes_definition = [
+            {'nom': 'Enseignement Général', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_general').order_by('nom')},
+            {'nom': 'Enseignement Professionnel', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_professionnel').order_by('nom')},
+            {'nom': 'Enseignement Divers', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_divers').order_by('nom')},
+        ]
+    elif type_enseignement == 'bilingue':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+    elif type_enseignement == 'general':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+
+    eleves_data = []
+    moyennes_eleves = []
+
+    for eleve in eleves:
+        eleve_groupes = []
+        total_notes = 0
+        total_coefficients = 0
+
+        absences_seq3 = Absence.objects.filter(eleve=eleve, classe=classe, sequence='Seq3').aggregate(total_absences=Sum('total'))['total_absences'] or 0
+
+        for groupe in groupes_definition:
+            matieres_groupes = []
+            groupe_total_notes = 0
+            groupe_total_coefficients = 0
+
+            for matiere in groupe['matieres']:
+                seq3_note = Note.objects.filter(eleve=eleve, matiere=matiere, sequence='Seq3').first()
+
+                # Vérification si la matière est complète ou non
+                if not seq3_note or seq3_note.note == 0 or seq3_note.note == "":
+                    continue  # Si la matière est incomplète, on la saute
+
+                moyenne_sequence = seq3_note.note if seq3_note else 0
+
+                groupe_total_notes += moyenne_sequence * matiere.coefficient
+                groupe_total_coefficients += matiere.coefficient
+
+                total_notes += moyenne_sequence * matiere.coefficient
+                total_coefficients += matiere.coefficient
+
+                classement_matiere = Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq3').values('eleve').annotate(
+                    moyenne_matiere=Avg('note')).order_by('-moyenne_matiere')
+
+                rang = next((index + 1 for index, item in enumerate(classement_matiere) if item['eleve'] == eleve.id), None)
+
+                mgc = Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq3').aggregate(moyenne_classe=Avg('note'))['moyenne_classe'] or 0
+
+                appreciation = "Non Acquis" if moyenne_sequence < 10 else "En cours d'acquisition" if moyenne_sequence < 13 else "Acquis"
+
+                matieres_groupes.append({
+                    'nom': matiere.nom,
+                    'seq3_note': moyenne_sequence,
+                    'coefficient': matiere.coefficient,
+                    'total': round(moyenne_sequence * matiere.coefficient, 2),
+                    'rang': rang,
+                    'mgc': round(mgc, 2),
+                    'min': Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq3').aggregate(Min('note'))['note__min'],
+                    'max': Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq3').aggregate(Max('note'))['note__max'],
+                    'appreciation': appreciation,
+                    'enseignant': matiere.enseignant.nom if matiere.enseignant else '',
+                })
+
+            groupe_moyenne = round(groupe_total_notes / groupe_total_coefficients, 2) if groupe_total_coefficients else 0
+
+            eleve_groupes.append({
+                'nom': groupe['nom'],
+                'matieres': matieres_groupes,
+                'total_coefficient': groupe_total_coefficients,
+                'total': groupe_total_notes,
+                'moyenne': groupe_moyenne,
+            })
+
+        moyenne_generale_eleve = round(total_notes / total_coefficients, 2) if total_coefficients > 0 else 0
+        moyennes_eleves.append({'moyenne': moyenne_generale_eleve, 'eleve': eleve})
+
+        appreciation_travail = "Non Acquis" if moyenne_generale_eleve < 10 else "En cours d'acquisition" if moyenne_generale_eleve < 13 else "Acquis"
+
+        eleves_data.append({
+            'eleve': eleve,
+            'groupes': eleve_groupes,
+            'moyenne_generale': moyenne_generale_eleve,
+            'absences_seq3': absences_seq3,
+            'total_points': total_notes,
+            'total_coefficients': total_coefficients,
+            'appreciation_travail': appreciation_travail,
+        })
+
+    # Tri des élèves par moyenne en ordre décroissant pour le calcul du rang
+    moyennes_eleves_sorted = sorted(moyennes_eleves, key=lambda x: x['moyenne'], reverse=True)
+
+    # Attribution des rangs en tenant compte des moyennes exactes
+    for rank, eleve in enumerate(moyennes_eleves_sorted, start=1):
+        for data in eleves_data:
+            if data['eleve'] == eleve['eleve']:
+                data['rang'] = rank
+                break
+
+    moyenne_classe = round(sum(e['moyenne'] for e in moyennes_eleves) / len(moyennes_eleves), 2) if moyennes_eleves else 0
+    variance = sum((e['moyenne'] - moyenne_classe) ** 2 for e in moyennes_eleves) / len(moyennes_eleves) if moyennes_eleves else 0
+    ecart_type = round(math.sqrt(variance), 2)
+
+    stats_classe_sequence = {
+        'moyenne_generale': moyenne_classe,
+        'moyenne_dernier': min(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'moyenne_premier': max(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'taux_reussite': len([e for e in moyennes_eleves if e['moyenne'] >= 10]) / len(moyennes_eleves) * 100 if moyennes_eleves else 0,
+        'nombre_moyennes': len([e for e in moyennes_eleves if e['moyenne'] >= 10]),
+        'ecart_type': ecart_type,
+    }
+
+    return render(request, 'bulletins/afficher_bulletins_sequence3.html', {
+        'classe': classe,
+        'eleves_data': eleves_data,
+        'profil_classe': stats_classe_sequence,
+        'parametres': parametres,
+    })
+
+@login_required
+def afficher_bulletins_sequence4(request, classe_id):
+    # Même logique que pour afficher_bulletins_sequence3 mais avec 'Seq4'
+    classe = get_object_or_404(Classe, id=classe_id)
+    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    parametres = ParametresEtablissement.objects.first()
+
+    type_enseignement = parametres.type_enseignement if parametres else None
+
+    groupes_definition = []
+    if type_enseignement == 'technique':
+        groupes_definition = [
+            {'nom': 'Enseignement Général', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_general').order_by('nom')},
+            {'nom': 'Enseignement Professionnel', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_professionnel').order_by('nom')},
+            {'nom': 'Enseignement Divers', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_divers').order_by('nom')},
+        ]
+    elif type_enseignement == 'bilingue':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+    elif type_enseignement == 'general':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+
+    eleves_data = []
+    moyennes_eleves = []
+
+    for eleve in eleves:
+        eleve_groupes = []
+        total_notes = 0
+        total_coefficients = 0
+
+        absences_seq4 = Absence.objects.filter(eleve=eleve, classe=classe, sequence='Seq4').aggregate(total_absences=Sum('total'))['total_absences'] or 0
+
+        for groupe in groupes_definition:
+            matieres_groupes = []
+            groupe_total_notes = 0
+            groupe_total_coefficients = 0
+
+            for matiere in groupe['matieres']:
+                seq4_note = Note.objects.filter(eleve=eleve, matiere=matiere, sequence='Seq4').first()
+
+                # Vérification si la matière est complète ou non
+                if not seq4_note or seq4_note.note == 0 or seq4_note.note == "":
+                    continue  # Si la matière est incomplète, on la saute
+
+                moyenne_sequence = seq4_note.note if seq4_note else 0
+
+                groupe_total_notes += moyenne_sequence * matiere.coefficient
+                groupe_total_coefficients += matiere.coefficient
+
+                total_notes += moyenne_sequence * matiere.coefficient
+                total_coefficients += matiere.coefficient
+
+                classement_matiere = Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq4').values('eleve').annotate(
+                    moyenne_matiere=Avg('note')).order_by('-moyenne_matiere')
+
+                rang = next((index + 1 for index, item in enumerate(classement_matiere) if item['eleve'] == eleve.id), None)
+
+                mgc = Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq4').aggregate(moyenne_classe=Avg('note'))['moyenne_classe'] or 0
+
+                appreciation = "Non Acquis" if moyenne_sequence < 10 else "En cours d'acquisition" if moyenne_sequence < 13 else "Acquis"
+
+                matieres_groupes.append({
+                    'nom': matiere.nom,
+                    'seq4_note': moyenne_sequence,
+                    'coefficient': matiere.coefficient,
+                    'total': round(moyenne_sequence * matiere.coefficient, 2),
+                    'rang': rang,
+                    'mgc': round(mgc, 2),
+                    'min': Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq4').aggregate(Min('note'))['note__min'],
+                    'max': Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq4').aggregate(Max('note'))['note__max'],
+                    'appreciation': appreciation,
+                    'enseignant': matiere.enseignant.nom if matiere.enseignant else '',
+                })
+
+            groupe_moyenne = round(groupe_total_notes / groupe_total_coefficients, 2) if groupe_total_coefficients else 0
+
+            eleve_groupes.append({
+                'nom': groupe['nom'],
+                'matieres': matieres_groupes,
+                'total_coefficient': groupe_total_coefficients,
+                'total': groupe_total_notes,
+                'moyenne': groupe_moyenne,
+            })
+
+        moyenne_generale_eleve = round(total_notes / total_coefficients, 2) if total_coefficients > 0 else 0
+        moyennes_eleves.append({'moyenne': moyenne_generale_eleve, 'eleve': eleve})
+
+        appreciation_travail = "Non Acquis" if moyenne_generale_eleve < 10 else "En cours d'acquisition" if moyenne_generale_eleve < 13 else "Acquis"
+
+        eleves_data.append({
+            'eleve': eleve,
+            'groupes': eleve_groupes,
+            'moyenne_generale': moyenne_generale_eleve,
+            'absences_seq4': absences_seq4,
+            'total_points': total_notes,
+            'total_coefficients': total_coefficients,
+            'appreciation_travail': appreciation_travail,
+        })
+
+    # Tri des élèves par moyenne en ordre décroissant pour le calcul du rang
+    moyennes_eleves_sorted = sorted(moyennes_eleves, key=lambda x: x['moyenne'], reverse=True)
+
+    # Attribution des rangs en tenant compte des moyennes exactes
+    for rank, eleve in enumerate(moyennes_eleves_sorted, start=1):
+        for data in eleves_data:
+            if data['eleve'] == eleve['eleve']:
+                data['rang'] = rank
+                break
+
+    moyenne_classe = round(sum(e['moyenne'] for e in moyennes_eleves) / len(moyennes_eleves), 2) if moyennes_eleves else 0
+    variance = sum((e['moyenne'] - moyenne_classe) ** 2 for e in moyennes_eleves) / len(moyennes_eleves) if moyennes_eleves else 0
+    ecart_type = round(math.sqrt(variance), 2)
+
+    stats_classe_sequence = {
+        'moyenne_generale': moyenne_classe,
+        'moyenne_dernier': min(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'moyenne_premier': max(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'taux_reussite': len([e for e in moyennes_eleves if e['moyenne'] >= 10]) / len(moyennes_eleves) * 100 if moyennes_eleves else 0,
+        'nombre_moyennes': len([e for e in moyennes_eleves if e['moyenne'] >= 10]),
+        'ecart_type': ecart_type,
+    }
+
+    return render(request, 'bulletins/afficher_bulletins_sequence4.html', {
+        'classe': classe,
+        'eleves_data': eleves_data,
+        'profil_classe': stats_classe_sequence,
+        'parametres': parametres,
+    })
+
+@login_required
+def afficher_bulletins_sequence5(request, classe_id):
+    # Même logique que pour afficher_bulletins_sequence3 mais avec 'Seq5'
+    classe = get_object_or_404(Classe, id=classe_id)
+    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    parametres = ParametresEtablissement.objects.first()
+
+    type_enseignement = parametres.type_enseignement if parametres else None
+
+    groupes_definition = []
+    if type_enseignement == 'technique':
+        groupes_definition = [
+            {'nom': 'Enseignement Général', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_general').order_by('nom')},
+            {'nom': 'Enseignement Professionnel', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_professionnel').order_by('nom')},
+            {'nom': 'Enseignement Divers', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_divers').order_by('nom')},
+        ]
+    elif type_enseignement == 'bilingue':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+    elif type_enseignement == 'general':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+
+    eleves_data = []
+    moyennes_eleves = []
+
+    for eleve in eleves:
+        eleve_groupes = []
+        total_notes = 0
+        total_coefficients = 0
+
+        absences_seq5 = Absence.objects.filter(eleve=eleve, classe=classe, sequence='Seq5').aggregate(total_absences=Sum('total'))['total_absences'] or 0
+
+        for groupe in groupes_definition:
+            matieres_groupes = []
+            groupe_total_notes = 0
+            groupe_total_coefficients = 0
+
+            for matiere in groupe['matieres']:
+                seq5_note = Note.objects.filter(eleve=eleve, matiere=matiere, sequence='Seq5').first()
+
+                # Vérification if la matière est complète ou non
+                if not seq5_note or seq5_note.note == 0 or seq5_note.note == "":
+                    continue  # Si la matière est incomplète, on la saute
+
+                moyenne_sequence = seq5_note.note if seq5_note else 0
+
+                groupe_total_notes += moyenne_sequence * matiere.coefficient
+                groupe_total_coefficients += matiere.coefficient
+
+                total_notes += moyenne_sequence * matiere.coefficient
+                total_coefficients += matiere.coefficient
+
+                classement_matiere = Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq5').values('eleve').annotate(
+                    moyenne_matiere=Avg('note')).order_by('-moyenne_matiere')
+
+                rang = next((index + 1 for index, item in enumerate(classement_matiere) if item['eleve'] == eleve.id), None)
+
+                mgc = Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq5').aggregate(moyenne_classe=Avg('note'))['moyenne_classe'] or 0
+
+                appreciation = "Non Acquis" if moyenne_sequence < 10 else "En cours d'acquisition" if moyenne_sequence < 13 else "Acquis"
+
+                matieres_groupes.append({
+                    'nom': matiere.nom,
+                    'seq5_note': moyenne_sequence,
+                    'coefficient': matiere.coefficient,
+                    'total': round(moyenne_sequence * matiere.coefficient, 2),
+                    'rang': rang,
+                    'mgc': round(mgc, 2),
+                    'min': Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq5').aggregate(Min('note'))['note__min'],
+                    'max': Note.objects.filter(classe=classe, matiere=matiere, sequence='Seq5').aggregate(Max('note'))['note__max'],
+                    'appreciation': appreciation,
+                    'enseignant': matiere.enseignant.nom if matiere.enseignant else '',
+                })
+
+            groupe_moyenne = round(groupe_total_notes / groupe_total_coefficients, 2) if groupe_total_coefficients else 0
+
+            eleve_groupes.append({
+                'nom': groupe['nom'],
+                'matieres': matieres_groupes,
+                'total_coefficient': groupe_total_coefficients,
+                'total': groupe_total_notes,
+                'moyenne': groupe_moyenne,
+            })
+
+        moyenne_generale_eleve = round(total_notes / total_coefficients, 2) if total_coefficients > 0 else 0
+        moyennes_eleves.append({'moyenne': moyenne_generale_eleve, 'eleve': eleve})
+
+        appreciation_travail = "Non Acquis" if moyenne_generale_eleve < 10 else "En cours d'acquisition" if moyenne_generale_eleve < 13 else "Acquis"
+
+        eleves_data.append({
+            'eleve': eleve,
+            'groupes': eleve_groupes,
+            'moyenne_generale': moyenne_generale_eleve,
+            'absences_seq5': absences_seq5,
+            'total_points': total_notes,
+            'total_coefficients': total_coefficients,
+            'appreciation_travail': appreciation_travail,
+        })
+
+    # Tri des élèves par moyenne en ordre décroissant pour le calcul du rang
+    moyennes_eleves_sorted = sorted(moyennes_eleves, key=lambda x: x['moyenne'], reverse=True)
+
+    # Attribution des rangs en tenant compte des moyennes exactes
+    for rank, eleve in enumerate(moyennes_eleves_sorted, start=1):
+        for data in eleves_data:
+            if data['eleve'] == eleve['eleve']:
+                data['rang'] = rank
+                break
+
+    moyenne_classe = round(sum(e['moyenne'] for e in moyennes_eleves) / len(moyennes_eleves), 2) if moyennes_eleves else 0
+    variance = sum((e['moyenne'] - moyenne_classe) ** 2 for e in moyennes_eleves) / len(moyennes_eleves) if moyennes_eleves else 0
+    ecart_type = round(math.sqrt(variance), 2)
+
+    stats_classe_sequence = {
+        'moyenne_generale': moyenne_classe,
+        'moyenne_dernier': min(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'moyenne_premier': max(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'taux_reussite': len([e for e in moyennes_eleves if e['moyenne'] >= 10]) / len(moyennes_eleves) * 100 if moyennes_eleves else 0,
+        'nombre_moyennes': len([e for e in moyennes_eleves if e['moyenne'] >= 10]),
+        'ecart_type': ecart_type,
+    }
+
+    return render(request, 'bulletins/afficher_bulletins_sequence5.html', {
+        'classe': classe,
+        'eleves_data': eleves_data,
+        'profil_classe': stats_classe_sequence,
+        'parametres': parametres,
+    })
+
+
+@login_required
+def afficher_bulletins_trimestre2(request, classe_id):
+    classe = get_object_or_404(Classe, id=classe_id)
+    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    parametres = ParametresEtablissement.objects.first()
+
+    type_enseignement = parametres.type_enseignement if parametres else None
+
+    groupes_definition = []
+    if type_enseignement == 'technique':
+        groupes_definition = [
+            {'nom': 'Enseignement Général', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_general').order_by('nom')},
+            {'nom': 'Enseignement Professionnel', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_professionnel').order_by('nom')},
+            {'nom': 'Enseignement Divers', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_divers').order_by('nom')},
+        ]
+    elif type_enseignement == 'bilingue':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+    elif type_enseignement == 'general':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+
+    eleves_data = []
+    moyennes_eleves = []
+
+    for eleve in eleves:
+        eleve_groupes = []
+        total_notes = 0
+        total_coefficients = 0
+        seq3_moyenne = 0
+        seq4_moyenne = 0
+
+        absences_seq3 = Absence.objects.filter(eleve=eleve, classe=classe, sequence='Seq3').aggregate(total_absences=Sum('total'))['total_absences'] or 0
+        absences_seq4 = Absence.objects.filter(eleve=eleve, classe=classe, sequence='Seq4').aggregate(total_absences=Sum('total'))['total_absences'] or 0
+        absences_non_justifiees = int(absences_seq3) + int(absences_seq4)
+
+        for groupe in groupes_definition:
+            matieres_groupes = []
+
+            for matiere in groupe['matieres']:
+                seq3_note = Note.objects.filter(eleve=eleve, matiere=matiere, sequence='Seq3').first()
+                seq4_note = Note.objects.filter(eleve=eleve, matiere=matiere, sequence='Seq4').first()
+
+                moyenne_trimestrielle = (
+                    ((seq3_note.note if seq3_note else 0) + (seq4_note.note if seq4_note else 0)) / 2
+                    if seq3_note and seq4_note else (seq3_note.note if seq3_note else (seq4_note.note if seq4_note else 0))
+                )
+
+                total_notes += moyenne_trimestrielle * matiere.coefficient
+                total_coefficients += matiere.coefficient
+
+                if seq3_note:
+                    seq3_moyenne += seq3_note.note * matiere.coefficient
+                if seq4_note:
+                    seq4_moyenne += seq4_note.note * matiere.coefficient
+
+                classement_matiere = Note.objects.filter(classe=classe, matiere=matiere).values('eleve').annotate(
+                    moyenne_matiere=Avg('note')).order_by('-moyenne_matiere')
+
+                rang = next((index + 1 for index, item in enumerate(classement_matiere) if item['eleve'] == eleve.id), None)
+
+                mgc = Note.objects.filter(classe=classe, matiere=matiere).aggregate(moyenne_classe=Avg('note'))['moyenne_classe'] or 0
+
+                appreciation = "Non Acquis" if moyenne_trimestrielle < 10 else "En cours d'acquisition" if moyenne_trimestrielle < 13 else "Acquis"
+
+                matieres_groupes.append({
+                    'nom': matiere.nom,
+                    'seq3_note': seq3_note.note if seq3_note else '',
+                    'seq4_note': seq4_note.note if seq4_note else '',
+                    'moyenne': round(moyenne_trimestrielle, 2),
+                    'coefficient': matiere.coefficient,
+                    'total': round(moyenne_trimestrielle * matiere.coefficient, 2),
+                    'rang': rang,
+                    'mgc': round(mgc, 2),
+                    'min': Note.objects.filter(classe=classe, matiere=matiere).aggregate(Min('note'))['note__min'],
+                    'max': Note.objects.filter(classe=classe, matiere=matiere).aggregate(Max('note'))['note__max'],
+                    'appreciation': appreciation,
+                    'enseignant': matiere.enseignant.nom if matiere.enseignant else '',
+                })
+
+            groupe_total_coefficient = sum(m['coefficient'] for m in matieres_groupes)
+            groupe_total = sum(m['total'] for m in matieres_groupes)
+            groupe_moyenne = groupe_total / groupe_total_coefficient if groupe_total_coefficient else 0
+
+            eleve_groupes.append({
+                'nom': groupe['nom'],
+                'matieres': matieres_groupes,
+                'total_coefficient': groupe_total_coefficient,
+                'total': groupe_total,
+                'moyenne': round(groupe_moyenne, 2),
+            })
+
+        moyenne_generale_eleve = round(total_notes / total_coefficients, 2) if total_coefficients > 0 else 0
+        moyennes_eleves.append({'moyenne': moyenne_generale_eleve, 'eleve': eleve})
+
+        appreciation_travail = "Non Acquis" if moyenne_generale_eleve < 10 else "En cours d'acquisition" if moyenne_generale_eleve < 13 else "Acquis"
+
+        eleves_data.append({
+            'eleve': eleve,
+            'groupes': eleve_groupes,
+            'moyenne_generale': moyenne_generale_eleve,
+            'absences_seq3': absences_seq3,  # Ajout des absences non justifiées de Seq3
+            'absences_seq4': absences_seq4, 
+            'absences_non_justifiees': absences_non_justifiees,
+            'seq3_moyenne': round(seq3_moyenne / total_coefficients, 2),
+            'seq4_moyenne': round(seq4_moyenne / total_coefficients, 2),
+            'total_points': total_notes,
+            'total_coefficients': total_coefficients,
+            'appreciation_travail': appreciation_travail,
+        })
+
+    # Tri des élèves par moyenne en ordre décroissant pour le calcul du rang
+    moyennes_eleves_sorted = sorted(moyennes_eleves, key=lambda x: x['moyenne'], reverse=True)
+
+    # Attribution des rangs en tenant compte des moyennes exactes
+    for rank, eleve in enumerate(moyennes_eleves_sorted, start=1):
+        for data in eleves_data:
+            if data['eleve'] == eleve['eleve']:
+                data['rang'] = rank
+                break
+
+    moyenne_classe = round(sum(e['moyenne'] for e in moyennes_eleves) / len(moyennes_eleves), 2) if moyennes_eleves else 0
+    variance = sum((e['moyenne'] - moyenne_classe) ** 2 for e in moyennes_eleves) / len(moyennes_eleves) if moyennes_eleves else 0
+    ecart_type = math.sqrt(variance)
+
+    stats_classe_trimestre = {
+        'moyenne_generale': moyenne_classe,
+        'moyenne_dernier': min(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'moyenne_premier': max(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'taux_reussite': len([e for e in moyennes_eleves if e['moyenne'] >= 10]) / len(moyennes_eleves) * 100 if moyennes_eleves else 0,
+        'nombre_moyennes': len([e for e in moyennes_eleves if e['moyenne'] >= 10]),
+        'ecart_type': round(ecart_type, 2),
+    }
+
+    return render(request, 'bulletins/afficher_bulletins_trimestriels.html', {
+        'classe': classe,
+        'eleves_data': eleves_data,
+        'profil_classe': stats_classe_trimestre,
+        'parametres': parametres,
+    })
+@login_required
+def afficher_bulletins_trimestre3(request, classe_id):
+    classe = get_object_or_404(Classe, id=classe_id)
+    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    parametres = ParametresEtablissement.objects.first()
+
+    type_enseignement = parametres.type_enseignement if parametres else None
+
+    groupes_definition = []
+    if type_enseignement == 'technique':
+        groupes_definition = [
+            {'nom': 'Enseignement Général', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_general').order_by('nom')},
+            {'nom': 'Enseignement Professionnel', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_professionnel').order_by('nom')},
+            {'nom': 'Enseignement Divers', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_divers').order_by('nom')},
+        ]
+    elif type_enseignement == 'bilingue':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+    elif type_enseignement == 'general':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+
+    eleves_data = []
+    moyennes_eleves = []
+
+    for eleve in eleves:
+        eleve_groupes = []
+        total_notes = 0
+        total_coefficients = 0
+
+        absences_seq5 = Absence.objects.filter(eleve=eleve, classe=classe, sequence='Seq5').aggregate(total_absences=Sum('total'))['total_absences'] or 0
+
+        for groupe in groupes_definition:
+            matieres_groupes = []
+
+            for matiere in groupe['matieres']:
+                seq5_note = Note.objects.filter(eleve=eleve, matiere=matiere, sequence='Seq5').first()
+
+                moyenne_trimestrielle = seq5_note.note if seq5_note else 0
+
+                total_notes += moyenne_trimestrielle * matiere.coefficient
+                total_coefficients += matiere.coefficient
+
+                classement_matiere = Note.objects.filter(classe=classe, matiere=matiere).values('eleve').annotate(
+                    moyenne_matiere=Avg('note')).order_by('-moyenne_matiere')
+
+                rang = next((index + 1 for index, item in enumerate(classement_matiere) if item['eleve'] == eleve.id), None)
+
+                mgc = Note.objects.filter(classe=classe, matiere=matiere).aggregate(moyenne_classe=Avg('note'))['moyenne_classe'] or 0
+
+                appreciation = "Non Acquis" if moyenne_trimestrielle < 10 else "En cours d'acquisition" if moyenne_trimestrielle < 13 else "Acquis"
+
+                matieres_groupes.append({
+                    'nom': matiere.nom,
+                    'seq5_note': moyenne_trimestrielle,
+                    'coefficient': matiere.coefficient,
+                    'total': round(moyenne_trimestrielle * matiere.coefficient, 2),
+                    'rang': rang,
+                    'mgc': round(mgc, 2),
+                    'min': Note.objects.filter(classe=classe, matiere=matiere).aggregate(Min('note'))['note__min'],
+                    'max': Note.objects.filter(classe=classe, matiere=matiere).aggregate(Max('note'))['note__max'],
+                    'appreciation': appreciation,
+                    'enseignant': matiere.enseignant.nom if matiere.enseignant else '',
+                })
+
+            groupe_total_coefficient = sum(m['coefficient'] for m in matieres_groupes)
+            groupe_total = sum(m['total'] for m in matieres_groupes)
+            groupe_moyenne = groupe_total / groupe_total_coefficient if groupe_total_coefficient else 0
+
+            eleve_groupes.append({
+                'nom': groupe['nom'],
+                'matieres': matieres_groupes,
+                'total_coefficient': groupe_total_coefficient,
+                'total': groupe_total,
+                'moyenne': round(groupe_moyenne, 2),
+            })
+
+        moyenne_generale_eleve = round(total_notes / total_coefficients, 2) if total_coefficients > 0 else 0
+        moyennes_eleves.append({'moyenne': moyenne_generale_eleve, 'eleve': eleve})
+
+        appreciation_travail = "Non Acquis" if moyenne_generale_eleve < 10 else "En cours d'acquisition" if moyenne_generale_eleve < 13 else "Acquis"
+
+        eleves_data.append({
+            'eleve': eleve,
+            'groupes': eleve_groupes,
+            'moyenne_generale': moyenne_generale_eleve,
+            'absences_seq5': absences_seq5,  # Ajout des absences non justifiées de Seq5
+            'total_points': total_notes,
+            'total_coefficients': total_coefficients,
+            'appreciation_travail': appreciation_travail,
+        })
+
+    # Tri des élèves par moyenne en ordre décroissant pour le calcul du rang
+    moyennes_eleves_sorted = sorted(moyennes_eleves, key=lambda x: x['moyenne'], reverse=True)
+
+    # Attribution des rangs en tenant compte des moyennes exactes
+    for rank, eleve in enumerate(moyennes_eleves_sorted, start=1):
+        for data in eleves_data:
+            if data['eleve'] == eleve['eleve']:
+                data['rang'] = rank
+                break
+
+    moyenne_classe = round(sum(e['moyenne'] for e in moyennes_eleves) / len(moyennes_eleves), 2) if moyennes_eleves else 0
+    variance = sum((e['moyenne'] - moyenne_classe) ** 2 for e in moyennes_eleves) / len(moyennes_eleves) if moyennes_eleves else 0
+    ecart_type = math.sqrt(variance)
+
+    stats_classe_trimestre = {
+        'moyenne_generale': moyenne_classe,
+        'moyenne_dernier': min(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'moyenne_premier': max(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'taux_reussite': len([e for e in moyennes_eleves if e['moyenne'] >= 10]) / len(moyennes_eleves) * 100 if moyennes_eleves else 0,
+        'nombre_moyennes': len([e for e in moyennes_eleves if e['moyenne'] >= 10]),
+        'ecart_type': round(ecart_type, 2),
+    }
+
+    return render(request, 'bulletins/afficher_bulletins_trimestriels.html', {
+        'classe': classe,
+        'eleves_data': eleves_data,
+        'profil_classe': stats_classe_trimestre,
+        'parametres': parametres,
+    })
+
+@login_required
+def afficher_bulletins_annuels(request, classe_id):
+    classe = get_object_or_404(Classe, id=classe_id)
+    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    parametres = ParametresEtablissement.objects.first()
+
+    type_enseignement = parametres.type_enseignement if parametres else None
+
+    groupes_definition = []
+    if type_enseignement == 'technique':
+        groupes_definition = [
+            {'nom': 'Enseignement Général', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_general').order_by('nom')},
+            {'nom': 'Enseignement Professionnel', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_professionnel').order_by('nom')},
+            {'nom': 'Enseignement Divers', 'matieres': Matiere.objects.filter(classe=classe, groupe='enseignement_divers').order_by('nom')},
+        ]
+    elif type_enseignement == 'bilingue':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+    elif type_enseignement == 'general':
+        groupes_definition = [
+            {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
+            {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
+            {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
+        ]
+
+    eleves_data = []
+    moyennes_eleves = []
+
+    for eleve in eleves:
+        eleve_groupes = []
+        total_notes = 0
+        total_coefficients = 0
+
+        # Calcul des moyennes trimestrielles
+        trim1_moyenne = calculer_moyenne_trimestrielle(eleve, classe, ['Seq1', 'Seq2'])
+        trim2_moyenne = calculer_moyenne_trimestrielle(eleve, classe, ['Seq3', 'Seq4'])
+        trim3_moyenne = calculer_moyenne_trimestrielle(eleve, classe, ['Seq5'])
+
+        # Calcul des absences par trimestre
+        absences_trim1 = Absence.objects.filter(eleve=eleve, classe=classe, sequence__in=['Seq1', 'Seq2']).aggregate(total_absences=Sum('total'))['total_absences'] or 0
+        absences_trim2 = Absence.objects.filter(eleve=eleve, classe=classe, sequence__in=['Seq3', 'Seq4']).aggregate(total_absences=Sum('total'))['total_absences'] or 0
+        absences_trim3 = Absence.objects.filter(eleve=eleve, classe=classe, sequence='Seq5').aggregate(total_absences=Sum('total'))['total_absences'] or 0
+
+        absences_non_justifiees = int(absences_trim1) + int(absences_trim2) + int(absences_trim3)
+
+        # Calcul de la moyenne annuelle
+        trimestres_valides = [trim1_moyenne, trim2_moyenne, trim3_moyenne]
+        trimestres_valides = [t for t in trimestres_valides if t > 0]  # Ne garder que les trimestres non nuls
+        if len(trimestres_valides) >= 2:  # Si au moins 2 trimestres sont valides
+            moyenne_annuelle = sum(trimestres_valides) / len(trimestres_valides)
+        else:
+            moyenne_annuelle = 0
+
+        for groupe in groupes_definition:
+            matieres_groupes = []
+
+            for matiere in groupe['matieres']:
+                moyenne_annuelle_matiere = (moyenne_annuelle * matiere.coefficient) / total_coefficients if total_coefficients > 0 else 0
+
+                total_notes += moyenne_annuelle_matiere
+                total_coefficients += matiere.coefficient
+
+                classement_matiere = Note.objects.filter(classe=classe, matiere=matiere).values('eleve').annotate(
+                    moyenne_matiere=Avg('note')).order_by('-moyenne_matiere')
+
+                rang = next((index + 1 for index, item in enumerate(classement_matiere) if item['eleve'] == eleve.id), None)
+
+                mgc = Note.objects.filter(classe=classe, matiere=matiere).aggregate(moyenne_classe=Avg('note'))['moyenne_classe'] or 0
+
+                appreciation = "Non Acquis" if moyenne_annuelle < 10 else "En cours d'acquisition" if moyenne_annuelle < 13 else "Acquis"
+
+                matieres_groupes.append({
+                    'nom': matiere.nom,
+                    'trim1_moyenne': trim1_moyenne,
+                    'trim2_moyenne': trim2_moyenne,
+                    'trim3_moyenne': trim3_moyenne,
+                    'moyenne_annuelle': round(moyenne_annuelle, 2),
+                    'coefficient': matiere.coefficient,
+                    'total': round(moyenne_annuelle_matiere, 2),
+                    'rang': rang,
+                    'mgc': round(mgc, 2),
+                    'min': Note.objects.filter(classe=classe, matiere=matiere).aggregate(Min('note'))['note__min'],
+                    'max': Note.objects.filter(classe=classe, matiere=matiere).aggregate(Max('note'))['note__max'],
+                    'appreciation': appreciation,
+                    'enseignant': matiere.enseignant.nom if matiere.enseignant else '',
+                })
+
+            groupe_total_coefficient = sum(m['coefficient'] for m in matieres_groupes)
+            groupe_total = sum(m['total'] for m in matieres_groupes)
+            groupe_moyenne = groupe_total / groupe_total_coefficient if groupe_total_coefficient else 0
+
+            eleve_groupes.append({
+                'nom': groupe['nom'],
+                'matieres': matieres_groupes,
+                'total_coefficient': groupe_total_coefficient,
+                'total': groupe_total,
+                'moyenne': round(groupe_moyenne, 2),
+            })
+
+        moyenne_generale_eleve = round(total_notes / total_coefficients, 2) if total_coefficients > 0 else 0
+        moyennes_eleves.append({'moyenne': moyenne_generale_eleve, 'eleve': eleve})
+
+        appreciation_travail = "Non Acquis" if moyenne_generale_eleve < 10 else "En cours d'acquisition" if moyenne_generale_eleve < 13 else "Acquis"
+
+        eleves_data.append({
+            'eleve': eleve,
+            'groupes': eleve_groupes,
+            'moyenne_generale': moyenne_generale_eleve,
+            'absences_trim1': absences_trim1,
+            'absences_trim2': absences_trim2,
+            'absences_trim3': absences_trim3,
+            'absences_non_justifiees': absences_non_justifiees,
+            'total_points': total_notes,
+            'total_coefficients': total_coefficients,
+            'appreciation_travail': appreciation_travail,
+        })
+
+    # Tri des élèves par moyenne en ordre décroissant pour le calcul du rang
+    moyennes_eleves_sorted = sorted(moyennes_eleves, key=lambda x: x['moyenne'], reverse=True)
+
+    # Attribution des rangs en tenant compte des moyennes exactes
+    for rank, eleve in enumerate(moyennes_eleves_sorted, start=1):
+        for data in eleves_data:
+            if data['eleve'] == eleve['eleve']:
+                data['rang'] = rank
+                break
+
+    moyenne_classe = round(sum(e['moyenne'] for e in moyennes_eleves) / len(moyennes_eleves), 2) if moyennes_eleves else 0
+    variance = sum((e['moyenne'] - moyenne_classe) ** 2 for e in moyennes_eleves) / len(moyennes_eleves) if moyennes_eleves else 0
+    ecart_type = math.sqrt(variance)
+
+    stats_classe_annuelle = {
+        'moyenne_generale': moyenne_classe,
+        'moyenne_dernier': min(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'moyenne_premier': max(e['moyenne'] for e in moyennes_eleves) if moyennes_eleves else 0,
+        'taux_reussite': len([e for e in moyennes_eleves if e['moyenne'] >= 10]) / len(moyennes_eleves) * 100 if moyennes_eleves else 0,
+        'nombre_moyennes': len([e for e in moyennes_eleves if e['moyenne'] >= 10]),
+        'ecart_type': round(ecart_type, 2),
+    }
+
+    return render(request, 'bulletins/afficher_bulletins_annuels.html', {
+        'classe': classe,
+        'eleves_data': eleves_data,
+        'profil_classe': stats_classe_annuelle,
+        'parametres': parametres,
+    })
+
+@login_required
+def imprimer_bordereau_remplissage(request, classe_id):
+    # Récupération de la classe et des élèves associés
+    classe = get_object_or_404(Classe, id=classe_id)
+    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    parametres = ParametresEtablissement.objects.first()
+
+    # Préparation des données pour chaque élève
+    eleves_data = []
+    for eleve in eleves:
+        notes_par_sequence = []
+        for seq_num in range(1, 6):
+            note_seq = Note.objects.filter(eleve=eleve, sequence=f'Seq{seq_num}').first()
+            notes_par_sequence.append(note_seq.note if note_seq else '-')
+        
+        eleves_data.append({
+            'eleve': eleve,
+            'notes_par_sequence': notes_par_sequence,
+        })
+
+    context = {
+        'classe': classe,
+        'eleves_data': eleves_data,
+        'parametres': parametres,
+    }
+
+    # Génération du PDF à partir du template
+    template_path = 'notes/bordereau_remplissage_pdf.html'
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Bordereau_Remplissage_{classe.nom}.pdf"'
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # Utilisation de pisa pour créer le PDF
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse("Une erreur s'est produite lors de la génération du PDF", status=400)
+    return response

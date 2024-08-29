@@ -3,20 +3,20 @@
 {% block content %}
     {% if user.is_authenticated %}
         <div class="dashboard-container">
-            <h1 class="dashboard-title">Trimestre 1</h1>
+            <h1 class="dashboard-title">Trimestre 2</h1>
             <div class="menu-grid">
                 {% if user.profilutilisateur.role == 'SG' or user.profilutilisateur.role == 'AP' or user.profilutilisateur.role == 'Admin_' %}
                     <div class="menu-item">
-                        <a href="{% url 'selection_classe_matiere' 'Seq1' %}">
+                        <a href="{% url 'selection_classe_matiere' 'Seq3' %}">
                             <button class="menu-button btn-block">
-                                <h2>Notes- Sequence 1</h2>
+                                <h2>Notes- Sequence 3</h2>
                             </button>
                         </a>
                     </div>
                     <div class="menu-item">
-                        <a href="{% url 'selection_classe_matiere_seq2' %}">
+                        <a href="{% url 'selection_classe_matiere_seq4' %}">
                             <button class="menu-button btn-block">
-                                <h2>Notes - Sequence 2</h2>
+                                <h2>Notes - Sequence 4</h2>
                             </button>
                         </a>
                     </div>
