@@ -1,14 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="ajouter">
-    <h2>Ajouter une Matière</h2>
-    <form method="POST" action="{% url 'ajouter_matiere' %}">
+<div class="container mt-5">
+    <h1>Ajouter une Matière</h1>
+    <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
+        
+        <div class="form-group">
+            <label for="id_nom">Nom :</label>
+            {{ form.nom }}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_coefficient">Coefficient :</label>
+            {{ form.coefficient }}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_departement">Departement :</label>
+            {{ form.departement }}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_classe">Classe :</label>
+            {{ form.classe }}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_enseignant">Enseignant :</label>
+            {{ form.enseignant }}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_groupe">Groupe :</label>
+            {{ form.groupe }}
+        </div>
+        
         <button type="submit" class="btn btn-primary">Ajouter</button>
     </form>
 </div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
