@@ -1,10 +1,19 @@
+/* Corps de la page */
 body {
     font-family: 'Nunito', sans-serif;
     background-color: #f4f4f9;
     margin: 0;
     padding: 0;
+    background-image: url('https://www.aefinfo.fr/assets/medias/documents/5/4/541013_prv.jpeg'); /* Remplacez cette URL par celle de votre image */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #fff; /* Couleur de texte blanche par défaut */
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
 }
 
+/* Navigation */
 header .navbar {
     display: flex;
     justify-content: space-between;
@@ -30,6 +39,8 @@ header .navbar .nav-links a {
     color: #fff;
     margin-right: 10px;
     text-decoration: none;
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
 }
 
 header .navbar .right-nav {
@@ -39,15 +50,21 @@ header .navbar .right-nav {
 
 header .navbar .right-nav a {
     margin-left: 20px;
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
 }
 
+/* Messages de bienvenue */
 .welcome-message {
     text-align: right;
     margin-right: 20px;
     margin-top: 10px;
-    color: #333;
+    color: #fff;
+    font-size: 24px; /* Augmente la taille de la police pour la bienvenue */
+    font-weight: bold; /* Texte en gras */
 }
 
+/* Conteneur principal */
 .main-container {
     display: flex;
     justify-content: center;
@@ -55,12 +72,14 @@ header .navbar .right-nav a {
     height: calc(100vh - 80px);
 }
 
-
-.heading {
-    margin-bottom: 20px;
+/* En-têtes */
+h1, h2, h3, h4, h5, h6 {
     font-size: 24px;
+    font-weight: bold;
+    color: #fff;
 }
 
+/* Formulaires */
 .user-profile-form-container ul {
     list-style: none;
     padding: 0;
@@ -74,6 +93,7 @@ header .navbar .right-nav a {
     display: block;
     font-weight: bold;
     margin-bottom: 5px;
+    font-size: 18px; /* Augmente la taille de la police */
 }
 
 .user-profile-form-container ul li input {
@@ -81,6 +101,7 @@ header .navbar .right-nav a {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 18px; /* Augmente la taille de la police */
 }
 
 .submit-button, .profile-save-button {
@@ -90,12 +111,17 @@ header .navbar .right-nav a {
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
 }
 
 .register-link, .login-link {
     margin-top: 10px;
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
 }
 
+/* Pied de page */
 footer {
     background-color: #343a40;
     color: white;
@@ -104,8 +130,11 @@ footer {
     position: relative;
     width: 100%;
     bottom: 0;
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
 }
 
+/* Notifications */
 .notification-container {
     position: fixed;
     top: 10px;
@@ -120,24 +149,24 @@ footer {
     border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
 }
 
-body {
-    font-family: 'Nunito', sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 0;
-}
-
+/* Dashboard */
 .dashboard-container {
     text-align: center;
     padding: 20px;
+    background: transparent;
+    border-radius: 10px;
+    margin: 50px auto; /* Centrer le conteneur */
 }
 
 .dashboard-title {
     font-size: 24px;
     margin-bottom: 20px;
     text-align: center;
+    color: #bee5eb;
 }
 
 .dashboard-menu {
@@ -145,16 +174,16 @@ body {
     justify-content: center;
     flex-wrap: wrap;
     gap: 20px;
-    background-color: #f4f4f9; /* Maintain the light background */
+    background-color: #f4f4f9; /* Fond clair */
     padding: 20px;
     border-radius: 10px;
-    width: 80%; /* Adjusted width */
-    margin: 0 auto; /* Center the menu */
+    width: 80%;
+    margin: 0 auto;
 }
 
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Create a grid layout */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     width: 100%;
 }
@@ -165,83 +194,43 @@ body {
 }
 
 .menu-button {
-    background-color: #c1bfe0b7; /* Original button background color */
-    border: none;
-    color: blue; /* Original text color */
-    padding: 20px 40px; /* Increased padding for better visual */
+    background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent sombre */
+    color: #fff;
+    padding: 20px 40px;
     text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
     border-radius: 8px;
-    transition: transform 0.2s ease-in-out; /* Transition for hover effect */
-    box-shadow: 12px 12px 20px 6px #2e6da4; /* Maintain the shadow */
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Légère ombre blanche */
 }
 
 .menu-button:hover {
-    transform: scale(1.1); /* Maintain the hover effect */
+    transform: scale(1.1); /* Effet au survol */
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7); /* Effet d'ombre au survol */
 }
 
+/* Cartes */
 .card {
     background: #c1bfe0b7;
     border-radius: 5px;
-    border: 0;
     margin-bottom: 1rem;
     box-shadow: 12px 12px 20px 6px #2e6da4;
 }
 
+/* Conteneur général */
 .container {
-    background: #fff;
+    background: transparent;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 50%; /* Adjust the width as needed */
-    margin: 50px auto; /* Center the container */
-    text-align: left; /* Align text to the left */
+    width: 50%;
+    margin: 50px auto;
+    text-align: left;
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
 }
 
-h1 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    text-align: center; /* Center the heading */
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.form-control {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.form-control-lg {
-    font-size: 1.25rem;
-    padding: 0.5rem 1rem;
-}
-
-.btn-primary {
-    background: #007bff;
-    border: none;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-primary:hover {
-    background: #0056b3;
-}
-
-
+/* Tables */
 .styled-table {
     border-collapse: collapse;
     margin: 25px 0;
@@ -257,9 +246,10 @@ h1 {
     text-align: left;
 }
 
-.styled-table th,
-.styled-table td {
+.styled-table th, .styled-table td {
     padding: 12px 15px;
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
 }
 
 .styled-table tbody tr {
@@ -279,34 +269,280 @@ h1 {
     color: #009879;
 }
 
-
+/* Messages */
 .messages {
     margin: 20px 0;
     padding: 10px;
     border-radius: 5px;
 }
+
 .messages .message {
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 5px;
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
 }
+
 .messages .message.success {
     background-color: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
 }
+
 .messages .message.error {
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
+
 .messages .message.info {
     background-color: #d1ecf1;
     color: #0c5460;
     border: 1px solid #bee5eb;
 }
+
 .messages .message.warning {
     background-color: #fff3cd;
     color: #856404;
     border: 1px solid #ffeeba;
+}
+
+/* Réactivité */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+        font-size: 16px; /* Taille de police ajustée pour petits écrans */
+    }
+
+    .form-group label, .form-control, .btn {
+        font-size: 16px;
+    }
+}
+
+@media (min-width: 769px) {
+    .container {
+        max-width: 600px;
+    }
+
+    .form-group label, .form-control, .btn {
+        font-size: 18px;
+    }
+}
+
+/* En-tête */
+.entete-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid #000;
+    padding-bottom: 10px;
+}
+
+.entete-container .left-section, .entete-container .right-section {
+    width: 35%;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.entete-container .center-section {
+    width: 30%;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold; /* Texte en gras */
+}
+
+.entete-container .logo {
+    max-width: 100px;
+    max-height: 100px;
+    margin-bottom: 5px;
+}
+
+.entete-container p {
+    margin: 0;
+    padding: 0;
+    line-height: 1.1;
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
+}
+
+.entete-container .republique {
+    font-weight: bold;
+    font-size: 20px; /* Taille plus grande pour 'REPUBLIQUE DU CAMEROUN' */
+    text-align: center;
+}
+
+.entete-container .paix {
+    font-style: italic;
+    font-size: 18px;
+    text-align: center;
+}
+
+.entete-container .ministere, .entete-container .nom-etablissement, .entete-container .adresse {
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+}
+
+.entete-container .nom-etablissement {
+    font-weight: bold;
+    font-size: 20px;
+    margin-top: 2px;
+}
+
+.entete-container .adresse {
+    font-size: 18px;
+    text-align: center;
+}
+
+.entete-container .annee-scolaire {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* Galerie */
+.gallery-container {
+    padding: 10px;
+    background-color: #f8f9fa;
+}
+
+.gallery-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.gallery-header h1 {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+}
+
+.add-image-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 18px; /* Augmente la taille de la police */
+    font-weight: bold; /* Texte en gras */
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-image-btn:hover {
+    background-color: #0056b3;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 5px;
+}
+
+.gallery-item:hover {
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Réactivité de la galerie */
+@media (max-width: 768px) {
+    .gallery-header h1 {
+        font-size: 20px;
+    }
+
+    .add-image-btn {
+        font-size: 16px;
+        padding: 8px 16px;
+    }
+
+    .gallery-item img {
+        max-width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-header h1 {
+        font-size: 18px;
+    }
+
+    .add-image-btn {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: auto;
+        max-width: 4cm;
+        max-height: 4cm;
+        display: block;
+        border-radius: 5px;
+    }
+}
+
+/* Formulaire d'ajout */
+.ajouter {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.ajouter input[type="text"], .ajouter input[type="number"], .ajouter select, .ajouter textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold; /* Texte en gras */
+}
+
+.ajouter .form-group {
+    margin-bottom: 20px;
+}
+
+.ajouter .btn-primary {
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold; /* Texte en gras */
+}
+
+/* Harmonisation générale */
+body, h1, h2, h3, h4, h5, h6, p, label, a, th, td {
+    color: #fff; /* Texte blanc partout */
+    font-weight: bold; /* Texte en gras */
+}
+.pagination .step-links .current {
+    color: #fff; /* Couleur blanche pour le numéro de page actuel */
+    font-weight: bold; /* Pour que le numéro de page soit en gras */
+}
+
+.pagination a {
+    color: #fff; /* Couleur blanche pour les liens de pagination */
+}
+
+.pagination a:hover {
+    color: #ddd; /* Couleur lors du survol */
 }

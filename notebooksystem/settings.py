@@ -164,3 +164,9 @@ CSRF_COOKIE_SECURE = True
 CELERY_BROKER_URL = 'django://'
 CELERY_RESULT_BACKEND = 'django-db'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
