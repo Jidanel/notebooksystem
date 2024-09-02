@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Notes Remplies</h2>
+
+    <!-- Barre de recherche -->
+    <div class="form-group">
+        <input id="search" class="form-control" type="text" placeholder="Recherche par nom de la classe, code ou séquence..." value="{{ query }}">
+    </div>
+    <br>
+
+    <!-- Tableau des notes -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Classe</th>
+                    <th>Matière</th>
+                    <th>Séquence</th>
+                    <th>Enseignant</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for note in notes %}
+                <tr>
+                    <td>{{ note.classe.nom }}</td>
+                    <td>{{ note.matiere.nom }}</td>
+                    <td>{{ note.get_sequence_display }}</td>
+                    <td>{{ note.matiere.enseignant }}</td>
+                    <td>
+                        <a href="{% url 'saisie_notes' note.sequence note.classe.id note.matiere.id %}" class="btn btn-primary">Modifier</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">Aucune note trouvée.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if notes.has_previous %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}">&laquo; premier</a>
+                <a href="?page={{ notes.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">précédent</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ notes.number }} de {{ notes.paginator.num_pages }}.
+            </span>
+
+            {% if notes.has_next %}
+                <a href="?page={{ notes.next_page_number }}{% if query %}&q={{ query }}{% endif %}">suivant</a>
+                <a href="?page={{ notes.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">dernier &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#search').on('input', function() {
+            var query = $(this).val();
+            window.location.href = "?q=" + query;
+        });
+    });
+</script>
+{% endblock %}

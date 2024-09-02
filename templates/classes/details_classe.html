@@ -10,7 +10,7 @@
     <p>Nombre de filles: {{ nombre_filles }}</p>
     <p>Nombre de redoublants: {{ nombre_redoublants }}</p>
     <p>Nombre de nouveaux: {{ nombre_nouveaux }}</p>
-    <button class="btn btn-primary btn-block" onclick="window.print()">Imprimer</button>
+    <a href="{% url 'imprimer_liste_eleves' classe.id %}" class="btn btn-primary btn-block">Imprimer en PDF</a>
 
     <h3>Liste des Élèves</h3>
     <div class="table-responsive">

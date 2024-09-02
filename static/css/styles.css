@@ -191,7 +191,12 @@ footer {
 .menu-item {
     display: flex;
     justify-content: center;
+    align-items: center; /* Centrer verticalement le contenu si nécessaire */
+    max-width: 100%; /* Empêcher l'élément de dépasser la taille du conteneur parent */
+    overflow: hidden; /* Masquer tout débordement éventuel */
+    box-sizing: border-box; /* Inclure la bordure et le padding dans la largeur totale */
 }
+
 
 .menu-button {
     background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent sombre */

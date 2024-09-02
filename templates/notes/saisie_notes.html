@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
     <h2>Saisie des Notes pour la classe {{ classe.nom }} - {{ matiere.nom }} - {{ sequence }}</h2>
-    <form method="post">
+    <form method="post" onsubmit="return validateAndConfirm();">
         {% csrf_token %}
         <div class="table-responsive">
             <table class="table table-striped">
@@ -22,19 +22,36 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ eleve.nom }} {{ eleve.prenom }}</td>
                         <td>
-                            <input type="number" name="note_{{ eleve.id }}" step="0.1" min="0" max="20" required value="{{ notes_existantes|get_item:eleve.id }}">
+                            {% if deja_enregistrees and not is_sg_or_admin %}
+                                <input type="number" name="note_{{ eleve.id }}" step="0.25" min="0.25" max="20" required value="{{ notes_existantes|get_item:eleve.id }}" readonly>
+                            {% else %}
+                                <input type="number" name="note_{{ eleve.id }}" step="0.25" min="0.25" max="20" required value="{{ notes_existantes|get_item:eleve.id }}">
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Enregistrer les Notes</button>
+        {% if not deja_enregistrees or is_sg_or_admin %}
+            <button type="submit" class="btn btn-primary btn-block">Enregistrer les Notes</button>
+        {% else %}
+            <p class="text-muted">Vous n'avez pas l'autorisation de modifier ces notes.</p>
+        {% endif %}
     </form>
-    <div style="display:none;">
-        <!-- Debugging Data -->
-        <h3>Debugging Data</h3>
-        <p>Notes existantes : {{ notes_existantes }}</p>
-    </div>
 </div>
+
+<script>
+    function validateAndConfirm() {
+        var inputs = document.querySelectorAll('input[type="number"]');
+        for (var i = 0; i < inputs.length; i++) {
+            var value = parseFloat(inputs[i].value);
+            if (isNaN(value) || value <= 0) {
+                alert("Veuillez entrer une note supérieure à 0 pour tous les élèves.");
+                return false; // Empêche la soumission du formulaire
+            }
+        }
+        return confirm('Êtes-vous sûr de vouloir enregistrer ces notes ? Cette action est irréversible.');
+    }
+</script>
 {% endblock %}

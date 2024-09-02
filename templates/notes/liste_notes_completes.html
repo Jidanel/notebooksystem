@@ -3,12 +3,22 @@
 {% block content %}
 <div class="container">
     <h2>Notes Remplies</h2>
+    
+    <!-- Formulaire de recherche -->
+    <form method="GET" class="form-inline mb-3">
+        <input type="text" name="q" class="form-control mr-2" placeholder="Rechercher par classe, matière ou séquence" value="{{ query }}">
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+    </form>
+    
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Classe</th>
                     <th>Matière</th>
+                    {% if user.profilutilisateur.role == 'SG' or user.profilutilisateur.role == 'Admin_' %}
+                        <th>Enseignant</th>
+                    {% endif %}
                     <th>Séquence</th>
                     <th>Action</th>
                 </tr>
@@ -18,15 +28,49 @@
                 <tr>
                     <td>{{ note.classe.nom }}</td>
                     <td>{{ note.matiere.nom }}</td>
+                    {% if user.profilutilisateur.role == 'SG' or user.profilutilisateur.role == 'Admin_' %}
+                        <td>{{ note.enseignant }}</td>
+                    {% endif %}
                     <td>{{ note.get_sequence_display }}</td>
                     <td>
-                        <a href="{% url 'saisie_notes' note.sequence note.classe.id note.matiere.id %}" class="btn btn-primary">Modifier</a>
-                        <a href="{% url 'afficher_statistiques_matiere' note.sequence note.classe.id note.matiere.id %}" class="btn btn-info">Statistiques</a>
+                        {% if user.profilutilisateur.role == 'SG' or user.profilutilisateur.role == 'Admin_' %}
+                            <a href="{% url 'saisie_notes' note.sequence note.classe.id note.matiere.id %}" class="btn btn-primary">Modifier</a>
+                        {% else %}
+                            <a href="{% url 'saisie_notes' note.sequence note.classe.id note.matiere.id %}" class="btn btn-primary">Voir</a>
+                            <a href="{% url 'afficher_statistiques_matiere' note.sequence note.classe.id note.matiere.id %}" class="btn btn-info">Statistiques</a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    
+    <!-- Pagination -->
+    <nav>
+        <ul class="pagination">
+            {% if notes_completes.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if query %}&q={{ query }}{% endif %}">Premier</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ notes_completes.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Précédent</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <a class="page-link" href="#">{{ notes_completes.number }}</a>
+            </li>
+
+            {% if notes_completes.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ notes_completes.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Suivant</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ notes_completes.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">Dernier</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 {% endblock %}

@@ -12,6 +12,14 @@ class Matiere(models.Model):
     enseignant = models.ForeignKey(ProfilUtilisateur, related_name='matieres', on_delete=models.SET_NULL, null=True)
     groupe = models.CharField(max_length=50, null=True, blank=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['nom']),  # Index sur le champ 'nom'
+            models.Index(fields=['classe']),  # Index sur le champ 'classe'
+            models.Index(fields=['departement']),  # Index sur le champ 'departement'
+            models.Index(fields=['enseignant']),  # Index sur le champ 'enseignant'
+        ]
+
     def __str__(self):
         return self.nom
 

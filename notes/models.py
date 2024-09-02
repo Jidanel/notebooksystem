@@ -31,9 +31,16 @@ class Note(models.Model):
 
     class Meta:
         unique_together = ('eleve', 'matiere', 'sequence')
+        indexes = [
+            models.Index(fields=['eleve']),
+            models.Index(fields=['enseignant']),
+            models.Index(fields=['classe']),
+            models.Index(fields=['matiere']),
+            models.Index(fields=['sequence']),
+        ]
 
     def clean(self):
-        if self.note < 0 or self.note > 20:
+        if self.note <= 0 or self.note > 20:
             raise ValidationError('La note doit être entre 0 et 20.')
 
     def save(self, *args, **kwargs):

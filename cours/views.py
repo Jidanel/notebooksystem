@@ -15,7 +15,7 @@ from django.db.models import Sum
 @login_required
 def liste_matieres(request):
     query = request.GET.get('q')
-    matieres = Matiere.objects.all().order_by('nom')
+    matieres = Matiere.objects.select_related('classe', 'departement', 'enseignant').all().order_by('nom')
 
     if query:
         matieres = matieres.filter(nom__icontains=query)
@@ -76,7 +76,6 @@ def modifier_matiere(request, matiere_id):
 
     return render(request, 'cours/modifier_matiere.html', {'form': form, 'matiere': matiere})
 
-
 @role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def confirmer_suppression_matiere(request, matiere_id):
@@ -91,27 +90,20 @@ def confirmer_suppression_matiere(request, matiere_id):
 @login_required
 def liste_groupes_par_classe(request, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)
-    matieres = Matiere.objects.filter(classe=classe)
+    matieres = Matiere.objects.filter(classe=classe).select_related('departement', 'enseignant')
 
-    # Récupérer le type d'enseignement
     parametres = ParametresEtablissement.objects.first()
     type_enseignement = parametres.type_enseignement if parametres else None
-
-    # Debug: afficher la valeur de `type_enseignement`
-    print(f"Type d'enseignement récupéré: '{type_enseignement}'")
 
     groupes_matieres = []
 
     if type_enseignement == 'technique':
-        print("Traitement pour 'Technique'")
         groupes = [
             {'nom': 'Enseignement Général', 'matieres': matieres.filter(groupe__exact='enseignement_general')},
             {'nom': 'Enseignement Professionnel', 'matieres': matieres.filter(groupe__exact='enseignement_professionnel')},
             {'nom': 'Enseignement Divers', 'matieres': matieres.filter(groupe__exact='enseignement_divers')},
-
         ]
     elif type_enseignement == 'bilingue':
-        print("Traitement pour 'Bilingue'")
         groupes = [
             {'nom': 'Groupe 1', 'matieres': matieres.filter(groupe__exact='groupe_1')},
             {'nom': 'Groupe 2', 'matieres': matieres.filter(groupe__exact='groupe_2')},
@@ -121,14 +113,12 @@ def liste_groupes_par_classe(request, classe_id):
             {'nom': 'Groupe 6', 'matieres': matieres.filter(groupe__exact='groupe_6')},
         ]
     elif type_enseignement == 'general':
-        print("Traitement pour 'Général'")
         groupes = [
             {'nom': 'Groupe 1', 'matieres': matieres.filter(groupe__exact='groupe_1')},
             {'nom': 'Groupe 2', 'matieres': matieres.filter(groupe__exact='groupe_2')},
             {'nom': 'Groupe 3', 'matieres': matieres.filter(groupe__exact='groupe_3')},
         ]
     else:
-        print("Aucun type d'enseignement spécifique, utilisation du else.")
         groupes = []
 
     for groupe in groupes:
@@ -138,9 +128,6 @@ def liste_groupes_par_classe(request, classe_id):
             'matieres': groupe['matieres'],
             'total_coefficient': total_coefficient,
         })
-
-        # Afficher les groupes et les coefficients pour le débogage
-        print(f"Groupe: {groupe['nom']}, Total Coefficient: {total_coefficient}, Nombre de matières: {groupe['matieres'].count()}")
 
     return render(request, 'cours/liste_groupes_par_classe.html', {
         'classe': classe,

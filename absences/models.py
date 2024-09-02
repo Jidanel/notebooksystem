@@ -14,20 +14,23 @@ class Absence(models.Model):
     justification = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
 
-    
+    class Meta:
+        indexes = [
+            models.Index(fields=['eleve']),  # Index sur le champ 'eleve'
+            models.Index(fields=['classe']),  # Index sur le champ 'classe'
+            models.Index(fields=['enseignant']),  # Index sur le champ 'enseignant'
+            models.Index(fields=['sequence']),  # Index sur le champ 'sequence'
+        ]
     
     def clean(self):
         if self.justification > self.absences:
             raise ValidationError("Les heures d'absences justifiées sont superieures aux heures non justifiées.")
         
     def save(self, *args, **kwargs):
-    # Convertir en entier si nécessaire
         self.absences = int(self.absences)
         self.justification = int(self.justification)
-        
         self.total = self.absences - self.justification
         super(Absence, self).save(*args, **kwargs)
-
 
     def __str__(self):
         return f"{self.eleve.nom} - {self.classe.nom} - {self.sequence}"

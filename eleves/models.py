@@ -14,5 +14,14 @@ class Eleve(models.Model):
     statut = models.CharField(max_length=10, choices=[('Nouveau', 'Nouveau'), ('Redoublant', 'Redoublant')])
     contact_parent = models.CharField(max_length=15)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['nom']),  # Index sur le champ 'nom'
+            models.Index(fields=['matricule']),  # Index sur le champ 'matricule'
+            models.Index(fields=['classe_actuelle']),  # Index sur le champ 'classe_actuelle'
+            models.Index(fields=['statut']),  # Index sur le champ 'statut'
+            models.Index(fields=['sexe']),  # Index sur le champ 'sexe'
+        ]
+
     def __str__(self):
         return f"{self.nom} {self.prenom}"

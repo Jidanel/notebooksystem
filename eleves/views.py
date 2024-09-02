@@ -18,22 +18,34 @@ from xhtml2pdf import pisa
 from utilisateurs.decorators import *
 from utilisateurs.views import *
 from parametres.models import *
-
+from django.core.cache import cache
 
 @role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def liste_eleves(request):
     query = request.GET.get('q')
-    eleves = Eleve.objects.all().order_by('nom')
+    page_number = request.GET.get('page', 1)
 
-    if query:
-        eleves = eleves.filter(nom__icontains=query)
+    # Créer une clé de cache unique basée sur la query et la page
+    cache_key = f"liste_eleves_{query}_{page_number}"
 
-    paginator = Paginator(eleves, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # Tenter de récupérer les résultats depuis le cache
+    page_obj = cache.get(cache_key)
+
+    if not page_obj:
+        eleves = Eleve.objects.select_related('classe_actuelle').all().order_by('nom')
+
+        if query:
+            eleves = eleves.filter(nom__icontains=query)
+
+        paginator = Paginator(eleves, 100)
+        page_obj = paginator.get_page(page_number)
+
+        # Mettre la page en cache pendant 15 minutes
+        cache.set(cache_key, page_obj, timeout=60*60)
 
     return render(request, 'eleves/liste_eleves.html', {'page_obj': page_obj, 'query': query})
+
 
 @role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
@@ -51,11 +63,19 @@ def ajouter_eleve(request):
 @role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def modifier_eleve(request, eleve_id):
-    eleve = get_object_or_404(Eleve, id=eleve_id)
+    cache_key = f"eleve_{eleve_id}"
+    eleve = cache.get(cache_key)
+
+    if not eleve:
+        eleve = get_object_or_404(Eleve, id=eleve_id)
+        cache.set(cache_key, eleve, timeout=60*15)
+
     if request.method == 'POST':
         form = EleveForm(request.POST, request.FILES, instance=eleve)
         if form.is_valid():
             form.save()
+            cache.delete(cache_key)
+            cache.delete_pattern('liste_eleves_*')
             messages.success(request, "Élève modifié avec succès.")
             return redirect('liste_eleves')
     else:
@@ -76,8 +96,6 @@ def confirmer_suppression_eleve(request, eleve_id):
 @role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def supprimer_eleves_selectionnes(request):
-    profil = request.user.profilutilisateur
-
     if request.method == "POST":
         eleve_ids = request.POST.getlist('eleves')
         eleves = Eleve.objects.filter(id__in=eleve_ids)
@@ -87,8 +105,10 @@ def supprimer_eleves_selectionnes(request):
         else:
             total = eleves.count()
             eleves.delete()
+            cache.delete_pattern('liste_eleves_*')
             messages.success(request, f'{total} élèves ont été supprimés avec succès.')
         return redirect('liste_eleves')
+
 
 
 @role_required(allowed_roles=['Admin_', 'SG'])
@@ -114,20 +134,18 @@ def importer_eleves(request):
 
         for row in ws.iter_rows(min_row=2, values_only=True):
             try:
-                nom = row[0] or ''  # Nom obligatoire
+                nom = row[0] or ''
                 prenom = row[1] or ''
                 sexe = row[2] or ''
                 date_naissance = row[3]
                 lieu_naissance = row[4] or ''
-                matricule = row[5]  # Matricule obligatoire
+                matricule = row[5]
                 statut = row[6] or ''
                 contact_parent = row[7] or ''
 
-                # Vérifier les champs obligatoires
                 if not nom or not matricule:
                     raise ValueError(f"Nom et matricule sont obligatoires (Nom: {nom}, Matricule: {matricule})")
 
-                # Convertir date_naissance en chaîne de caractères
                 if isinstance(date_naissance, datetime):
                     date_naissance = date_naissance.strftime('%Y-%m-%d')
 
@@ -142,8 +160,8 @@ def importer_eleves(request):
                         'matricule': matricule,
                         'statut': statut,
                         'contact_parent': contact_parent,
-                        'classe_actuelle': classe.id,  # Stocker l'ID de la classe
-                        'existing_eleve': eleve.id  # Stocker l'ID de l'élève existant
+                        'classe_actuelle': classe.id,
+                        'existing_eleve': eleve.id
                     })
                     duplicate_count += 1
                 else:
@@ -156,14 +174,13 @@ def importer_eleves(request):
                         'matricule': matricule,
                         'statut': statut,
                         'contact_parent': contact_parent,
-                        'classe_actuelle': classe.id  # Stocker l'ID de la classe
+                        'classe_actuelle': classe.id
                     })
                     imported_count += 1
             except Exception as e:
                 errors.append(f"Erreur sur la ligne {row}: {str(e)}")
                 error_count += 1
 
-        # Stocker temporairement les nouveaux élèves, les doublons et les erreurs dans la session
         request.session['new_eleves'] = new_eleves
         request.session['duplicates'] = duplicates
         request.session['errors'] = errors
@@ -174,9 +191,8 @@ def importer_eleves(request):
         if duplicates:
             return redirect('resolve_duplicates')
 
-        # Ajouter les nouveaux élèves à la base de données
         for eleve_data in new_eleves:
-            classe = Classe.objects.get(id=eleve_data['classe_actuelle'])  # Récupérer l'objet Classe
+            classe = Classe.objects.get(id=eleve_data['classe_actuelle'])
             Eleve.objects.create(
                 nom=eleve_data['nom'],
                 prenom=eleve_data['prenom'],
@@ -186,24 +202,21 @@ def importer_eleves(request):
                 matricule=eleve_data['matricule'],
                 statut=eleve_data['statut'],
                 contact_parent=eleve_data['contact_parent'],
-                classe_actuelle=classe  # Utiliser l'objet Classe
+                classe_actuelle=classe
             )
 
+        cache.delete_pattern('liste_eleves_*')
         messages.success(request, f"Importation réussie: {imported_count} élèves importés, {duplicate_count} doublons détectés, {error_count} erreurs.")
         return redirect('liste_eleves')
 
     classes = Classe.objects.all()
     return render(request, 'eleves/importer_eleves.html', {'classes': classes})
 
-
-
 @role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def resolve_import_errors(request):
     errors = request.session.get('errors', [])
     return render(request, 'eleves/resolve_import_errors.html', {'errors': errors})
-
-
 
 @role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
@@ -220,14 +233,12 @@ def resolve_duplicates(request):
             existing_eleve = Eleve.objects.get(id=eleve_data['existing_eleve'])
             classe = Classe.objects.get(id=eleve_data['classe_actuelle'])
 
-            # Convertir la date de naissance en chaîne de caractères si nécessaire
             date_naissance = eleve_data['date_naissance']
             if isinstance(date_naissance, datetime):
                 date_naissance = date_naissance.strftime('%Y-%m-%d')
 
             try:
                 if choice == 'fusionner':
-                    # Mettre à jour les informations de l'élève existant
                     existing_eleve.nom = eleve_data['nom']
                     existing_eleve.prenom = eleve_data['prenom']
                     existing_eleve.sexe = eleve_data['sexe']
@@ -238,7 +249,6 @@ def resolve_duplicates(request):
                     existing_eleve.classe_actuelle = classe
                     existing_eleve.save()
                 elif choice == 'dupliquer':
-                    # Créer un nouvel élève avec les informations fournies
                     eleve_data.pop('existing_eleve')
                     Eleve.objects.create(
                         nom=eleve_data['nom'],
@@ -256,7 +266,6 @@ def resolve_duplicates(request):
             except ValueError as e:
                 errors.append(f"Erreur de validation pour le matricule {eleve_data['matricule']}: {str(e)}")
 
-        # Ajouter les nouveaux élèves non-duplicats
         for eleve_data in new_eleves:
             classe = Classe.objects.get(id=eleve_data['classe_actuelle'])
             try:
@@ -318,14 +327,13 @@ def liste_eleves_par_classe(request):
         selected_classe = get_object_or_404(Classe, id=selected_classe_id)
         eleves = Eleve.objects.filter(classe_actuelle=selected_classe).order_by('nom')
 
-        paginator = Paginator(eleves, 10)
+        paginator = Paginator(eleves, 50)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
-        # Calculer les statistiques
         stats['total_eleves'] = eleves.count()
-        stats['total_eleves_redoublants']= eleves.filter(statut='Redoublant').count()
-        stats['total_eleves_nouveaux']= eleves.filter(statut='Nouveau').count()
+        stats['total_eleves_redoublants'] = eleves.filter(statut='Redoublant').count()
+        stats['total_eleves_nouveaux'] = eleves.filter(statut='Nouveau').count()
         stats['total_garcons'] = eleves.filter(sexe='Masculin').count()
         stats['total_filles'] = eleves.filter(sexe='Feminin').count()
         stats['garcons_redoublants'] = eleves.filter(sexe='Masculin', statut='Redoublant').count()
@@ -344,23 +352,28 @@ def liste_eleves_par_classe(request):
 @role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def imprimer_liste_eleves(request, classe_id):
+    cache_key = f"imprimer_liste_eleves_{classe_id}"
     classe = get_object_or_404(Classe, id=classe_id)
-    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    eleves = cache.get(cache_key)
+
+    if not eleves:
+        eleves = Eleve.objects.filter(classe_actuelle=classe).select_related('classe_actuelle').order_by('nom')
+        cache.set(cache_key, eleves, timeout=60*15)
+
     parametres_etablissement = ParametresEtablissement.objects.first()
 
-    # Calculer les statistiques
-    stats = {}
-    stats['total_eleves'] = eleves.count()
-    stats['total_eleves_redoublants']= eleves.filter(statut='Redoublant').count()
-    stats['total_eleves_nouveaux']= eleves.filter(statut='Nouveau').count()
-    stats['total_garcons'] = eleves.filter(sexe='Masculin').count()
-    stats['total_filles'] = eleves.filter(sexe='Feminin').count()
-    stats['garcons_redoublants'] = eleves.filter(sexe='Masculin', statut='Redoublant').count()
-    stats['garcons_nouveaux'] = eleves.filter(sexe='Masculin', statut='Nouveau').count()
-    stats['filles_redoublantes'] = eleves.filter(sexe='Feminin', statut='Redoublant').count()
-    stats['filles_nouvelles'] = eleves.filter(sexe='Feminin', statut='Nouveau').count()
+    stats = {
+        'total_eleves': eleves.count(),
+        'total_eleves_redoublants': eleves.filter(statut='Redoublant').count(),
+        'total_eleves_nouveaux': eleves.filter(statut='Nouveau').count(),
+        'total_garcons': eleves.filter(sexe='Masculin').count(),
+        'total_filles': eleves.filter(sexe='Feminin').count(),
+        'garcons_redoublants': eleves.filter(sexe='Masculin', statut='Redoublant').count(),
+        'garcons_nouveaux': eleves.filter(sexe='Masculin', statut='Nouveau').count(),
+        'filles_redoublantes': eleves.filter(sexe='Feminin', statut='Redoublant').count(),
+        'filles_nouvelles': eleves.filter(sexe='Feminin', statut='Nouveau').count(),
+    }
 
-     # Modifier les valeurs de sexe pour les raccourcir
     for eleve in eleves:
         if eleve.sexe == 'Masculin':
             eleve.sexe = 'M'

@@ -69,5 +69,5 @@ urlpatterns = [
     # URL pour afficher les statistiques trimestrielles d'un département
     path('statistiques-trimestrielles-departement/<str:trimestre>/', views.statistiques_trimestrielles_departement, name='statistiques_trimestrielles_departement'),
     path('imprimer_bordereau_remplissage/<int:classe_id>/', views.imprimer_bordereau_remplissage, name='imprimer_bordereau_remplissage'),
-
+    path('voir-notes/<str:sequence>/<int:classe_id>/<int:matiere_id>/', views.voir_notes, name='voir_notes'),
 ]

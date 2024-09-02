@@ -41,8 +41,19 @@ def saisie_notes(request, sequence, classe_id, matiere_id):
     matiere = get_object_or_404(Matiere, id=matiere_id)
     eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
     notes_existantes = {note.eleve.id: note.note for note in Note.objects.filter(classe=classe, matiere=matiere, sequence=sequence)}
+    
+    # Vérifier s'il y a déjà des notes enregistrées
+    deja_enregistrees = bool(notes_existantes)
+    
+    # Vérifier le rôle de l'utilisateur
+    is_sg_or_admin = request.user.profilutilisateur.role in ['SG', 'Admin_']
 
     if request.method == 'POST':
+        # Si des notes existent déjà et que l'utilisateur n'est pas SG ou Admin, interdisez la modification
+        if deja_enregistrees and not is_sg_or_admin:
+            messages.error(request, "Vous n'avez pas l'autorisation de modifier ces notes.")
+            return redirect('voir_notes', sequence=sequence, classe_id=classe_id, matiere_id=matiere_id)
+        
         all_filled = True
         for eleve in eleves:
             note_value = request.POST.get(f'note_{eleve.id}')
@@ -82,8 +93,12 @@ def saisie_notes(request, sequence, classe_id, matiere_id):
         'classe': classe,
         'matiere': matiere,
         'sequence': sequence,
-        'notes_existantes': notes_existantes
+        'notes_existantes': notes_existantes,
+        'deja_enregistrees': deja_enregistrees,
+        'is_sg_or_admin': is_sg_or_admin
     })
+
+
 
 
 @login_required
@@ -124,11 +139,33 @@ def bulletins_et_stats(request):
 @login_required
 def liste_notes_completes(request):
     enseignant = request.user.profilutilisateur
-    notes_completes = Note.objects.filter(
-        Q(enseignant=enseignant) | Q(matiere__enseignant=enseignant),
-        completed=True
-    ).distinct('classe', 'matiere', 'sequence')
-    return render(request, 'notes/liste_notes_completes.html', {'notes_completes': notes_completes})
+    query = request.GET.get('q', '')
+
+    if enseignant.role in ['SG', 'Admin_']:
+        notes_completes = Note.objects.filter(completed=True)
+    else:
+        notes_completes = Note.objects.filter(
+            Q(enseignant=enseignant) | Q(matiere__enseignant=enseignant),
+            completed=True
+        )
+
+    if query:
+        notes_completes = notes_completes.filter(
+            Q(classe__nom__icontains=query) |
+            Q(matiere__nom__icontains=query) |  # Correction ici
+            Q(sequence__icontains=query)
+        )
+
+    notes_completes = notes_completes.distinct('classe', 'matiere', 'sequence')
+
+    paginator = Paginator(notes_completes, 10)  # Pagination avec 10 éléments par page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'notes/liste_notes_completes.html', {
+        'notes_completes': page_obj,
+        'query': query,
+    })
 
 # Alias pour la séquence 2
 @login_required
@@ -2195,3 +2232,30 @@ def imprimer_bordereau_remplissage(request, classe_id):
     if pisa_status.err:
         return HttpResponse("Une erreur s'est produite lors de la génération du PDF", status=400)
     return response
+
+def voir_notes(request, sequence, classe_id, matiere_id):
+    # Vérifier si l'utilisateur est SG ou Admin
+    if request.user.profilutilisateur.role not in ['SG', 'Admin_']:
+        messages.error(request, "Vous n'avez pas l'autorisation d'accéder à cette page.")
+        return redirect('home')  # Rediriger vers la page d'accueil ou une autre page appropriée
+
+    classe = get_object_or_404(Classe, id=classe_id)
+    matiere = get_object_or_404(Matiere, id=matiere_id)
+    query = request.GET.get('q', '')
+
+    # Filtrer les notes par nom ou code de classe, ou par séquence
+    notes = Note.objects.filter(classe=classe, matiere=matiere, sequence=sequence)
+    if query:
+        notes = notes.filter(Q(classe__nom__icontains=query) | Q(classe__code__icontains=query) | Q(sequence__icontains=query))
+
+    paginator = Paginator(notes, 20)  # Pagination avec 20 éléments par page
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'notes/liste_notes_a_modifier.html', {
+        'classe': classe,
+        'matiere': matiere,
+        'sequence': sequence,
+        'notes': page_obj,
+        'query': query,
+    })

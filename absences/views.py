@@ -29,7 +29,7 @@ def selection_classe_sequence(request):
 @login_required
 def saisie_absences(request, classe_id, sequence):
     classe = get_object_or_404(Classe, id=classe_id)
-    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    eleves = Eleve.objects.filter(classe_actuelle=classe).select_related('classe_actuelle').order_by('nom')
     absences_existantes = {absence.eleve.id: absence.absences for absence in Absence.objects.filter(classe=classe, sequence=sequence)}
 
     if request.method == 'POST':
@@ -40,7 +40,7 @@ def saisie_absences(request, classe_id, sequence):
                 all_filled = False
                 break
         if all_filled:
-            enseignant = request.user.profilutilisateur  # Récupérer le ProfilUtilisateur associé à l'utilisateur connecté
+            enseignant = request.user.profilutilisateur
             for eleve in eleves:
                 absence_value = request.POST.get(f'absence_{eleve.id}')
                 try:
@@ -53,7 +53,7 @@ def saisie_absences(request, classe_id, sequence):
                     eleve=eleve,
                     classe=classe,
                     sequence=sequence,
-                    defaults={'absences': absence_value, 'enseignant': enseignant}  # Utiliser le ProfilUtilisateur ici
+                    defaults={'absences': absence_value, 'enseignant': enseignant}
                 )
             messages.success(request, "Les absences ont été enregistrées avec succès.")
             return redirect('menu_gestion_trimestres')
@@ -67,8 +67,6 @@ def saisie_absences(request, classe_id, sequence):
         'absences_existantes': absences_existantes
     })
 
-
-
 @login_required
 def liste_absences_completes(request):
     enseignant = request.user.profilutilisateur
@@ -79,7 +77,7 @@ def liste_absences_completes(request):
 @login_required
 def justifier_absences(request, sequence, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)
-    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
+    eleves = Eleve.objects.filter(classe_actuelle=classe).select_related('classe_actuelle').order_by('nom')
     absences_existantes = {absence.eleve.id: absence for absence in Absence.objects.filter(classe=classe, sequence=sequence)}
 
     if request.method == 'POST':
@@ -90,7 +88,7 @@ def justifier_absences(request, sequence, classe_id):
                 try:
                     justification = int(justification)
                 except ValueError:
-                    justification = 0  # Par défaut, mettre à 0 en cas de problème
+                    justification = 0
 
                 absence.justification = justification
                 absence.total = absence.absences - absence.justification
@@ -104,17 +102,16 @@ def justifier_absences(request, sequence, classe_id):
         'sequence': sequence,
         'absences_existantes': absences_existantes
     })
-    
-# absences/views.py
+
 @role_required(allowed_roles=['Admin_', 'SG'])
 @login_required
 def imprimer_absences(request, sequence, classe_id):
     classe = get_object_or_404(Classe, id=classe_id)
-    eleves = Eleve.objects.filter(classe_actuelle=classe).order_by('nom')
-    absences = Absence.objects.filter(classe=classe, sequence=sequence)
+    eleves = Eleve.objects.filter(classe_actuelle=classe).select_related('classe_actuelle').order_by('nom')
+    absences = Absence.objects.filter(classe=classe, sequence=sequence).select_related('eleve', 'classe').order_by('eleve__nom')
+    
     parametres_etablissement = ParametresEtablissement.objects.first()
 
-    # Récupérer la valeur de with_justifications depuis les paramètres GET
     with_justifications = request.GET.get('with_justifications', 'False') == 'True'
 
     template_path = 'absences/imprimer_absences.html' if with_justifications else 'absences/imprimer_absences_sans_justifications.html'
@@ -136,6 +133,3 @@ def imprimer_absences(request, sequence, classe_id):
     if pisa_status.err:
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
-
-
-
