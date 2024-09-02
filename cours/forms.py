@@ -47,9 +47,7 @@ class MatiereForm(forms.ModelForm):
                     ('groupe_1', 'Groupe 1'),
                     ('groupe_2', 'Groupe 2'),
                     ('groupe_3', 'Groupe 3'),
-                    ('groupe_4', 'Groupe 4'),
-                    ('groupe_5', 'Groupe 5'),
-                    ('groupe_6', 'Groupe 6'),
+                    
                 ]
             elif parametres.type_enseignement == 'technique':
                 self.fields['groupe'].choices = [

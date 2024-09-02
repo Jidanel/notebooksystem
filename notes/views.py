@@ -414,9 +414,6 @@ def afficher_bulletins_trimestriels(request, classe_id):
             {'nom': 'Groupe 1', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_1').order_by('nom')},
             {'nom': 'Groupe 2', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_2').order_by('nom')},
             {'nom': 'Groupe 3', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_3').order_by('nom')},
-            {'nom': 'Groupe 4', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_4').order_by('nom')},
-            {'nom': 'Groupe 5', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_5').order_by('nom')},
-            {'nom': 'Groupe 6', 'matieres': Matiere.objects.filter(classe=classe, groupe='groupe_6').order_by('nom')},
         ]
     elif type_enseignement == 'general':
         groupes_definition = [

@@ -1,12 +1,54 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!-- templates/parametres/gerer_parametres_etablissement.html -->
 <div class="container mt-5">
     <h2>Gérer les paramètres de l'établissement</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div class="form-group">
+            <label for="id_nom_etablissement_fr">Nom de l'établissement :</label>
+            {{ form.nom_etablissement_fr }}
+        </div>
+        <div class="form-group">
+            <label for="id_nom_etablissement_en">Name of the School :</label>
+            {{ form.nom_etablissement_en }}
+        </div>
+        <div class="form-group">
+            <label for="id_bp_fr">Boîte Postale :</label>
+            {{ form.bp_fr }}
+        </div>
+        <div class="form-group">
+            <label for="id_bp_en">PO Box :</label>
+            {{ form.bp_en }}
+        </div>
+        <div class="form-group">
+            <label for="id_telephone_fr">Téléphone :</label>
+            {{ form.telephone_fr }}
+        </div>
+        <div class="form-group">
+            <label for="id_telephone_en">Phone :</label>
+            {{ form.telephone_en }}
+        </div>
+        <div class="form-group">
+            <label for="id_ville_fr">Ville :</label>
+            {{ form.ville_fr }}
+        </div>
+        <div class="form-group">
+            <label for="id_ville_en">Town :</label>
+            {{ form.ville_en }}
+        </div>
+        <div class="form-group">
+            <label for="id_annee_scolaire">Année Scolaire / School Year :</label>
+            {{ form.annee_scolaire }}
+        </div>
+        <div class="form-group">
+            <label for="id_logo">URL du Logo :</label>
+            {{ form.logo }}
+        </div>
+        <div class="form-group">
+            <label for="id_type_enseignement">Type d'Enseignement :</label>
+            {{ form.type_enseignement }}
+        </div>
         <button type="submit" class="btn btn-primary btn-block">Enregistrer</button>
     </form>
 </div>

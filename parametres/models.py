@@ -4,7 +4,7 @@ from django.db import models
 class ParametresEtablissement(models.Model):
     TYPE_ENSEIGNEMENT_CHOICES = [
         ('technique', 'Enseignement Technique'),
-        ('bilingue', 'Enseignement Bilingue'),
+        ('bilingue', 'Enseignement Bilingue Ou Polyvalent'),
         ('general', 'Enseignement Général'),
     ]
 

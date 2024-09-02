@@ -108,9 +108,6 @@ def liste_groupes_par_classe(request, classe_id):
             {'nom': 'Groupe 1', 'matieres': matieres.filter(groupe__exact='groupe_1')},
             {'nom': 'Groupe 2', 'matieres': matieres.filter(groupe__exact='groupe_2')},
             {'nom': 'Groupe 3', 'matieres': matieres.filter(groupe__exact='groupe_3')},
-            {'nom': 'Groupe 4', 'matieres': matieres.filter(groupe__exact='groupe_4')},
-            {'nom': 'Groupe 5', 'matieres': matieres.filter(groupe__exact='groupe_5')},
-            {'nom': 'Groupe 6', 'matieres': matieres.filter(groupe__exact='groupe_6')},
         ]
     elif type_enseignement == 'general':
         groupes = [
