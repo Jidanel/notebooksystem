@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h3 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 2px;
+            font-size: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #BDBDBD;
+        }
+        .details {
+            margin-top: 20px;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        .signature-section {
+            page-break-after: always;
+        }
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        .signature-section p {
+            font-weight: bold;
+        }
+        .signature-section .left {
+            text-align: left;
+            vertical-align: top;
+        }
+        .signature-section .right {
+            text-align: right;
+            vertical-align: bottom;
+        }
+    </style>
+</head>
+<body>
+    {% for eleve_data in eleves_data %}
+    <!-- Entête de l'établissement -->
+    {% include 'parametres/entete.html' with parametres=parametres %}
+
+    <!-- Informations sur l'élève et sa classe -->
+    <div class="header">
+        <table style="width: 100%; border: none; border-collapse: collapse;">
+            <tr>
+                <td style="text-align: center; font-weight: bold; font-size: 10px;">
+                    <h3><strong>Noms & prénoms :</strong> {{ eleve_data.eleve.nom }} {{ eleve_data.eleve.prenom }}</h3>
+                    <p><strong>Né(e) le :</strong> {{ eleve_data.eleve.date_naissance }} à {{ eleve_data.eleve.lieu_naissance }}</p>
+                </td>
+                <td style="text-align: center; font-weight: bold; font-size: 10px;">
+                    <h3><strong>Classe :</strong> {{ classe.nom }}</h3>
+                    <p><strong>Effectif :</strong> {{ classe.eleves.count }}</p>
+                </td>
+                <td style="text-align: center; font-weight: bold; font-size: 10px;">
+                    <p><strong>Rang Annuel :</strong> {{ eleve_data.rang_annuel }} / {{ classe.eleves.count }}</p>
+                    <p><strong>Prof. principal :</strong> {% if classe.responsable.sexe == 'Masculin' %}M.{% else %}Mme{% endif %} {{ classe.responsable.nom }}</p>
+                    <p><strong>Tél. Père/Mère/Tuteur :</strong> {{ eleve_data.eleve.contact_parent }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; font-weight: bold; font-size: 9px;">
+                    <p><strong>Matricule :</strong> {{ eleve_data.eleve.matricule }}</p>
+                </td>
+                <td style="text-align: center; font-weight: bold; font-size: 9px;">
+                    <p><strong>Redoublant :</strong> {{ eleve_data.eleve.statut }}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Tableau des notes par matière et par trimestre -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Matières</th>
+                    <th>Trim 1</th>
+                    <th>Trim 2</th>
+                    <th>Trim 3</th>
+                    <th>Coef</th>
+                    <th>Total</th>
+                    <th>Rg</th>
+                    <th>MGC</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th>Appréciations</th>
+                    <th>Enseignant</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for groupe in eleve_data.groupes %}
+                    {% for matiere in groupe.matieres %}
+                    <tr>
+                        <td>{{ matiere.nom }}</td>
+                        <td>{{ matiere.trim1|floatformat:2 }}</td>
+                        <td>{{ matiere.trim2|floatformat:2 }}</td>
+                        <td>{{ matiere.trim3|floatformat:2 }}</td>
+                        <td>{{ matiere.coefficient }}</td>
+                        <td>{{ matiere.total|floatformat:2 }}</td>
+                        <td>{{ matiere.rang }}</td>
+                        <td>{{ matiere.mgc|floatformat:2 }}</td>
+                        <td>{{ matiere.min|floatformat:2 }}</td>
+                        <td>{{ matiere.max|floatformat:2 }}</td>
+                        <td>{{ matiere.appreciation }}</td>
+                        <td>{{ matiere.enseignant }}</td>
+                    </tr>
+                    {% endfor %}
+                    <!-- Ligne de total par groupe -->
+                    <tr style="background-color: #BDBDBD;">
+                        <td colspan="4"><strong>{{ groupe.nom }}</strong></td>
+                        <td><strong>{{ groupe.total_coefficient }}</strong></td>
+                        <td><strong>{{ groupe.total|floatformat:2 }}</strong></td>
+                        <td colspan="6" style="text-align: right;"><strong>Moyenne: {{ groupe.moyenne|floatformat:2 }}</strong></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Discipline et travail de l'élève -->
+    <div class="table-responsive">
+        <table style="width: 100%;">
+            <tr>
+                <th colspan="2">Discipline</th>
+                <th>Trim 1</th>
+                <th>Trim 2</th>
+                <th>Trim 3</th>
+                <th>Total</th>
+                <th colspan="5">Travail de l'élève</th>
+            </tr>
+            <tr>
+                <td colspan="2">Absences non justifiées (h) :</td>
+                <td>{{ eleve_data.absences_trim1|default:"0" }}</td>
+                <td>{{ eleve_data.absences_trim2|default:"0" }}</td>
+                <td>{{ eleve_data.absences_trim3|default:"0" }}</td>
+                <td><strong> {{ eleve_data.absences_totales|default:"0" }}</strong></td>
+                <td colspan="2">Points :</td>
+                <td colspan="3"><strong>{{ eleve_data.total_points|floatformat:2 }}</strong></td>
+            </tr>
+            <tr>
+                <td colspan="2">Retards (h) :</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td colspan="2">Coeff :</td>
+                <td colspan="3">{{ eleve_data.total_coefficients }}</td>
+            </tr>
+            <tr>
+                <td colspan="2">Consignes (h) :</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td colspan="2">Avertissements :</td>
+                <td>Travail</td>
+                <td>Conduite</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Profil de la classe -->
+    <div class="table-responsive">
+        <table style="width: 100%;">
+            <tr>
+                <th colspan="4">Profil de la classe</th>
+                <th colspan="4">Statistiques de la classe</th>
+            </tr>
+            <tr>
+                <td colspan="2">Moy. gen. classe :</td>
+                <td colspan="2">{{ profil_classe.moyenne_generale|floatformat:2 }}</td>
+                <td colspan="2">Taux de Réussite :</td>
+                <td colspan="2">{{ profil_classe.taux_reussite|floatformat:2 }}%</td>
+            </tr>
+            <tr>
+                <td colspan="2">Moy. dernier :</td>
+                <td colspan="2">{{ profil_classe.moyenne_dernier|floatformat:2 }}</td>
+                <td colspan="2">Nombre de Moyennes :</td>
+                <td colspan="2">{{ profil_classe.nombre_moyennes }}</td>
+            </tr>
+            <tr>
+                <td colspan="2">Moy. premier :</td>
+                <td colspan="2">{{ profil_classe.moyenne_premier|floatformat:2 }}</td>
+                <td colspan="2">Écart-type :</td>
+                <td colspan="2">{{ profil_classe.ecart_type|floatformat:2 }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Section des signatures -->
+    <div class="signature-section">
+        <table style="width: 100%; padding:20px;">
+            <tr>
+                <th colspan="3">Visa du Parent</th>
+                <th colspan="2">Appréciation du travail</th>
+                <th colspan="3">Visa Professeur Principal</th>
+                <th colspan="4">Visa du Chef d'établissement</th>
+            </tr>
+            <tr style="height: 100px;">
+                <td colspan="3"></td>
+                <td colspan="2" style="text-align: center; font-weight: bold; vertical-align: top;">{{ eleve_data.appreciation_travail }}</td>
+                <td colspan="3"></td>
+                <td colspan="4" style="text-align: left; font-weight: bold; vertical-align: top;">
+                    <p>Fait à {{ parametres.ville_fr }}, Le {% now "d/m/Y" %}</p>
+                    <p></p>
+                    <p style="text-align: right; font-weight: bold; vertical-align: bottom;">Le Principal</p>
+                </td>
+                
+            </tr>
+        </table>
+    </div>
+
+    <div style="page-break-after: always;"></div>
+    {% endfor %}
+</body>
+</html>

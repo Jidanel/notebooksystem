@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h3 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 2px;
+            font-size: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #BDBDBD;
+        }
+        .details {
+            margin-top: 20px;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        .signature-section {
+            page-break-after: always;
+        }
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+    </style>
+</head>
+<body>
+    {% for eleve_data in eleves_data %}
+    {% include 'parametres/entete.html' with parametres=parametres %}
+    <div class="header">
+        <table style="width: 100%; border: none; border-collapse: collapse;">
+            <tr>
+                <td style="text-align: center; font-weight: bold; font-size: 10px; padding-bottom: 0; border: none;">
+                    <h3><strong>Noms & prénoms :</strong> {{ eleve_data.eleve.nom }} {{ eleve_data.eleve.prenom }}</h3>
+                    <p><strong>Né(e) le :</strong> {{ eleve_data.eleve.date_naissance }} à {{ eleve_data.eleve.lieu_naissance }}</p>
+                </td>
+                <td style="text-align: center; font-weight: bold; font-size: 10px; padding-bottom: 0; border: none;">
+                    <h3><strong>Classe :</strong> {{ classe.nom }}</h3>
+                    <p><strong>Effectif :</strong> {{ classe.eleves.count }}</p>
+                </td>
+                <td style="text-align: center; font-weight: bold; font-size: 10px; padding-bottom: 0; border: none;">
+                    <p><strong>Prof. principal :</strong> {% if classe.responsable.sexe == 'Masculin' %}M.{% else %}Mme{% endif %} {{ classe.responsable.nom }}</p>
+                    <span style="font-weight: normal; font-size: 9px;">
+                        <p><strong>Tél. Père/Mère/Tuteur :</strong> {{ eleve_data.eleve.contact_parent }}</p>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; font-weight: bold; font-size: 9px; border: none;">
+                    <p><strong>Matricule :</strong> {{ eleve_data.eleve.matricule }}</p>
+                </td>
+                <td style="text-align: center; font-weight: bold; font-size: 9px; border: none;">
+                    <p><strong>Redoublant :</strong> {{ eleve_data.eleve.statut }}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Matières</th>
+                    <th style="background-color: #BDBDBD;">Seq3</th>
+                    <th>Coef</th>
+                    <th style="background-color: #BDBDBD;">Total</th>
+                    <th>Rg</th>
+                    <th style="background-color: #BDBDBD;">MGC</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th>Appréciations</th>
+                    <th>Enseignant</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for groupe in eleve_data.groupes %}
+                    {% for matiere in groupe.matieres %}
+                    <tr>
+                        <td>{{ matiere.nom }}</td>
+                        <td style="background-color: #BDBDBD;">{{ matiere.seq3_note|floatformat:2 }}</td>
+                        <td>{{ matiere.coefficient }}</td>
+                        <td>{{ matiere.total|floatformat:2 }}</td>
+                        <td>{{ matiere.rang }}</td>
+                        <td style="background-color: #BDBDBD;">{{ matiere.mgc|floatformat:2 }}</td>
+                        <td>{{ matiere.min|floatformat:2 }}</td>
+                        <td>{{ matiere.max|floatformat:2 }}</td>
+                        <td>{{ matiere.appreciation }}</td>
+                        <td>{{ matiere.enseignant }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr style="background-color: #BDBDBD;">
+                        <td colspan="2"><strong>{{ groupe.nom }}</strong></td>
+                        <td><strong>{{ groupe.total_coefficient }}</strong></td>
+                        <td><strong>{{ groupe.total|floatformat:2 }}</strong></td>
+                        <td colspan="6" style="text-align: right;"><strong>Moyenne: {{ groupe.moyenne|floatformat:2 }}</strong></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="table-responsive">
+        <table style="width: 100%;">
+            <tr>
+                <th colspan="3">Discipline</th>
+                <th colspan="5">Travail de l'élève</th>
+                <th colspan="4">Profil de la classe</th>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: left;">Absences non justifiées (h) :</td>
+                <td>{{ eleve_data.absences_seq3|default:"0" }}</td>
+                <td colspan="5" rowspan="3"><strong>Moyenne: {{ eleve_data.moyenne_generale|floatformat:2 }}</strong></td>
+                <td colspan="2">Moy. gen. classe :</td>
+                <td colspan="3"><strong>{{ profil_classe.moyenne_generale|floatformat:2 }}</strong></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: left;">Retards (h) :</td>
+                <td></td>
+                <td colspan="2">Moy. dernier :</td>
+                <td colspan="3">{{ profil_classe.moyenne_dernier|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: left;">Consignes (h) :</td>
+                <td></td>
+                <td colspan="2">Moy. premier :</td>
+                <td colspan="3">{{ profil_classe.moyenne_premier|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td colspan="1" style="text-align: left;">Avertissements :</td>
+                <td style="text-align: center;">Travail</td>
+                <td style="text-align: center;">Conduite</td>
+                <td colspan="5" rowspan="3" style="font-size: 13px; font-weight:bold;">Rang :{{ eleve_data.rang }}/{{ classe.eleves.count }}</td>
+                <td colspan="2">Nombre de Moyennes :</td>
+                <td colspan="3">{{ profil_classe.nombre_moyennes }}</td>
+            </tr>
+            <tr>
+                <td colspan="1" style="text-align: left;">Blâme :</td>
+                <td style="text-align: center;">Travail</td>
+                <td style="text-align: center;">Conduite</td>
+                <td colspan="2">Taux R :</td>
+                <td colspan="3">{{ profil_classe.taux_reussite|floatformat:2 }}%</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: left;">Exclusions :</td>
+                <td colspan="1"></td>
+                <td colspan="2">Écart-type :</td>
+                <td colspan="3">{{ profil_classe.ecart_type|floatformat:2 }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="signature-section">
+        <table style="width: 100%; padding:20px;">
+            <tr>
+                <th colspan="3">Visa du Parent</th>
+                <th colspan="2">Appréciation du travail</th>
+                <th colspan="3">Visa Professeur Principal</th>
+            </tr>
+            <tr style="height: 100px; vertical-align: bottom;">
+                <td colspan="3" style="text-align: center;"></td>
+                <td colspan="2" style="text-align: center;">{{ eleve_data.appreciation_travail_seq3|default:"" }}</td>
+                <td colspan="3" style="text-align: center;"></td>
+            </tr>
+        </table>
+    </div>
+    {% endfor %}
+</body>
+</html>
